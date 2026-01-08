@@ -84,19 +84,21 @@ def collect_all_images(dataset_dir: Path) -> List[Tuple[Path, Path]]:
 
 
 def split_data(pairs: List[Tuple[Path, Path]], 
-               ratios: Tuple[float, float, float]) -> Tuple[List, List, List]:
+               ratios: Tuple[float, float, float],
+               seed: int = 42) -> Tuple[List, List, List]:
     """
     Split data into train/valid/test based on ratios.
     
     Args:
         pairs: List of (image_path, label_path)
         ratios: (train_ratio, valid_ratio, test_ratio)
+        seed: Random seed for reproducibility
     
     Returns:
         (train_pairs, valid_pairs, test_pairs)
     """
     # Shuffle with fixed seed
-    random.seed(RANDOM_SEED)
+    random.seed(seed)
     shuffled = pairs.copy()
     random.shuffle(shuffled)
     
@@ -157,10 +159,7 @@ def main():
                         help='Remove existing processed data before splitting')
     
     args = parser.parse_args()
-    
-    # Update seed if provided
-    global RANDOM_SEED
-    RANDOM_SEED = args.seed
+    seed = args.seed
     
     # Determine ratios
     if args.final:
@@ -176,7 +175,7 @@ def main():
         print("=" * 60)
         print("Ratios: 70% train / 10% valid / 20% test")
     
-    print(f"Random seed: {RANDOM_SEED}")
+    print(f"Random seed: {seed}")
     
     # Find dataset
     print("\n1. Finding dataset...")
@@ -205,7 +204,7 @@ def main():
     
     # Split data
     print("\n3. Splitting data...")
-    train_pairs, valid_pairs, test_pairs = split_data(all_pairs, ratios)
+    train_pairs, valid_pairs, test_pairs = split_data(all_pairs, ratios, seed=seed)
     
     print(f"   Train: {len(train_pairs)} ({100*len(train_pairs)/len(all_pairs):.1f}%)")
     print(f"   Valid: {len(valid_pairs)} ({100*len(valid_pairs)/len(all_pairs):.1f}%)")
