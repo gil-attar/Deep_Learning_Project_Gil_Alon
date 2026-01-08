@@ -39,18 +39,23 @@ def download_dataset():
     # Dataset: https://universe.roboflow.com/samuels/food-ingredients-dataset-2
     project = rf.workspace("samuels").project("food-ingredients-dataset-2")
     
-    # Get latest version number
-    versions = project.versions()
-    if not versions:
-        raise RuntimeError("No versions found for this dataset")
-    latest_version = max(v.version for v in versions)
-    print(f"Using version: {latest_version}")
+    # Try to get version - try versions 1, 2, 3 in order
+    dataset = None
+    for version_num in [2, 1, 3]:
+        try:
+            print(f"Trying version {version_num}...")
+            dataset = project.version(version_num).download(
+                model_format="yolov8",
+                location=str(DATA_RAW_DIR)
+            )
+            print(f"Successfully downloaded version {version_num}")
+            break
+        except RuntimeError as e:
+            print(f"Version {version_num} not found, trying next...")
+            continue
     
-    # Download in YOLO format
-    dataset = project.version(latest_version).download(
-        model_format="yolov8",
-        location=str(DATA_RAW_DIR)
-    )
+    if dataset is None:
+        raise RuntimeError("Could not find any valid version of this dataset")
     
     print("\n" + "=" * 50)
     print(f"Dataset downloaded to: {DATA_RAW_DIR}")
