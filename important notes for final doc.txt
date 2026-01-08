@@ -1,0 +1,15 @@
+the best data we found had 2k images, because we had to have bboxes for the cnn to work. therefore we went to another approach - taking pre trained model and fine tune it with our data - this cause a robust and more efficiant training for our project purpose:
+2K images is enough for fine-tuning pre-trained models
+26 classes = diverse enough for meaningful recipes
+Roboflow makes export trivial (YOLO format ready)
+
+one major problem we had to solve: we may need to manually curate a "Hard Occlusion" test subset — but that's part of our novelty contribution anyway!
+
+few key things we focus on:
+1	Occlusion Difficulty Split - Classify test images into Easy/Medium/Hard based on bounding box overlap (IoU between objects)
+2	Confidence Calibration Study - Analyze: Is high confidence = correct? Plot reliability diagrams, find optimal threshold, compare CNN vs Transformer calibration
+3	Attention Map Visualization - Show WHERE RT-DETR "looks" on occluded images — proves it uses global context
+4	Performance Graphs - mAP, Recall, Precision curves across difficulty levels + confidence thresholds
+
+
+
