@@ -19,3 +19,11 @@ few key things we focus on:
 4.5) make complex - adding noise, occulations etc...
 5) show resaults - talk about hyper params, matrixes, praphs, plots
 6) conclusion
+
+
+
+reguarding occulations:
+What it does: For N boxes, computes IoU for all pairs.
+Example: 4 boxes → 6 pairs → returns max of those 6 IoUs. with this max we decice if its easy/medium/hard.
+we chose this matrix. we could add more like: Object count, Object size variance, Edge proximity, Class confusion, Visibility percentage. but we chose to not focus it because it will get the project to other dimantions we are not interested now. for future projects we can look into these paths.
+
