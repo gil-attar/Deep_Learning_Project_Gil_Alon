@@ -1,0 +1,22 @@
+# Core ML framework (torch is a transitive dependency - don't add explicitly!)
+ultralytics>=8.0.0          # YOLOv8 & RT-DETR (same library!)
+
+# Data handling
+numpy>=1.24.0
+pandas>=2.0.0
+opencv-python>=4.8.0
+Pillow>=10.0.0
+
+# Dataset download
+roboflow>=1.1.0
+
+# Visualization
+matplotlib>=3.7.0
+seaborn>=0.12.0
+
+# LLM integration
+openai>=1.0.0
+
+# Utilities
+tqdm>=4.65.0
+pyyaml>=6.0
