@@ -58,10 +58,19 @@ def download_dataset():
     if dataset is None:
         raise RuntimeError("Could not find any valid version")
     
+    # Debug: Show what's in the processed directory
+    print(f"\n[DEBUG] Contents of {DATA_PROCESSED_DIR}:")
+    for item in DATA_PROCESSED_DIR.iterdir():
+        print(f"  {item.name}/ " if item.is_dir() else f"  {item.name}")
+        if item.is_dir():
+            for subitem in list(item.iterdir())[:5]:
+                print(f"    {subitem.name}")
+    
     # Roboflow creates a subfolder - move contents up
     # e.g., data/processed/food-ingredients-dataset-2-rewtd-1/ → data/processed/
+    moved = False
     for subdir in DATA_PROCESSED_DIR.iterdir():
-        if subdir.is_dir() and subdir.name.startswith("food-ingredients"):
+        if subdir.is_dir() and "food-ingredients" in subdir.name.lower():
             print(f"\nMoving files from {subdir.name}/ to processed/...")
             for item in subdir.iterdir():
                 dest = DATA_PROCESSED_DIR / item.name
@@ -72,7 +81,11 @@ def download_dataset():
                         dest.unlink()
                 shutil.move(str(item), str(dest))
             subdir.rmdir()
+            moved = True
             break
+    
+    if not moved:
+        print("\n[DEBUG] No subfolder found to move. Checking direct structure...")
     
     print("\n" + "=" * 50)
     print("Download Complete!")
