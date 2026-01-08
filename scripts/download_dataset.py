@@ -36,8 +36,8 @@ def download_dataset():
     rf = Roboflow(api_key=ROBOFLOW_API_KEY)
     
     # Access the dataset
-    # Dataset: https://universe.roboflow.com/samuels/food-ingredients-dataset-2
-    project = rf.workspace("samuels").project("food-ingredients-dataset-2")
+    # Dataset: https://app.roboflow.com/gaworkspace-utcbg/food-ingredients-dataset-2-rewtd
+    project = rf.workspace("gaworkspace-utcbg").project("food-ingredients-dataset-2-rewtd")
     
     # Try to get version - try versions 1, 2, 3 in order
     dataset = None
