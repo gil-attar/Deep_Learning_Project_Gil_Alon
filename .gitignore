@@ -1,7 +1,43 @@
+# Python
 __pycache__/
+*.pyc
+*.pyo
+.ipynb_checkpoints/
+
+# Model weights
 *.pt
 *.ckpt
 *.weights
+
+# Training outputs
 runs/
 wandb/
+
+# Environment
 .env
+venv/
+.venv/
+
+# ==============================================================================
+# DATA EXCLUSIONS (CRITICAL FOR STEP 2)
+# ==============================================================================
+# Raw data - downloaded from Roboflow, treated as IMMUTABLE
+data/raw/**
+
+# Processed data - images and labels should not be committed
+data/processed/**/images/**
+data/processed/**/labels/**
+
+# Keep metadata files (these SHOULD be committed):
+#   - data/processed/splits/split_manifest.json
+#   - data/processed/evaluation/test_index.json
+#   - data/processed/evaluation/difficulty_summary.csv
+# ==============================================================================
+
+# Model predictions (generated during evaluation)
+predictions/
+
+# Temporary files
+*.tmp
+*.temp
+.DS_Store

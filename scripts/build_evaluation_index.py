@@ -1,56 +1,93 @@
 """
 Build Evaluation Index
 ======================
-Creates a single JSON file containing all test image metadata, ground truth boxes,
-and occlusion difficulty labels. This becomes the "source of truth" for all 
-downstream analyses (calibration, visualization, hallucination study).
+Creates all Step-2 evaluation artifacts:
+  1. split_manifest.json   - Lists all filenames per split (reproducibility)
+  2. test_index.json       - Ground truth + occlusion difficulty for each test image
+  3. difficulty_summary.csv - Statistics per difficulty level
+
+Occlusion Difficulty Definition (Core Novelty):
+-----------------------------------------------
+Difficulty is based on MAXIMUM pairwise IoU between ground-truth boxes:
+  - Easy:   max_iou < 0.05  (no/minimal overlap)
+  - Medium: 0.05 <= max_iou < 0.15 (partial overlap)
+  - Hard:   max_iou >= 0.15 (significant overlap/occlusion)
 
 Usage:
-    python scripts/build_evaluation_index.py
+    python scripts/build_evaluation_index.py --dataset_root data/raw --output_dir data/processed
 
-Output:
-    data/processed/test_index.json
+Arguments:
+    --dataset_root : Path to raw dataset (default: data/raw)
+    --output_dir   : Path to output directory (default: data/processed)
+    --seed         : Random seed for reproducibility (default: 42)
 
 This script does NOT:
 - Move or copy image files
 - Run any model predictions
 - Require GPU
+
+Note:
+    This script is part of Step 2 (Data Pipeline & Evaluation Foundations).
+    After running, Step 2 is FROZEN. Do not regenerate these files.
 """
 
 import json
+import csv
+import argparse
 from pathlib import Path
 from datetime import datetime
-from typing import List, Dict, Tuple, Optional
+from typing import List, Dict
 import yaml
 
-# Project paths
-PROJECT_ROOT = Path(__file__).parent.parent
-DATA_RAW_DIR = PROJECT_ROOT / "data" / "raw"
-DATA_PROCESSED_DIR = PROJECT_ROOT / "data" / "processed"
+# ==============================================================================
+# OCCLUSION DIFFICULTY THRESHOLDS (CORE NOVELTY - DO NOT CHANGE AFTER STEP 2)
+# ==============================================================================
+# Difficulty is assigned based on MAXIMUM pairwise IoU between GT boxes:
+#   - Easy:   max_iou < EASY_THRESHOLD     (no significant overlap)
+#   - Medium: EASY_THRESHOLD <= max_iou < HARD_THRESHOLD (partial overlap)  
+#   - Hard:   max_iou >= HARD_THRESHOLD    (significant occlusion)
+# ==============================================================================
+EASY_THRESHOLD = 0.05
+HARD_THRESHOLD = 0.15
+# ==============================================================================
 
-# Occlusion thresholds (tunable)
-EASY_MAX_IOU = 0.05
-MEDIUM_MAX_IOU = 0.15
 
-
-def find_dataset_dir() -> Path:
-    """Find the dataset directory (prefers processed, falls back to raw)."""
-    # First check processed directory (after split_dataset.py)
-    if (DATA_PROCESSED_DIR / "data.yaml").exists():
-        return DATA_PROCESSED_DIR
-    
-    # Fall back to raw directory (Roboflow creates a subdirectory)
-    for subdir in DATA_RAW_DIR.iterdir():
-        if subdir.is_dir() and (subdir / "data.yaml").exists():
-            return subdir
-    
-    # Check if data.yaml is directly in raw
-    if (DATA_RAW_DIR / "data.yaml").exists():
-        return DATA_RAW_DIR
-    
-    raise FileNotFoundError(
-        f"Dataset not found. Run download_dataset.py and split_dataset.py first."
+def parse_args():
+    """Parse command line arguments."""
+    parser = argparse.ArgumentParser(
+        description="Build evaluation index with occlusion difficulty labels"
     )
+    parser.add_argument(
+        "--dataset_root",
+        type=str,
+        default="data/raw",
+        help="Path to raw dataset directory (default: data/raw)"
+    )
+    parser.add_argument(
+        "--output_dir",
+        type=str,
+        default="data/processed",
+        help="Path to output directory (default: data/processed)"
+    )
+    parser.add_argument(
+        "--seed",
+        type=int,
+        default=42,
+        help="Random seed for reproducibility (default: 42)"
+    )
+    return parser.parse_args()
+
+
+def get_image_files(directory: Path) -> List[str]:
+    """Get sorted list of image filenames in a directory."""
+    image_extensions = {'.jpg', '.jpeg', '.png', '.bmp', '.webp'}
+    if not directory.exists():
+        return []
+    images = sorted([
+        f.name for f in directory.iterdir()
+        if f.suffix.lower() in image_extensions
+    ])
+    return images
 
 
 def load_class_names(dataset_dir: Path) -> Dict[int, str]:
@@ -193,17 +230,30 @@ def calculate_occlusion_stats(boxes: List[Dict]) -> Dict:
     }
 
 
-def assign_difficulty(avg_iou: float) -> str:
-    """Assign difficulty label based on average IoU."""
-    if avg_iou <= EASY_MAX_IOU:
+def assign_difficulty(max_iou: float) -> str:
+    """
+    Assign difficulty label based on MAXIMUM pairwise IoU.
+    
+    Thresholds (defined at top of file):
+        - Easy:   max_iou < EASY_THRESHOLD (0.05)
+        - Medium: EASY_THRESHOLD <= max_iou < HARD_THRESHOLD (0.05 - 0.15)
+        - Hard:   max_iou >= HARD_THRESHOLD (0.15+)
+    
+    Args:
+        max_iou: Maximum pairwise IoU between any two GT boxes
+    
+    Returns:
+        'easy', 'medium', or 'hard'
+    """
+    if max_iou < EASY_THRESHOLD:
         return 'easy'
-    elif avg_iou <= MEDIUM_MAX_IOU:
+    elif max_iou < HARD_THRESHOLD:
         return 'medium'
     else:
         return 'hard'
 
 
-def build_index(dataset_dir: Path, class_names: Dict[int, str]) -> Dict:
+def build_test_index(dataset_dir: Path, class_names: Dict[int, str]) -> Dict:
     """
     Build the complete evaluation index.
     
@@ -254,8 +304,8 @@ def build_index(dataset_dir: Path, class_names: Dict[int, str]) -> Dict:
         # Calculate occlusion stats
         occlusion_stats = calculate_occlusion_stats(boxes)
         
-        # Assign difficulty
-        difficulty = assign_difficulty(occlusion_stats['avg_iou'])
+        # Assign difficulty based on MAX IoU (not average!)
+        difficulty = assign_difficulty(occlusion_stats['max_iou'])
         difficulty_counts[difficulty] += 1
         
         total_objects += len(boxes)
@@ -263,8 +313,7 @@ def build_index(dataset_dir: Path, class_names: Dict[int, str]) -> Dict:
         # Build image entry
         image_entry = {
             'image_id': img_path.stem,
-            'image_path': str(img_path.relative_to(PROJECT_ROOT)),
-            'label_path': str(label_path.relative_to(PROJECT_ROOT)) if label_path.exists() else None,
+            'image_filename': img_path.name,
             'ground_truth': boxes,
             'num_objects': len(boxes),
             'occlusion_stats': occlusion_stats,
@@ -273,10 +322,31 @@ def build_index(dataset_dir: Path, class_names: Dict[int, str]) -> Dict:
         
         images_data.append(image_entry)
     
+    # Compute difficulty statistics for summary
+    difficulty_stats = {}
+    for diff in ['easy', 'medium', 'hard']:
+        diff_images = [img for img in images_data if img['difficulty'] == diff]
+        if diff_images:
+            avg_objects = sum(img['num_objects'] for img in diff_images) / len(diff_images)
+            max_ious = [img['occlusion_stats']['max_iou'] for img in diff_images]
+            difficulty_stats[diff] = {
+                'count': len(diff_images),
+                'avg_num_objects': round(avg_objects, 2),
+                'avg_max_iou': round(sum(max_ious) / len(max_ious), 4),
+                'max_max_iou': round(max(max_ious), 4)
+            }
+        else:
+            difficulty_stats[diff] = {
+                'count': 0,
+                'avg_num_objects': 0,
+                'avg_max_iou': 0,
+                'max_max_iou': 0
+            }
+    
     # Build metadata
     metadata = {
         'created_at': datetime.now().isoformat(),
-        'dataset_path': str(dataset_dir.relative_to(PROJECT_ROOT)),
+        'dataset_version': 'food-ingredients-dataset-2-rewtd-v1',
         'num_images': len(images_data),
         'num_classes': len(class_names),
         'total_objects': total_objects,
@@ -286,10 +356,12 @@ def build_index(dataset_dir: Path, class_names: Dict[int, str]) -> Dict:
             for k, v in sorted(class_counts.items())
         },
         'difficulty_distribution': difficulty_counts,
-        'thresholds': {
-            'easy_max_iou': EASY_MAX_IOU,
-            'medium_max_iou': MEDIUM_MAX_IOU
-        }
+        'difficulty_thresholds': {
+            'easy': f'max_iou < {EASY_THRESHOLD}',
+            'medium': f'{EASY_THRESHOLD} <= max_iou < {HARD_THRESHOLD}',
+            'hard': f'max_iou >= {HARD_THRESHOLD}'
+        },
+        'difficulty_stats': difficulty_stats
     }
     
     return {
@@ -298,48 +370,128 @@ def build_index(dataset_dir: Path, class_names: Dict[int, str]) -> Dict:
     }
 
 
+def build_split_manifest(dataset_dir: Path, seed: int) -> Dict:
+    """
+    Build the split manifest listing all filenames per split.
+    
+    Args:
+        dataset_dir: Path to dataset root
+        seed: Random seed used (for documentation)
+    
+    Returns:
+        Split manifest dict
+    """
+    manifest = {
+        'created_at': datetime.now().isoformat(),
+        'dataset_version': 'food-ingredients-dataset-2-rewtd-v1',
+        'random_seed': seed,
+        'splits': {}
+    }
+    
+    for split in ['train', 'valid', 'test']:
+        images_dir = dataset_dir / split / 'images'
+        filenames = get_image_files(images_dir)
+        manifest['splits'][split] = {
+            'count': len(filenames),
+            'filenames': filenames
+        }
+    
+    return manifest
+
+
+def save_difficulty_summary(test_index: Dict, output_path: Path):
+    """
+    Save difficulty statistics as CSV.
+    
+    Args:
+        test_index: The complete test index
+        output_path: Path to save CSV
+    """
+    stats = test_index['metadata']['difficulty_stats']
+    
+    with open(output_path, 'w', newline='') as f:
+        writer = csv.writer(f)
+        writer.writerow(['difficulty', 'count', 'avg_num_objects', 'avg_max_iou', 'max_max_iou'])
+        for diff in ['easy', 'medium', 'hard']:
+            s = stats[diff]
+            writer.writerow([diff, s['count'], s['avg_num_objects'], s['avg_max_iou'], s['max_max_iou']])
+
+
 def main():
+    args = parse_args()
+    
+    dataset_dir = Path(args.dataset_root)
+    output_dir = Path(args.output_dir)
+    seed = args.seed
+    
     print("=" * 60)
-    print("BUILD EVALUATION INDEX")
+    print("BUILD EVALUATION INDEX (Step 2)")
+    print("=" * 60)
+    print(f"  Dataset root: {dataset_dir}")
+    print(f"  Output dir:   {output_dir}")
+    print(f"  Seed:         {seed}")
     print("=" * 60)
     
-    # Find dataset
-    print("\n1. Finding dataset...")
-    dataset_dir = find_dataset_dir()
-    print(f"   Found: {dataset_dir}")
+    # Validate dataset exists
+    if not (dataset_dir / "data.yaml").exists():
+        raise FileNotFoundError(
+            f"Dataset not found at {dataset_dir}. Run download_dataset.py first."
+        )
     
     # Load class names
-    print("\n2. Loading class names...")
+    print("\n1. Loading class names...")
     class_names = load_class_names(dataset_dir)
     print(f"   Found {len(class_names)} classes")
     
-    # Build index
-    print("\n3. Processing test images...")
-    index = build_index(dataset_dir, class_names)
+    # Create output directories
+    splits_dir = output_dir / "splits"
+    evaluation_dir = output_dir / "evaluation"
+    splits_dir.mkdir(parents=True, exist_ok=True)
+    evaluation_dir.mkdir(parents=True, exist_ok=True)
+    
+    # Build split manifest
+    print("\n2. Building split manifest...")
+    manifest = build_split_manifest(dataset_dir, seed)
+    manifest_path = splits_dir / "split_manifest.json"
+    with open(manifest_path, 'w') as f:
+        json.dump(manifest, f, indent=2)
+    print(f"   Train: {manifest['splits']['train']['count']} images")
+    print(f"   Valid: {manifest['splits']['valid']['count']} images")
+    print(f"   Test:  {manifest['splits']['test']['count']} images")
+    print(f"   Saved: {manifest_path}")
+    
+    # Build test index
+    print("\n3. Building test index with occlusion difficulty...")
+    test_index = build_test_index(dataset_dir, class_names)
+    index_path = evaluation_dir / "test_index.json"
+    with open(index_path, 'w') as f:
+        json.dump(test_index, f, indent=2)
+    print(f"   Saved: {index_path}")
+    
+    # Save difficulty summary CSV
+    print("\n4. Saving difficulty summary...")
+    summary_path = evaluation_dir / "difficulty_summary.csv"
+    save_difficulty_summary(test_index, summary_path)
+    print(f"   Saved: {summary_path}")
     
     # Print summary
     print("\n" + "=" * 60)
-    print("SUMMARY")
+    print("STEP 2 ARTIFACTS COMPLETE")
     print("=" * 60)
-    print(f"  Total images: {index['metadata']['num_images']}")
-    print(f"  Total objects: {index['metadata']['total_objects']}")
-    print(f"  Classes: {index['metadata']['num_classes']}")
-    print(f"\n  Difficulty distribution:")
-    for diff, count in index['metadata']['difficulty_distribution'].items():
-        pct = 100 * count / index['metadata']['num_images']
+    print(f"\nDifficulty Distribution (based on MAX pairwise IoU):")
+    print(f"  Thresholds: Easy < {EASY_THRESHOLD}, Medium < {HARD_THRESHOLD}, Hard >= {HARD_THRESHOLD}")
+    for diff, count in test_index['metadata']['difficulty_distribution'].items():
+        pct = 100 * count / test_index['metadata']['num_images']
         print(f"    {diff.upper():8s}: {count:4d} ({pct:.1f}%)")
     
-    # Save index
-    DATA_PROCESSED_DIR.mkdir(parents=True, exist_ok=True)
-    output_path = DATA_PROCESSED_DIR / "test_index.json"
+    print(f"\nFiles created:")
+    print(f"  ✓ {manifest_path}")
+    print(f"  ✓ {index_path}")
+    print(f"  ✓ {summary_path}")
     
-    with open(output_path, 'w') as f:
-        json.dump(index, f, indent=2)
-    
-    print(f"\n✅ Saved to: {output_path}")
-    print("\nNext steps:")
-    print("  1. Train models (scripts/train_models.py)")
-    print("  2. Run evaluation (scripts/evaluate_models.py)")
+    print("\n" + "=" * 60)
+    print("STEP 2 FROZEN - Do not regenerate these files")
+    print("=" * 60)
 
 
 if __name__ == "__main__":
