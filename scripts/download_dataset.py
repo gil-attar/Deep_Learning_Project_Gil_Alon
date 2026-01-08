@@ -44,10 +44,20 @@ def download_dataset():
     for v in [1, 2, 3]:
         try:
             print(f"Trying version {v}...")
-            dataset = project.version(v).download(
+            version = project.version(v)
+            
+            # Debug: print the dataset location before download
+            print(f"[DEBUG] Download location set to: {DATA_PROCESSED_DIR}")
+            print(f"[DEBUG] Current working directory: {os.getcwd()}")
+            
+            dataset = version.download(
                 model_format="yolov8",
                 location=str(DATA_PROCESSED_DIR)
             )
+            
+            # Check where files actually went
+            print(f"[DEBUG] Dataset location after download: {dataset.location}")
+            
             version_num = v
             print(f"✓ Downloaded version {v}")
             break
@@ -57,6 +67,27 @@ def download_dataset():
     
     if dataset is None:
         raise RuntimeError("Could not find any valid version")
+    
+    # Get the actual location where Roboflow downloaded
+    actual_location = Path(dataset.location)
+    print(f"\n[DEBUG] Actual dataset location: {actual_location}")
+    
+    # If files are not in DATA_PROCESSED_DIR, move them there
+    if actual_location != DATA_PROCESSED_DIR and actual_location.exists():
+        print(f"[DEBUG] Moving from {actual_location} to {DATA_PROCESSED_DIR}")
+        for item in actual_location.iterdir():
+            dest = DATA_PROCESSED_DIR / item.name
+            if dest.exists():
+                if dest.is_dir():
+                    shutil.rmtree(dest)
+                else:
+                    dest.unlink()
+            shutil.move(str(item), str(dest))
+        # Try to remove the empty source directory
+        try:
+            actual_location.rmdir()
+        except:
+            pass
     
     # Debug: Show what's in the processed directory
     print(f"\n[DEBUG] Contents of {DATA_PROCESSED_DIR}:")
