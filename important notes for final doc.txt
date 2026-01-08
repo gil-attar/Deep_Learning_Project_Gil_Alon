@@ -1,4 +1,9 @@
-the best data we found had 2k images, because we had to have bboxes for the cnn to work. therefore we went to another approach - taking pre trained model and fine tune it with our data - this cause a robust and more efficiant training for our project purpose:
+0) first - explain the project goal
+1) then explain about learning images via transformers (we didnt study it in class).
+2) then compare why it is different from cnn
+3) then say how we do it
+4) talk about things we ran into:
+the best data we found had 2k images, because we had to have bboxes (****explain why****) for the cnn to work. therefore we went to another approach - taking pre trained model and fine tune it with our data - this cause a robust and more efficiant training for our project purpose:
 2K images is enough for fine-tuning pre-trained models
 26 classes = diverse enough for meaningful recipes
 Roboflow makes export trivial (YOLO format ready)
@@ -11,5 +16,6 @@ few key things we focus on:
 3	Attention Map Visualization - Show WHERE RT-DETR "looks" on occluded images — proves it uses global context
 4	Performance Graphs - mAP, Recall, Precision curves across difficulty levels + confidence thresholds
 
-
-
+4.5) make complex - adding noise, occulations etc...
+5) show resaults - talk about hyper params, matrixes, praphs, plots
+6) conclusion
