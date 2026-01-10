@@ -6,7 +6,7 @@ before results are analyzed.
 ## Overview and Motivation
 The general goal of the experiments is to perform a controlled and reproducible comparison between
 a CNN-based detector (YOLOv8) and a Transformer-based detector (RT-DETR), and to evaluate
-their behavior under increasing levels of visual occlusion, which we found to be the most related
+their behavior under increasing levels of visual occlusion on the same test dataset, which we found to be the most related
 augmentation to true usage reality of our models.
 
 The experiments defined here are designed to:
@@ -25,9 +25,9 @@ The following constraints apply to **all experiments (E1–E4)**:
   `data/processed/evaluation/test_index.json`
 
 - **Occlusion Difficulty Definition**:  
-  Difficulty levels (Easy / Medium / Hard) are precomputed and fixed in  
-  `data/processed/evaluation/difficulty_summary.csv`
-
+  Difficulty levels (Easy / Medium / Hard) are introduces synthetically into the same test data set.
+  The parameters are fixed before each evaluation, ground truth labels remain unchanged.
+  
 - **Image Resolution**:  
   Identical image resolution is used for YOLOv8 and RT-DETR during evaluation
 
@@ -62,9 +62,10 @@ The following constraints apply to **all experiments (E1–E4)**:
         - `evaluation/metrics/baseline_yolo_*.json`
         - `evaluation/metrics/baseline_rtdetr_*.json`
 
-## E2: YOLOv8 vs RT-DETR Training on Dataset with occlusions, Evaluation on Difficulty Level (Easy/ Medium / Hard)
+## E2: YOLOv8 vs RT-DETR Testing on Dataset with occlusions, Evaluation on Difficulty Level (Easy/ Medium / Hard)
 * Inputs:
-    - Test images grouped by difficulty level (Easy / Medium / Hard)
+    - Test images from the same test set, introducet with three different
+    difficulty levels (Easy / Medium / Hard)
     - Difficulty assignment from `difficulty_summary.csv`
     - Same test index as Experiment E1
 
@@ -77,12 +78,24 @@ The following constraints apply to **all experiments (E1–E4)**:
     - Recall (primary metric)
     - Precision
     - False Negative (FN) count
+    
+* Output artifacts  
+  Stored under:
 
-* Output artifacts
-    Stored under:
-        - `evaluation/metrics/yolo_by_difficulty.json`
-        - `evaluation/metrics/rtdetr_by_difficulty.json`
-        - Difficulty-based comparison plots under `evaluation/plots/
+  **Per-run E2 metrics (2 models × 3 severities = 6 runs):**
+  - `evaluation/metrics/e2_yolo_easy.json`
+  - `evaluation/metrics/e2_yolo_medium.json`
+  - `evaluation/metrics/e2_yolo_hard.json`
+  - `evaluation/metrics/e2_rtdetr_easy.json`
+  - `evaluation/metrics/e2_rtdetr_medium.json`
+  - `evaluation/metrics/e2_rtdetr_hard.json`
+
+  **Per-model summaries (aggregates severity results for plotting/comparison):**
+  - `evaluation/metrics/e2_yolo_summary.json`
+  - `evaluation/metrics/e2_rtdetr_summary.json`
+
+  **Plots (generated from the summary files):**
+  - Stored under `evaluation/plots/` (e.g., precision/recall vs. occlusion severity)
 
 ## E3: Confidence ThreshHold Sweep (Logic Gate Analysis)
 * Inputs:
