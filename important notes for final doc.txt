@@ -31,6 +31,35 @@ Built-in online augmentations (mosaic, flip, scale, HSV) during training
 That's why you don't need Roboflow augmentations - ultralytics handles it automatically during model.train().
 
 
+How to Reach 85-90% mAP@50:
+Quick Wins (Can do now):
+1. Train Longer
 
+
+epochs=100  # Instead of 50
+patience=20  # Instead of 10
+You stopped at epoch 28-49, might not have fully converged.
+
+2. Use Larger Models
+
+
+# Instead of yolov8n (nano)
+yolo_model = YOLO('yolov8m.pt')  # medium (+10-15% mAP typically)
+
+# Instead of rtdetr-l (large)  
+rtdetr_model = RTDETR('rtdetr-x.pt')  # extra-large (+5-10% mAP)
+3. Data Augmentation (Ultralytics does this automatically, but you can boost it)
+
+
+model.train(
+    ...,
+    hsv_h=0.015,      # Hue augmentation
+    hsv_s=0.7,        # Saturation
+    hsv_v=0.4,        # Value
+    degrees=10,       # Rotation
+    translate=0.1,    # Translation
+    scale=0.5,        # Zoom
+    mosaic=1.0,       # Mosaic augmentation
+)
 
 
