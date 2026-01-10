@@ -1,0 +1,24 @@
+{
+  "run_id": "baseline_yolo_001",
+  "model_family": "yolo",
+  "model_name": "yolov8n",
+  "bbox_format": "xyxy",
+  "image_root_hint": "See test_index.json for canonical image paths.",
+
+  "predictions": [
+    {
+      "image_id": "REPLACE_WITH_ID_FROM_test_index",
+      "image_path": "REPLACE_WITH_RELATIVE_PATH",
+      "detections": [
+        {
+          "class_id": null,
+          "class_name": null,
+          "confidence": null,
+          "bbox": [null, null, null, null]
+        }
+      ]
+    }
+  ],
+
+  "notes": "Replace the predictions list with real per-image detections after running inference."
+}

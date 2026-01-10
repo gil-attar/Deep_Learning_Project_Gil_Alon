@@ -1,0 +1,37 @@
+.
+├── README.md
+├── data
+│   ├── processed
+│   │   ├── data.yaml
+│   │   ├── evaluation
+│   │   │   ├── difficulty_summary.csv
+│   │   │   └── test_index.json
+│   │   └── splits
+│   │       └── split_manifest.json
+│   └── raw
+├── evaluation
+│   ├── metrics
+│   │   ├── baseline_redeter.json
+│   │   └── baseline_yolo_run.json
+│   └── plots
+├── experiments
+│   ├── rtdetr
+│   └── yolo
+├── important notes for final doc.txt
+├── init_project_structure.sh
+├── logic_gate
+├── main.py
+├── notebooks
+│   ├── 01_data_pipeline.ipynb
+│   ├── 02_train_models.ipynb
+│   └── 03_test_synthetic_occlusions.ipynb
+├── recipes
+├── requirements.txt
+├── scripts
+│   ├── build_evaluation_index.py
+│   ├── download_dataset.py
+│   ├── generate_synthetic_occlusions.py
+│   └── merge_valid_into_train.py
+└── tree_log.txt
+
+16 directories, 19 files
