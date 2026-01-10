@@ -1,0 +1,46 @@
+{
+  "run_id": "baseline_yolo_001",
+  "model_name": "yolov8n",
+  "evaluation_date": "2026-01-10 14:30:00",
+  "num_images": 400,
+  "inference_settings": {
+    "imgsz": 640,
+    "conf_threshold": 0.25,
+    "iou_threshold": 0.50,
+    "max_det": 300,
+    "device": "cuda",
+    "half": true
+  },
+  "bbox_format": "xyxy",
+  "predictions": [
+    {
+      "image_id": "-101_jpg.rf.6b25c54c2e5757525123906d817bdb5e",
+      "image_path": "data/raw/test/images/-101_jpg.rf.6b25c54c2e5757525123906d817bdb5e.jpg",
+      "detections": [
+        {
+          "class_id": 9,
+          "class_name": "Capsicum",
+          "confidence": 0.89,
+          "bbox": [236.5, 1.2, 534.8, 170.3],
+          "bbox_format": "xyxy"
+        },
+        {
+          "class_id": 9,
+          "class_name": "Capsicum",
+          "confidence": 0.76,
+          "bbox": [212.1, 134.5, 446.7, 419.2],
+          "bbox_format": "xyxy"
+        }
+      ],
+      "num_detections": 2,
+      "inference_time_ms": 23.4
+    },
+    {
+      "image_id": "another_image_id",
+      "image_path": "data/raw/test/images/another_image.jpg",
+      "detections": [],
+      "num_detections": 0,
+      "inference_time_ms": 18.7
+    }
+  ]
+}

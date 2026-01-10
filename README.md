@@ -33,9 +33,9 @@ This section documents the data protocol. **Do not modify after Step 2 is comple
 
 | Split | Images | Percentage |
 |-------|--------|------------|
-| Train | 1386   | 70%        |
-| Valid | 198    | 10%        |
-| Test  | 396    | 20%        |
+| Train | 1384   | 70%        |
+| Valid | 200    | 10%        |
+| Test  | 400    | 20%        |
 
 The test set is **fixed forever**. All experiments evaluate on the same 396 test images.
 
@@ -109,6 +109,98 @@ Deep_Learning_Gil_Alon/
 
 ---
 
+## Step 3: Baseline Model Training & Evaluation (READY TO RUN)
+
+This section implements baseline training and evaluation for YOLOv8 and RT-DETR.
+
+### Workflow
+
+#### Option A: Google Colab (Recommended)
+
+1. Open [notebooks/02_train_models.ipynb](notebooks/02_train_models.ipynb) in Colab
+2. Run all cells sequentially:
+   - Downloads dataset
+   - Trains YOLOv8n (50 epochs)
+   - Trains RT-DETR-l (50 epochs)
+   - Generates all 6 evaluation JSON files
+   - Saves weights and JSONs to Google Drive
+
+**Expected outputs:**
+```
+models/
+├── yolov8n_baseline.pt       # ~6 MB
+└── rtdetr_baseline.pt        # ~100 MB
+
+evaluation/metrics/
+├── baseline_yolo_run.json          # Run metadata
+├── baseline_yolo_metrics.json      # Aggregate metrics
+├── baseline_yolo_predictions.json  # Per-image predictions
+├── baseline_rtdetr_run.json
+├── baseline_rtdetr_metrics.json
+└── baseline_rtdetr_predictions.json
+```
+
+#### Option B: Local/WSL Training (If you have GPU)
+
+```bash
+# Install dependencies
+pip install -r requirements.txt
+
+# Download dataset
+export ROBOFLOW_API_KEY="your_api_key"
+python scripts/download_dataset.py --output_dir data/raw
+
+# Create data.yaml
+python scripts/create_data_yaml.py --dataset_root data/raw --output data/processed/data.yaml
+
+# Train models (requires GPU)
+# ... (not recommended for 3-week timeline - use Colab's free GPU instead)
+```
+
+#### Option C: Evaluation Only (If you already have weights)
+
+If you've already trained models and just need to generate evaluation JSONs:
+
+```bash
+python scripts/evaluate_baseline.py \
+    --yolo_weights models/yolov8n_baseline.pt \
+    --rtdetr_weights models/rtdetr_baseline.pt \
+    --dataset_root data \
+    --output_dir evaluation/metrics \
+    --model both
+```
+
+### What Gets Generated
+
+The evaluation script creates **6 JSON files** (see [evaluation/README.md](evaluation/README.md)):
+
+1. **Run Metadata** (`*_run.json`): Reproducibility info (model config, dataset refs, hardware)
+2. **Metrics** (`*_metrics.json`): Aggregate performance (mAP@50, precision, recall, FPS)
+3. **Predictions** (`*_predictions.json`): Per-image detections (for occlusion analysis)
+
+### Verification
+
+After training completes:
+
+```python
+import json
+
+# Check metrics comparison
+with open("evaluation/metrics/baseline_yolo_metrics.json") as f:
+    yolo = json.load(f)
+with open("evaluation/metrics/baseline_rtdetr_metrics.json") as f:
+    rtdetr = json.load(f)
+
+print(f"YOLOv8   mAP@50: {yolo['metrics']['map50']:.4f}")
+print(f"RT-DETR  mAP@50: {rtdetr['metrics']['map50']:.4f}")
+```
+
+### Next: Occlusion Analysis (Step 3.3)
+
+Once JSON files are generated, your friend can proceed with occlusion difficulty analysis without re-running inference.
+
+---
+
 ## Environment Setup
 
 ```bash
@@ -126,13 +218,15 @@ export ROBOFLOW_API_KEY="your_api_key"
 
 - [x] Step 1: Repository & Environment Setup
 - [x] Step 2: Data Pipeline & Evaluation Foundations (FROZEN)
-- [ ] Step 3: Baseline Model Training (YOLOv8 & RT-DETR)
-- [ ] Step 4: Evaluation Script
-- [ ] Step 5: Occlusion Difficulty Analysis
-- [ ] Step 6: Hyperparameter Tuning (Phase 1)
-- [ ] Step 7: Final Training (Phase 2 - 80/20 split)
-- [ ] Step 8: Confidence Calibration Study
-- [ ] Step 9: Attention Map Visualization
-- [ ] Step 10: Performance Graphs & Analysis
-- [ ] Step 11: Recipe Generation (OpenAI API)
-- [ ] Step 12: Final Report
+- [x] Step 3: Baseline Model Training & Evaluation
+  - [x] 3.1: Protocol Freezing (run metadata JSONs)
+  - [x] 3.2: Training & Baseline Performance (metrics + predictions JSONs)
+  - [ ] 3.3: Occlusion Difficulty Analysis (slice by Easy/Medium/Hard)
+  - [ ] 3.4: Confidence Threshold Sweep
+- [ ] Step 4: Performance Visualization
+- [ ] Step 5: Hyperparameter Tuning (Phase 1)
+- [ ] Step 6: Final Training (Phase 2 - 80/20 split)
+- [ ] Step 7: Confidence Calibration Study
+- [ ] Step 8: Attention Map Visualization
+- [ ] Step 9: Recipe Generation Pipeline (Logic Gate + OpenAI API)
+- [ ] Step 10: Final Report & Ethics Statement
