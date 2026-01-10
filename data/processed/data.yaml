@@ -1,0 +1,37 @@
+names:
+- Asparagus
+- Avocado
+- Bacon
+- Bamboo Shoots
+- Banana
+- Beef
+- Beetroot
+- Broccoli
+- Cabbage
+- Capsicum
+- Carrot
+- Cauliflower
+- Cheese
+- Chicken
+- Corn
+- Cucumber
+- Egg
+- Eggplant
+- Garlic
+- Ham
+- Lemon
+- Mushroom
+- Okra
+- Pork
+- Potato
+- Tomato
+nc: 26
+roboflow:
+  license: CC BY 4.0
+  project: food-ingredients-dataset-2-rewtd
+  url: https://universe.roboflow.com/gaworkspace-utcbg/food-ingredients-dataset-2-rewtd/dataset/1
+  version: 1
+  workspace: gaworkspace-utcbg
+test: ../test/images
+train: ../train/images
+val: ../valid/images
