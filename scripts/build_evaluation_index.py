@@ -47,8 +47,8 @@ import yaml
 #   - Medium: EASY_THRESHOLD <= max_iou < HARD_THRESHOLD (partial overlap)  
 #   - Hard:   max_iou >= HARD_THRESHOLD    (significant occlusion)
 # ==============================================================================
-EASY_THRESHOLD = 0.05
-HARD_THRESHOLD = 0.15
+EASY_THRESHOLD = 0.10
+HARD_THRESHOLD = 0.25
 # ==============================================================================
 
 
