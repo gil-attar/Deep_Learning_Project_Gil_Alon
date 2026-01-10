@@ -1,4 +1,0 @@
-difficulty,count,avg_num_objects,avg_max_iou,max_max_iou
-easy,285,1.46,0.0042,0.0489
-medium,51,3.35,0.0969,0.1494
-hard,64,4.19,0.299,0.9332
