@@ -114,31 +114,31 @@ def generate_grid_occlusion_cells(
     bbox_xyxy: List[int],
     occlusion_level: float,
     grid_size: int,
-    seed: int
+    rng: random.Random
 ) -> List[Tuple[int, int, int, int]]:
     """
     Generate multiple small rectangles using a grid-based approach.
-    
+
     Divides the bounding box into a grid (e.g., 10x10 = 100 cells).
     Randomly selects cells to fill black until target coverage is reached.
-    
+
     Benefits:
     - Exact coverage (20% = exactly 20 cells out of 100)
     - No overlap between occlusion rectangles
     - More realistic scattered occlusion pattern
-    
+
     Args:
         bbox_xyxy: [x1, y1, x2, y2] bounding box coordinates
         occlusion_level: Fraction of bbox to cover (0.0 to 1.0)
         grid_size: Number of cells per row/column (default 10 = 100 cells)
-        seed: Random seed for reproducibility
-    
+        rng: Random number generator instance (for independent randomness per bbox)
+
     Returns:
         List of (x1, y1, x2, y2) rectangles to fill black
     """
-    random.seed(seed)
-    
-    x1, y1, x2, y2 = bbox_xyxy
+
+    # Ensure coordinates are integers (convert from list/float if needed)
+    x1, y1, x2, y2 = [int(coord) for coord in bbox_xyxy]
     bbox_width = x2 - x1
     bbox_height = y2 - y1
     
@@ -155,9 +155,9 @@ def generate_grid_occlusion_cells(
     
     # Create list of all cell coordinates (row, col)
     all_cells = [(r, c) for r in range(grid_size) for c in range(grid_size)]
-    
-    # Randomly select cells to occlude
-    random.shuffle(all_cells)
+
+    # Randomly select cells to occlude (using passed RNG instance)
+    rng.shuffle(all_cells)
     selected_cells = all_cells[:cells_to_fill]
     
     # Convert cell coordinates to pixel rectangles
@@ -167,6 +167,11 @@ def generate_grid_occlusion_cells(
         rect_y1 = int(y1 + row * cell_height)
         rect_x2 = int(x1 + (col + 1) * cell_width)
         rect_y2 = int(y1 + (row + 1) * cell_height)
+
+        # Clamp to bbox bounds (avoid rounding errors going outside)
+        rect_x2 = min(rect_x2, x2)
+        rect_y2 = min(rect_y2, y2)
+
         rectangles.append((rect_x1, rect_y1, rect_x2, rect_y2))
     
     return rectangles
@@ -181,44 +186,83 @@ def apply_occlusions(
 ) -> Image.Image:
     """
     Apply synthetic grid-based occlusions to all bounding boxes in an image.
-    
+
     Each bounding box is divided into a grid (default 10x10 = 100 cells).
     Random cells are filled with black until target coverage is reached.
-    
+
     Example: 20% occlusion with 10x10 grid = 20 random cells per bbox filled black.
-    
+
     Args:
         image: PIL Image
         boxes: List of ground truth boxes with 'bbox_xyxy'
         occlusion_level: Fraction of each bbox to cover (e.g., 0.2 = 20%)
         base_seed: Base seed (combined with box index for reproducibility)
         grid_size: Grid divisions per side (10 = 100 cells, each cell = 1%)
-    
+
     Returns:
         Modified image with grid-based occlusions
     """
     # Make a copy to avoid modifying original
     occluded_img = image.copy()
     draw = ImageDraw.Draw(occluded_img)
-    
+
     for i, box in enumerate(boxes):
         bbox_xyxy = box.get('bbox_xyxy')
         if not bbox_xyxy:
             continue
-        
+
+        # Create independent RNG for THIS specific bbox
+        # This ensures each bbox gets its own random pattern
+        bbox_rng = random.Random(base_seed + i)
+
         # Generate grid-based occlusion rectangles for this box
         rectangles = generate_grid_occlusion_cells(
             bbox_xyxy,
             occlusion_level,
             grid_size=grid_size,
-            seed=base_seed + i
+            rng=bbox_rng
         )
-        
+
         # Draw all black rectangles for this bbox
         for rect in rectangles:
             draw.rectangle(rect, fill='black')
-    
+
     return occluded_img
+
+
+def yolo_to_xyxy(bbox_yolo, img_width, img_height):
+    """Convert YOLO format to xyxy using actual image dimensions."""
+    x_center, y_center, width, height = bbox_yolo
+    x1 = int((x_center - width / 2) * img_width)
+    y1 = int((y_center - height / 2) * img_height)
+    x2 = int((x_center + width / 2) * img_width)
+    y2 = int((y_center + height / 2) * img_height)
+    return [x1, y1, x2, y2]
+
+
+def load_boxes_from_label(label_path: Path, img_width: int, img_height: int) -> List[Dict]:
+    """Load bounding boxes from YOLO label file using actual image dimensions."""
+    boxes = []
+    if not label_path.exists():
+        return boxes
+
+    with open(label_path, 'r') as f:
+        for line in f:
+            parts = line.strip().split()
+            if len(parts) < 5:
+                continue
+
+            class_id = int(parts[0])
+            bbox_yolo = [float(x) for x in parts[1:5]]
+            bbox_xyxy = yolo_to_xyxy(bbox_yolo, img_width, img_height)
+
+            boxes.append({
+                'class_id': class_id,
+                'bbox_yolo': bbox_yolo,
+                'bbox_xyxy': bbox_xyxy
+            })
+
+    return boxes
 
 
 def process_test_set(
@@ -231,7 +275,7 @@ def process_test_set(
 ) -> Dict:
     """
     Generate synthetic occlusion test set for a specific level.
-    
+
     Args:
         test_index: Loaded test_index.json
         images_dir: Path to original test images
@@ -239,7 +283,7 @@ def process_test_set(
         output_dir: Output directory for this level
         occlusion_level: Fraction to occlude (e.g., 0.4)
         seed: Random seed
-    
+
     Returns:
         Statistics dict
     """
@@ -248,48 +292,54 @@ def process_test_set(
     out_labels = output_dir / "labels"
     out_images.mkdir(parents=True, exist_ok=True)
     out_labels.mkdir(parents=True, exist_ok=True)
-    
+
     stats = {
         'total_images': 0,
         'total_boxes_occluded': 0,
         'occlusion_level': occlusion_level
     }
-    
+
     for img_data in test_index['images']:
         filename = img_data['image_filename']
         image_id = img_data['image_id']
-        boxes = img_data['ground_truth']
-        
+
         # Load original image
         img_path = images_dir / filename
         if not img_path.exists():
             print(f"Warning: Image not found: {img_path}")
             continue
-        
+
         image = Image.open(img_path).convert('RGB')
-        
-        # Apply occlusions
-        occluded_image = apply_occlusions(
-            image,
-            boxes,
-            occlusion_level,
-            base_seed=seed + hash(image_id) % 10000
-        )
-        
-        # Save occluded image
-        occluded_image.save(out_images / filename)
-        
+        img_width, img_height = image.size
+
+        # Load boxes from YOLO label file using ACTUAL image dimensions
+        label_path = labels_dir / (image_id + ".txt")
+        boxes = load_boxes_from_label(label_path, img_width, img_height)
+
+        if len(boxes) == 0:
+            # No boxes, just copy image as-is
+            image.save(out_images / filename)
+        else:
+            # Apply occlusions
+            occluded_image = apply_occlusions(
+                image,
+                boxes,
+                occlusion_level,
+                base_seed=seed + hash(image_id) % 10000
+            )
+            # Save occluded image
+            occluded_image.save(out_images / filename)
+
         # Copy label file unchanged (ground truth stays the same)
-        label_filename = image_id + ".txt"
-        src_label = labels_dir / label_filename
-        dst_label = out_labels / label_filename
-        
+        src_label = label_path
+        dst_label = out_labels / (image_id + ".txt")
+
         if src_label.exists():
             shutil.copy(src_label, dst_label)
-        
+
         stats['total_images'] += 1
         stats['total_boxes_occluded'] += len(boxes)
-    
+
     return stats
 
 
