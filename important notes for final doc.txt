@@ -61,5 +61,15 @@ model.train(
     scale=0.5,        # Zoom
     mosaic=1.0,       # Mosaic augmentation
 )
+My Recommendation:
+For this project, keep your current results because:
 
+Training longer/bigger models takes 5-10x more time
+Your 67-70% is respectable for this task
+The occlusion experiment will work just as well
+You can mention "future work: larger models, more data" in your report
+If you really want higher scores:
+
+Easiest: Train yolov8m and rtdetr-x for 100 epochs (~6-8 hours)
+Expected gain: +10-15% mAP → 80-85% range
 
