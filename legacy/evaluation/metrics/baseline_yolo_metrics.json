@@ -1,0 +1,24 @@
+{
+  "run_id": "baseline_yolo_001",
+  "model_family": "yolo",
+  "model_name": "yolov8n",
+
+  "dataset": {
+    "test_index_path": "data/processed/evaluation/test_index.json"
+  },
+
+  "metrics": {
+    "map50": null,
+    "precision": null,
+    "recall": null,
+    "fps": null
+  },
+
+  "timing": {
+    "num_images": null,
+    "total_inference_seconds": null,
+    "avg_inference_seconds_per_image": null
+  },
+
+  "notes": "Fill these values after running inference+evaluation for Step 3.2 baseline."
+}

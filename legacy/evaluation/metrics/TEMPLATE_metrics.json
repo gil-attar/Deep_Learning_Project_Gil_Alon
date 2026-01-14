@@ -1,0 +1,38 @@
+{
+  "run_id": "baseline_yolo_001",
+  "model_name": "yolov8n",
+  "test_index_path": "data/processed/evaluation/test_index.json",
+  "evaluation_date": "2026-01-10 14:30:00",
+
+  "metrics": {
+    "map50": 0.7234,
+    "map50_95": 0.5123,
+    "precision": 0.7891,
+    "recall": 0.6789,
+    "fps": 45.67
+  },
+
+  "timing": {
+    "total_inference_time_seconds": 8.76,
+    "avg_inference_time_ms": 21.9,
+    "fps": 45.67,
+    "num_images": 400
+  },
+
+  "inference_settings": {
+    "imgsz": 640,
+    "conf_threshold": 0.25,
+    "iou_threshold": 0.50,
+    "max_det": 300,
+    "device": "cuda",
+    "half": true
+  },
+
+  "hardware": {
+    "platform": "google_colab",
+    "gpu": "Tesla T4",
+    "ultralytics_version": "8.0.0",
+    "python_version": "3.10.12",
+    "pytorch_version": "2.1.0+cu121"
+  }
+}
