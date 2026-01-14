@@ -1,0 +1,60 @@
+
+=== YOLOv8m top-level blocks ===
+model.0: BatchNorm2d, Conv, Conv2d, SiLU
+model.1: BatchNorm2d, Conv, Conv2d
+model.2: BatchNorm2d, Bottleneck, C2f, Conv, Conv2d, ModuleList
+model.3: BatchNorm2d, Conv, Conv2d
+model.4: BatchNorm2d, Bottleneck, C2f, Conv, Conv2d, ModuleList
+model.5: BatchNorm2d, Conv, Conv2d
+model.6: BatchNorm2d, Bottleneck, C2f, Conv, Conv2d, ModuleList
+model.7: BatchNorm2d, Conv, Conv2d
+model.8: BatchNorm2d, Bottleneck, C2f, Conv, Conv2d, ModuleList
+model.9: BatchNorm2d, Conv, Conv2d, MaxPool2d, SPPF
+model.10: Upsample
+model.11: Concat
+model.12: BatchNorm2d, Bottleneck, C2f, Conv, Conv2d, ModuleList
+model.13: Upsample
+model.14: Concat
+model.15: BatchNorm2d, Bottleneck, C2f, Conv, Conv2d, ModuleList
+model.16: BatchNorm2d, Conv, Conv2d
+model.17: Concat
+model.18: BatchNorm2d, Bottleneck, C2f, Conv, Conv2d, ModuleList
+model.19: BatchNorm2d, Conv, Conv2d
+model.20: Concat
+model.21: BatchNorm2d, Bottleneck, C2f, Conv, Conv2d, ModuleList
+model.22: BatchNorm2d, Conv, Conv2d, DFL, Detect, ModuleList, Sequential
+
+=== RT-DETR-L top-level blocks ===
+model.0: BatchNorm2d, Conv, Conv2d, HGStem, MaxPool2d, ReLU
+model.1: BatchNorm2d, Conv, Conv2d, HGBlock, ModuleList, ReLU
+model.2: BatchNorm2d, Conv2d, DWConv, Identity
+model.3: BatchNorm2d, Conv, Conv2d, HGBlock, ModuleList
+model.4: BatchNorm2d, Conv2d, DWConv, Identity
+model.5: BatchNorm2d, Conv, Conv2d, DWConv, HGBlock, Identity, LightConv, ModuleList
+model.6: BatchNorm2d, Conv, Conv2d, DWConv, HGBlock, Identity, LightConv, ModuleList
+model.7: BatchNorm2d, Conv, Conv2d, DWConv, HGBlock, Identity, LightConv, ModuleList
+model.8: BatchNorm2d, Conv2d, DWConv, Identity
+model.9: BatchNorm2d, Conv, Conv2d, DWConv, HGBlock, Identity, LightConv, ModuleList
+model.10: BatchNorm2d, Conv, Conv2d, Identity
+model.11: AIFI, Dropout, GELU, LayerNorm, Linear, MultiheadAttention, NonDynamicallyQuantizableLinear
+model.12: BatchNorm2d, Conv, Conv2d, SiLU
+model.13: Upsample
+model.14: BatchNorm2d, Conv, Conv2d, Identity
+model.15: Concat
+model.16: BatchNorm2d, Conv, Conv2d, Identity, RepC3, RepConv, Sequential, SiLU
+model.17: BatchNorm2d, Conv, Conv2d
+model.18: Upsample
+model.19: BatchNorm2d, Conv, Conv2d, Identity
+model.20: Concat
+model.21: BatchNorm2d, Conv, Conv2d, Identity, RepC3, RepConv, Sequential
+model.22: BatchNorm2d, Conv, Conv2d
+model.23: Concat
+model.24: BatchNorm2d, Conv, Conv2d, Identity, RepC3, RepConv, Sequential
+model.25: BatchNorm2d, Conv, Conv2d
+model.26: Concat
+model.27: BatchNorm2d, Conv, Conv2d, Identity, RepC3, RepConv, Sequential
+model.28: BatchNorm2d, Conv2d, DeformableTransformerDecoder, DeformableTransformerDecoderLayer, Dropout, Embedding, LayerNorm, Linear
+
+Suggested splits (starting point):
+YOLOv8m: backbone=model.0-9, neck=model.10-21, head=model.22
+RT-DETR-L: backbone=model.0-11, neck=model.12-27, head=model.28

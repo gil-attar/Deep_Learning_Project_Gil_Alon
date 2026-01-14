@@ -30,6 +30,11 @@ env/
 # Training / experiment tracking outputs
 # ==============================================================================
 runs/
+# Allow .gitkeep placeholders inside any ignored runs/ directory (keep skeleton in git)
+!**/runs/
+!**/runs/**/
+!**/runs/**/.gitkeep
+#
 wandb/
 mlruns/
 lightning_logs/
@@ -40,6 +45,7 @@ tb_logs/
 # ==============================================================================
 artifacts/**
 !artifacts/**/README.md
+!artifacts/**/.gitkeep
 
 # ==============================================================================
 # DATA EXCLUSIONS (CRITICAL FOR STEP 2)

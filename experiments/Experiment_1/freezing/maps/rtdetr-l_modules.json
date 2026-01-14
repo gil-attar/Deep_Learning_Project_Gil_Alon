@@ -1,0 +1,4044 @@
+{
+  "global_params_total": 32970476,
+  "global_params_trainable": 0,
+  "modules": [
+    {
+      "name": "",
+      "type": "DetectionModel",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model",
+      "type": "Sequential",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.0",
+      "type": "HGStem",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.0.stem1",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.0.stem1.conv",
+      "type": "Conv2d",
+      "params_total_local": 864,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.0.stem1.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 64,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.0.stem1.act",
+      "type": "ReLU",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.0.stem2a",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.0.stem2a.conv",
+      "type": "Conv2d",
+      "params_total_local": 2048,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.0.stem2a.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 32,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.0.stem2a.act",
+      "type": "ReLU",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.0.stem2b",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.0.stem2b.conv",
+      "type": "Conv2d",
+      "params_total_local": 2048,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.0.stem2b.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 64,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.0.stem2b.act",
+      "type": "ReLU",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.0.stem3",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.0.stem3.conv",
+      "type": "Conv2d",
+      "params_total_local": 18432,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.0.stem3.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 64,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.0.stem3.act",
+      "type": "ReLU",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.0.stem4",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.0.stem4.conv",
+      "type": "Conv2d",
+      "params_total_local": 1536,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.0.stem4.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 96,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.0.stem4.act",
+      "type": "ReLU",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.0.pool",
+      "type": "MaxPool2d",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.1",
+      "type": "HGBlock",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.1.m",
+      "type": "ModuleList",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.1.m.0",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.1.m.0.conv",
+      "type": "Conv2d",
+      "params_total_local": 20736,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.1.m.0.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 96,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.1.m.0.act",
+      "type": "ReLU",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.1.m.1",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.1.m.1.conv",
+      "type": "Conv2d",
+      "params_total_local": 20736,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.1.m.1.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 96,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.1.m.2",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.1.m.2.conv",
+      "type": "Conv2d",
+      "params_total_local": 20736,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.1.m.2.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 96,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.1.m.3",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.1.m.3.conv",
+      "type": "Conv2d",
+      "params_total_local": 20736,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.1.m.3.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 96,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.1.m.4",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.1.m.4.conv",
+      "type": "Conv2d",
+      "params_total_local": 20736,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.1.m.4.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 96,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.1.m.5",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.1.m.5.conv",
+      "type": "Conv2d",
+      "params_total_local": 20736,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.1.m.5.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 96,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.1.sc",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.1.sc.conv",
+      "type": "Conv2d",
+      "params_total_local": 21504,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.1.sc.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 128,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.1.ec",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.1.ec.conv",
+      "type": "Conv2d",
+      "params_total_local": 8192,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.1.ec.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 256,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.2",
+      "type": "DWConv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.2.conv",
+      "type": "Conv2d",
+      "params_total_local": 1152,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.2.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 256,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.2.act",
+      "type": "Identity",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.3",
+      "type": "HGBlock",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.3.m",
+      "type": "ModuleList",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.3.m.0",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.3.m.0.conv",
+      "type": "Conv2d",
+      "params_total_local": 110592,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.3.m.0.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 192,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.3.m.1",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.3.m.1.conv",
+      "type": "Conv2d",
+      "params_total_local": 82944,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.3.m.1.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 192,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.3.m.2",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.3.m.2.conv",
+      "type": "Conv2d",
+      "params_total_local": 82944,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.3.m.2.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 192,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.3.m.3",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.3.m.3.conv",
+      "type": "Conv2d",
+      "params_total_local": 82944,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.3.m.3.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 192,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.3.m.4",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.3.m.4.conv",
+      "type": "Conv2d",
+      "params_total_local": 82944,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.3.m.4.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 192,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.3.m.5",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.3.m.5.conv",
+      "type": "Conv2d",
+      "params_total_local": 82944,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.3.m.5.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 192,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.3.sc",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.3.sc.conv",
+      "type": "Conv2d",
+      "params_total_local": 180224,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.3.sc.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 512,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.3.ec",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.3.ec.conv",
+      "type": "Conv2d",
+      "params_total_local": 131072,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.3.ec.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 1024,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.4",
+      "type": "DWConv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.4.conv",
+      "type": "Conv2d",
+      "params_total_local": 4608,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.4.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 1024,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.4.act",
+      "type": "Identity",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.5",
+      "type": "HGBlock",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.5.m",
+      "type": "ModuleList",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.5.m.0",
+      "type": "LightConv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.5.m.0.conv1",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.5.m.0.conv1.conv",
+      "type": "Conv2d",
+      "params_total_local": 98304,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.5.m.0.conv1.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 384,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.5.m.0.conv1.act",
+      "type": "Identity",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.5.m.0.conv2",
+      "type": "DWConv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.5.m.0.conv2.conv",
+      "type": "Conv2d",
+      "params_total_local": 4800,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.5.m.0.conv2.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 384,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.5.m.1",
+      "type": "LightConv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.5.m.1.conv1",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.5.m.1.conv1.conv",
+      "type": "Conv2d",
+      "params_total_local": 36864,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.5.m.1.conv1.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 384,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.5.m.1.conv1.act",
+      "type": "Identity",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.5.m.1.conv2",
+      "type": "DWConv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.5.m.1.conv2.conv",
+      "type": "Conv2d",
+      "params_total_local": 4800,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.5.m.1.conv2.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 384,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.5.m.2",
+      "type": "LightConv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.5.m.2.conv1",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.5.m.2.conv1.conv",
+      "type": "Conv2d",
+      "params_total_local": 36864,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.5.m.2.conv1.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 384,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.5.m.2.conv1.act",
+      "type": "Identity",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.5.m.2.conv2",
+      "type": "DWConv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.5.m.2.conv2.conv",
+      "type": "Conv2d",
+      "params_total_local": 4800,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.5.m.2.conv2.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 384,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.5.m.3",
+      "type": "LightConv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.5.m.3.conv1",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.5.m.3.conv1.conv",
+      "type": "Conv2d",
+      "params_total_local": 36864,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.5.m.3.conv1.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 384,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.5.m.3.conv1.act",
+      "type": "Identity",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.5.m.3.conv2",
+      "type": "DWConv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.5.m.3.conv2.conv",
+      "type": "Conv2d",
+      "params_total_local": 4800,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.5.m.3.conv2.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 384,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.5.m.4",
+      "type": "LightConv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.5.m.4.conv1",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.5.m.4.conv1.conv",
+      "type": "Conv2d",
+      "params_total_local": 36864,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.5.m.4.conv1.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 384,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.5.m.4.conv1.act",
+      "type": "Identity",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.5.m.4.conv2",
+      "type": "DWConv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.5.m.4.conv2.conv",
+      "type": "Conv2d",
+      "params_total_local": 4800,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.5.m.4.conv2.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 384,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.5.m.5",
+      "type": "LightConv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.5.m.5.conv1",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.5.m.5.conv1.conv",
+      "type": "Conv2d",
+      "params_total_local": 36864,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.5.m.5.conv1.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 384,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.5.m.5.conv1.act",
+      "type": "Identity",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.5.m.5.conv2",
+      "type": "DWConv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.5.m.5.conv2.conv",
+      "type": "Conv2d",
+      "params_total_local": 4800,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.5.m.5.conv2.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 384,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.5.sc",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.5.sc.conv",
+      "type": "Conv2d",
+      "params_total_local": 851968,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.5.sc.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 1024,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.5.ec",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.5.ec.conv",
+      "type": "Conv2d",
+      "params_total_local": 524288,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.5.ec.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 2048,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.6",
+      "type": "HGBlock",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.6.m",
+      "type": "ModuleList",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.6.m.0",
+      "type": "LightConv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.6.m.0.conv1",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.6.m.0.conv1.conv",
+      "type": "Conv2d",
+      "params_total_local": 196608,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.6.m.0.conv1.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 384,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.6.m.0.conv1.act",
+      "type": "Identity",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.6.m.0.conv2",
+      "type": "DWConv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.6.m.0.conv2.conv",
+      "type": "Conv2d",
+      "params_total_local": 4800,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.6.m.0.conv2.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 384,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.6.m.1",
+      "type": "LightConv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.6.m.1.conv1",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.6.m.1.conv1.conv",
+      "type": "Conv2d",
+      "params_total_local": 36864,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.6.m.1.conv1.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 384,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.6.m.1.conv1.act",
+      "type": "Identity",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.6.m.1.conv2",
+      "type": "DWConv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.6.m.1.conv2.conv",
+      "type": "Conv2d",
+      "params_total_local": 4800,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.6.m.1.conv2.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 384,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.6.m.2",
+      "type": "LightConv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.6.m.2.conv1",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.6.m.2.conv1.conv",
+      "type": "Conv2d",
+      "params_total_local": 36864,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.6.m.2.conv1.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 384,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.6.m.2.conv1.act",
+      "type": "Identity",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.6.m.2.conv2",
+      "type": "DWConv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.6.m.2.conv2.conv",
+      "type": "Conv2d",
+      "params_total_local": 4800,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.6.m.2.conv2.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 384,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.6.m.3",
+      "type": "LightConv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.6.m.3.conv1",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.6.m.3.conv1.conv",
+      "type": "Conv2d",
+      "params_total_local": 36864,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.6.m.3.conv1.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 384,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.6.m.3.conv1.act",
+      "type": "Identity",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.6.m.3.conv2",
+      "type": "DWConv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.6.m.3.conv2.conv",
+      "type": "Conv2d",
+      "params_total_local": 4800,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.6.m.3.conv2.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 384,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.6.m.4",
+      "type": "LightConv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.6.m.4.conv1",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.6.m.4.conv1.conv",
+      "type": "Conv2d",
+      "params_total_local": 36864,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.6.m.4.conv1.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 384,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.6.m.4.conv1.act",
+      "type": "Identity",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.6.m.4.conv2",
+      "type": "DWConv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.6.m.4.conv2.conv",
+      "type": "Conv2d",
+      "params_total_local": 4800,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.6.m.4.conv2.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 384,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.6.m.5",
+      "type": "LightConv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.6.m.5.conv1",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.6.m.5.conv1.conv",
+      "type": "Conv2d",
+      "params_total_local": 36864,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.6.m.5.conv1.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 384,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.6.m.5.conv1.act",
+      "type": "Identity",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.6.m.5.conv2",
+      "type": "DWConv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.6.m.5.conv2.conv",
+      "type": "Conv2d",
+      "params_total_local": 4800,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.6.m.5.conv2.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 384,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.6.sc",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.6.sc.conv",
+      "type": "Conv2d",
+      "params_total_local": 1114112,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.6.sc.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 1024,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.6.ec",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.6.ec.conv",
+      "type": "Conv2d",
+      "params_total_local": 524288,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.6.ec.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 2048,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.7",
+      "type": "HGBlock",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.7.m",
+      "type": "ModuleList",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.7.m.0",
+      "type": "LightConv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.7.m.0.conv1",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.7.m.0.conv1.conv",
+      "type": "Conv2d",
+      "params_total_local": 196608,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.7.m.0.conv1.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 384,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.7.m.0.conv1.act",
+      "type": "Identity",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.7.m.0.conv2",
+      "type": "DWConv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.7.m.0.conv2.conv",
+      "type": "Conv2d",
+      "params_total_local": 4800,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.7.m.0.conv2.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 384,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.7.m.1",
+      "type": "LightConv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.7.m.1.conv1",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.7.m.1.conv1.conv",
+      "type": "Conv2d",
+      "params_total_local": 36864,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.7.m.1.conv1.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 384,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.7.m.1.conv1.act",
+      "type": "Identity",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.7.m.1.conv2",
+      "type": "DWConv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.7.m.1.conv2.conv",
+      "type": "Conv2d",
+      "params_total_local": 4800,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.7.m.1.conv2.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 384,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.7.m.2",
+      "type": "LightConv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.7.m.2.conv1",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.7.m.2.conv1.conv",
+      "type": "Conv2d",
+      "params_total_local": 36864,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.7.m.2.conv1.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 384,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.7.m.2.conv1.act",
+      "type": "Identity",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.7.m.2.conv2",
+      "type": "DWConv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.7.m.2.conv2.conv",
+      "type": "Conv2d",
+      "params_total_local": 4800,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.7.m.2.conv2.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 384,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.7.m.3",
+      "type": "LightConv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.7.m.3.conv1",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.7.m.3.conv1.conv",
+      "type": "Conv2d",
+      "params_total_local": 36864,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.7.m.3.conv1.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 384,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.7.m.3.conv1.act",
+      "type": "Identity",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.7.m.3.conv2",
+      "type": "DWConv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.7.m.3.conv2.conv",
+      "type": "Conv2d",
+      "params_total_local": 4800,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.7.m.3.conv2.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 384,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.7.m.4",
+      "type": "LightConv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.7.m.4.conv1",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.7.m.4.conv1.conv",
+      "type": "Conv2d",
+      "params_total_local": 36864,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.7.m.4.conv1.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 384,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.7.m.4.conv1.act",
+      "type": "Identity",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.7.m.4.conv2",
+      "type": "DWConv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.7.m.4.conv2.conv",
+      "type": "Conv2d",
+      "params_total_local": 4800,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.7.m.4.conv2.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 384,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.7.m.5",
+      "type": "LightConv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.7.m.5.conv1",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.7.m.5.conv1.conv",
+      "type": "Conv2d",
+      "params_total_local": 36864,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.7.m.5.conv1.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 384,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.7.m.5.conv1.act",
+      "type": "Identity",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.7.m.5.conv2",
+      "type": "DWConv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.7.m.5.conv2.conv",
+      "type": "Conv2d",
+      "params_total_local": 4800,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.7.m.5.conv2.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 384,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.7.sc",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.7.sc.conv",
+      "type": "Conv2d",
+      "params_total_local": 1114112,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.7.sc.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 1024,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.7.ec",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.7.ec.conv",
+      "type": "Conv2d",
+      "params_total_local": 524288,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.7.ec.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 2048,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.8",
+      "type": "DWConv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.8.conv",
+      "type": "Conv2d",
+      "params_total_local": 9216,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.8.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 2048,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.8.act",
+      "type": "Identity",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.9",
+      "type": "HGBlock",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.9.m",
+      "type": "ModuleList",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.9.m.0",
+      "type": "LightConv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.9.m.0.conv1",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.9.m.0.conv1.conv",
+      "type": "Conv2d",
+      "params_total_local": 393216,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.9.m.0.conv1.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 768,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.9.m.0.conv1.act",
+      "type": "Identity",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.9.m.0.conv2",
+      "type": "DWConv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.9.m.0.conv2.conv",
+      "type": "Conv2d",
+      "params_total_local": 9600,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.9.m.0.conv2.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 768,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.9.m.1",
+      "type": "LightConv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.9.m.1.conv1",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.9.m.1.conv1.conv",
+      "type": "Conv2d",
+      "params_total_local": 147456,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.9.m.1.conv1.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 768,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.9.m.1.conv1.act",
+      "type": "Identity",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.9.m.1.conv2",
+      "type": "DWConv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.9.m.1.conv2.conv",
+      "type": "Conv2d",
+      "params_total_local": 9600,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.9.m.1.conv2.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 768,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.9.m.2",
+      "type": "LightConv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.9.m.2.conv1",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.9.m.2.conv1.conv",
+      "type": "Conv2d",
+      "params_total_local": 147456,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.9.m.2.conv1.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 768,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.9.m.2.conv1.act",
+      "type": "Identity",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.9.m.2.conv2",
+      "type": "DWConv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.9.m.2.conv2.conv",
+      "type": "Conv2d",
+      "params_total_local": 9600,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.9.m.2.conv2.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 768,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.9.m.3",
+      "type": "LightConv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.9.m.3.conv1",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.9.m.3.conv1.conv",
+      "type": "Conv2d",
+      "params_total_local": 147456,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.9.m.3.conv1.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 768,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.9.m.3.conv1.act",
+      "type": "Identity",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.9.m.3.conv2",
+      "type": "DWConv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.9.m.3.conv2.conv",
+      "type": "Conv2d",
+      "params_total_local": 9600,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.9.m.3.conv2.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 768,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.9.m.4",
+      "type": "LightConv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.9.m.4.conv1",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.9.m.4.conv1.conv",
+      "type": "Conv2d",
+      "params_total_local": 147456,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.9.m.4.conv1.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 768,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.9.m.4.conv1.act",
+      "type": "Identity",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.9.m.4.conv2",
+      "type": "DWConv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.9.m.4.conv2.conv",
+      "type": "Conv2d",
+      "params_total_local": 9600,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.9.m.4.conv2.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 768,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.9.m.5",
+      "type": "LightConv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.9.m.5.conv1",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.9.m.5.conv1.conv",
+      "type": "Conv2d",
+      "params_total_local": 147456,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.9.m.5.conv1.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 768,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.9.m.5.conv1.act",
+      "type": "Identity",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.9.m.5.conv2",
+      "type": "DWConv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.9.m.5.conv2.conv",
+      "type": "Conv2d",
+      "params_total_local": 9600,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.9.m.5.conv2.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 768,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.9.sc",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.9.sc.conv",
+      "type": "Conv2d",
+      "params_total_local": 3407872,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.9.sc.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 2048,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.9.ec",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.9.ec.conv",
+      "type": "Conv2d",
+      "params_total_local": 2097152,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.9.ec.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 4096,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.10",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.10.conv",
+      "type": "Conv2d",
+      "params_total_local": 524288,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.10.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 512,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.10.act",
+      "type": "Identity",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.11",
+      "type": "AIFI",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.11.ma",
+      "type": "MultiheadAttention",
+      "params_total_local": 197376,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.11.ma.out_proj",
+      "type": "NonDynamicallyQuantizableLinear",
+      "params_total_local": 65792,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.11.fc1",
+      "type": "Linear",
+      "params_total_local": 263168,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.11.fc2",
+      "type": "Linear",
+      "params_total_local": 262400,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.11.norm1",
+      "type": "LayerNorm",
+      "params_total_local": 512,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.11.norm2",
+      "type": "LayerNorm",
+      "params_total_local": 512,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.11.dropout",
+      "type": "Dropout",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.11.dropout1",
+      "type": "Dropout",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.11.dropout2",
+      "type": "Dropout",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.11.act",
+      "type": "GELU",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.12",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.12.conv",
+      "type": "Conv2d",
+      "params_total_local": 65536,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.12.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 512,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.12.act",
+      "type": "SiLU",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.13",
+      "type": "Upsample",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.14",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.14.conv",
+      "type": "Conv2d",
+      "params_total_local": 262144,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.14.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 512,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.14.act",
+      "type": "Identity",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.15",
+      "type": "Concat",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.16",
+      "type": "RepC3",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.16.cv1",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.16.cv1.conv",
+      "type": "Conv2d",
+      "params_total_local": 131072,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.16.cv1.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 512,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.16.cv2",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.16.cv2.conv",
+      "type": "Conv2d",
+      "params_total_local": 131072,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.16.cv2.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 512,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.16.m",
+      "type": "Sequential",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.16.m.0",
+      "type": "RepConv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.16.m.0.act",
+      "type": "SiLU",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.16.m.0.conv1",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.16.m.0.conv1.conv",
+      "type": "Conv2d",
+      "params_total_local": 589824,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.16.m.0.conv1.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 512,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.16.m.0.conv1.act",
+      "type": "Identity",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.16.m.0.conv2",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.16.m.0.conv2.conv",
+      "type": "Conv2d",
+      "params_total_local": 65536,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.16.m.0.conv2.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 512,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.16.m.0.conv2.act",
+      "type": "Identity",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.16.m.1",
+      "type": "RepConv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.16.m.1.conv1",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.16.m.1.conv1.conv",
+      "type": "Conv2d",
+      "params_total_local": 589824,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.16.m.1.conv1.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 512,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.16.m.1.conv1.act",
+      "type": "Identity",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.16.m.1.conv2",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.16.m.1.conv2.conv",
+      "type": "Conv2d",
+      "params_total_local": 65536,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.16.m.1.conv2.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 512,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.16.m.1.conv2.act",
+      "type": "Identity",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.16.m.2",
+      "type": "RepConv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.16.m.2.conv1",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.16.m.2.conv1.conv",
+      "type": "Conv2d",
+      "params_total_local": 589824,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.16.m.2.conv1.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 512,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.16.m.2.conv1.act",
+      "type": "Identity",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.16.m.2.conv2",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.16.m.2.conv2.conv",
+      "type": "Conv2d",
+      "params_total_local": 65536,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.16.m.2.conv2.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 512,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.16.m.2.conv2.act",
+      "type": "Identity",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.16.cv3",
+      "type": "Identity",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.17",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.17.conv",
+      "type": "Conv2d",
+      "params_total_local": 65536,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.17.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 512,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.18",
+      "type": "Upsample",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.19",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.19.conv",
+      "type": "Conv2d",
+      "params_total_local": 131072,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.19.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 512,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.19.act",
+      "type": "Identity",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.20",
+      "type": "Concat",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.21",
+      "type": "RepC3",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.21.cv1",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.21.cv1.conv",
+      "type": "Conv2d",
+      "params_total_local": 131072,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.21.cv1.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 512,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.21.cv2",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.21.cv2.conv",
+      "type": "Conv2d",
+      "params_total_local": 131072,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.21.cv2.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 512,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.21.m",
+      "type": "Sequential",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.21.m.0",
+      "type": "RepConv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.21.m.0.conv1",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.21.m.0.conv1.conv",
+      "type": "Conv2d",
+      "params_total_local": 589824,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.21.m.0.conv1.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 512,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.21.m.0.conv1.act",
+      "type": "Identity",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.21.m.0.conv2",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.21.m.0.conv2.conv",
+      "type": "Conv2d",
+      "params_total_local": 65536,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.21.m.0.conv2.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 512,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.21.m.0.conv2.act",
+      "type": "Identity",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.21.m.1",
+      "type": "RepConv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.21.m.1.conv1",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.21.m.1.conv1.conv",
+      "type": "Conv2d",
+      "params_total_local": 589824,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.21.m.1.conv1.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 512,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.21.m.1.conv1.act",
+      "type": "Identity",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.21.m.1.conv2",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.21.m.1.conv2.conv",
+      "type": "Conv2d",
+      "params_total_local": 65536,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.21.m.1.conv2.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 512,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.21.m.1.conv2.act",
+      "type": "Identity",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.21.m.2",
+      "type": "RepConv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.21.m.2.conv1",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.21.m.2.conv1.conv",
+      "type": "Conv2d",
+      "params_total_local": 589824,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.21.m.2.conv1.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 512,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.21.m.2.conv1.act",
+      "type": "Identity",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.21.m.2.conv2",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.21.m.2.conv2.conv",
+      "type": "Conv2d",
+      "params_total_local": 65536,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.21.m.2.conv2.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 512,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.21.m.2.conv2.act",
+      "type": "Identity",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.21.cv3",
+      "type": "Identity",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.22",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.22.conv",
+      "type": "Conv2d",
+      "params_total_local": 589824,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.22.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 512,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.23",
+      "type": "Concat",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.24",
+      "type": "RepC3",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.24.cv1",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.24.cv1.conv",
+      "type": "Conv2d",
+      "params_total_local": 131072,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.24.cv1.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 512,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.24.cv2",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.24.cv2.conv",
+      "type": "Conv2d",
+      "params_total_local": 131072,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.24.cv2.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 512,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.24.m",
+      "type": "Sequential",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.24.m.0",
+      "type": "RepConv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.24.m.0.conv1",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.24.m.0.conv1.conv",
+      "type": "Conv2d",
+      "params_total_local": 589824,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.24.m.0.conv1.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 512,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.24.m.0.conv1.act",
+      "type": "Identity",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.24.m.0.conv2",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.24.m.0.conv2.conv",
+      "type": "Conv2d",
+      "params_total_local": 65536,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.24.m.0.conv2.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 512,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.24.m.0.conv2.act",
+      "type": "Identity",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.24.m.1",
+      "type": "RepConv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.24.m.1.conv1",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.24.m.1.conv1.conv",
+      "type": "Conv2d",
+      "params_total_local": 589824,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.24.m.1.conv1.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 512,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.24.m.1.conv1.act",
+      "type": "Identity",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.24.m.1.conv2",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.24.m.1.conv2.conv",
+      "type": "Conv2d",
+      "params_total_local": 65536,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.24.m.1.conv2.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 512,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.24.m.1.conv2.act",
+      "type": "Identity",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.24.m.2",
+      "type": "RepConv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.24.m.2.conv1",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.24.m.2.conv1.conv",
+      "type": "Conv2d",
+      "params_total_local": 589824,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.24.m.2.conv1.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 512,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.24.m.2.conv1.act",
+      "type": "Identity",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.24.m.2.conv2",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.24.m.2.conv2.conv",
+      "type": "Conv2d",
+      "params_total_local": 65536,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.24.m.2.conv2.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 512,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.24.m.2.conv2.act",
+      "type": "Identity",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.24.cv3",
+      "type": "Identity",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.25",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.25.conv",
+      "type": "Conv2d",
+      "params_total_local": 589824,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.25.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 512,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.26",
+      "type": "Concat",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.27",
+      "type": "RepC3",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.27.cv1",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.27.cv1.conv",
+      "type": "Conv2d",
+      "params_total_local": 131072,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.27.cv1.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 512,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.27.cv2",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.27.cv2.conv",
+      "type": "Conv2d",
+      "params_total_local": 131072,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.27.cv2.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 512,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.27.m",
+      "type": "Sequential",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.27.m.0",
+      "type": "RepConv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.27.m.0.conv1",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.27.m.0.conv1.conv",
+      "type": "Conv2d",
+      "params_total_local": 589824,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.27.m.0.conv1.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 512,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.27.m.0.conv1.act",
+      "type": "Identity",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.27.m.0.conv2",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.27.m.0.conv2.conv",
+      "type": "Conv2d",
+      "params_total_local": 65536,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.27.m.0.conv2.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 512,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.27.m.0.conv2.act",
+      "type": "Identity",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.27.m.1",
+      "type": "RepConv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.27.m.1.conv1",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.27.m.1.conv1.conv",
+      "type": "Conv2d",
+      "params_total_local": 589824,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.27.m.1.conv1.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 512,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.27.m.1.conv1.act",
+      "type": "Identity",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.27.m.1.conv2",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.27.m.1.conv2.conv",
+      "type": "Conv2d",
+      "params_total_local": 65536,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.27.m.1.conv2.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 512,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.27.m.1.conv2.act",
+      "type": "Identity",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.27.m.2",
+      "type": "RepConv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.27.m.2.conv1",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.27.m.2.conv1.conv",
+      "type": "Conv2d",
+      "params_total_local": 589824,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.27.m.2.conv1.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 512,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.27.m.2.conv1.act",
+      "type": "Identity",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.27.m.2.conv2",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.27.m.2.conv2.conv",
+      "type": "Conv2d",
+      "params_total_local": 65536,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.27.m.2.conv2.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 512,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.27.m.2.conv2.act",
+      "type": "Identity",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.27.cv3",
+      "type": "Identity",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28",
+      "type": "RTDETRDecoder",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.input_proj",
+      "type": "ModuleList",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.input_proj.0",
+      "type": "Sequential",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.input_proj.0.0",
+      "type": "Conv2d",
+      "params_total_local": 65536,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.input_proj.0.1",
+      "type": "BatchNorm2d",
+      "params_total_local": 512,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.input_proj.1",
+      "type": "Sequential",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.input_proj.1.0",
+      "type": "Conv2d",
+      "params_total_local": 65536,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.input_proj.1.1",
+      "type": "BatchNorm2d",
+      "params_total_local": 512,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.input_proj.2",
+      "type": "Sequential",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.input_proj.2.0",
+      "type": "Conv2d",
+      "params_total_local": 65536,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.input_proj.2.1",
+      "type": "BatchNorm2d",
+      "params_total_local": 512,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.decoder",
+      "type": "DeformableTransformerDecoder",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.decoder.layers",
+      "type": "ModuleList",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.decoder.layers.0",
+      "type": "DeformableTransformerDecoderLayer",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.decoder.layers.0.self_attn",
+      "type": "MultiheadAttention",
+      "params_total_local": 197376,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.decoder.layers.0.self_attn.out_proj",
+      "type": "NonDynamicallyQuantizableLinear",
+      "params_total_local": 65792,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.decoder.layers.0.dropout1",
+      "type": "Dropout",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.decoder.layers.0.norm1",
+      "type": "LayerNorm",
+      "params_total_local": 512,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.decoder.layers.0.cross_attn",
+      "type": "MSDeformAttn",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.decoder.layers.0.cross_attn.sampling_offsets",
+      "type": "Linear",
+      "params_total_local": 49344,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.decoder.layers.0.cross_attn.attention_weights",
+      "type": "Linear",
+      "params_total_local": 24672,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.decoder.layers.0.cross_attn.value_proj",
+      "type": "Linear",
+      "params_total_local": 65792,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.decoder.layers.0.cross_attn.output_proj",
+      "type": "Linear",
+      "params_total_local": 65792,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.decoder.layers.0.dropout2",
+      "type": "Dropout",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.decoder.layers.0.norm2",
+      "type": "LayerNorm",
+      "params_total_local": 512,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.decoder.layers.0.linear1",
+      "type": "Linear",
+      "params_total_local": 263168,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.decoder.layers.0.act",
+      "type": "ReLU",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.decoder.layers.0.dropout3",
+      "type": "Dropout",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.decoder.layers.0.linear2",
+      "type": "Linear",
+      "params_total_local": 262400,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.decoder.layers.0.dropout4",
+      "type": "Dropout",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.decoder.layers.0.norm3",
+      "type": "LayerNorm",
+      "params_total_local": 512,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.decoder.layers.1",
+      "type": "DeformableTransformerDecoderLayer",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.decoder.layers.1.self_attn",
+      "type": "MultiheadAttention",
+      "params_total_local": 197376,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.decoder.layers.1.self_attn.out_proj",
+      "type": "NonDynamicallyQuantizableLinear",
+      "params_total_local": 65792,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.decoder.layers.1.dropout1",
+      "type": "Dropout",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.decoder.layers.1.norm1",
+      "type": "LayerNorm",
+      "params_total_local": 512,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.decoder.layers.1.cross_attn",
+      "type": "MSDeformAttn",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.decoder.layers.1.cross_attn.sampling_offsets",
+      "type": "Linear",
+      "params_total_local": 49344,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.decoder.layers.1.cross_attn.attention_weights",
+      "type": "Linear",
+      "params_total_local": 24672,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.decoder.layers.1.cross_attn.value_proj",
+      "type": "Linear",
+      "params_total_local": 65792,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.decoder.layers.1.cross_attn.output_proj",
+      "type": "Linear",
+      "params_total_local": 65792,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.decoder.layers.1.dropout2",
+      "type": "Dropout",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.decoder.layers.1.norm2",
+      "type": "LayerNorm",
+      "params_total_local": 512,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.decoder.layers.1.linear1",
+      "type": "Linear",
+      "params_total_local": 263168,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.decoder.layers.1.act",
+      "type": "ReLU",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.decoder.layers.1.dropout3",
+      "type": "Dropout",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.decoder.layers.1.linear2",
+      "type": "Linear",
+      "params_total_local": 262400,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.decoder.layers.1.dropout4",
+      "type": "Dropout",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.decoder.layers.1.norm3",
+      "type": "LayerNorm",
+      "params_total_local": 512,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.decoder.layers.2",
+      "type": "DeformableTransformerDecoderLayer",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.decoder.layers.2.self_attn",
+      "type": "MultiheadAttention",
+      "params_total_local": 197376,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.decoder.layers.2.self_attn.out_proj",
+      "type": "NonDynamicallyQuantizableLinear",
+      "params_total_local": 65792,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.decoder.layers.2.dropout1",
+      "type": "Dropout",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.decoder.layers.2.norm1",
+      "type": "LayerNorm",
+      "params_total_local": 512,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.decoder.layers.2.cross_attn",
+      "type": "MSDeformAttn",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.decoder.layers.2.cross_attn.sampling_offsets",
+      "type": "Linear",
+      "params_total_local": 49344,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.decoder.layers.2.cross_attn.attention_weights",
+      "type": "Linear",
+      "params_total_local": 24672,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.decoder.layers.2.cross_attn.value_proj",
+      "type": "Linear",
+      "params_total_local": 65792,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.decoder.layers.2.cross_attn.output_proj",
+      "type": "Linear",
+      "params_total_local": 65792,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.decoder.layers.2.dropout2",
+      "type": "Dropout",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.decoder.layers.2.norm2",
+      "type": "LayerNorm",
+      "params_total_local": 512,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.decoder.layers.2.linear1",
+      "type": "Linear",
+      "params_total_local": 263168,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.decoder.layers.2.act",
+      "type": "ReLU",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.decoder.layers.2.dropout3",
+      "type": "Dropout",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.decoder.layers.2.linear2",
+      "type": "Linear",
+      "params_total_local": 262400,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.decoder.layers.2.dropout4",
+      "type": "Dropout",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.decoder.layers.2.norm3",
+      "type": "LayerNorm",
+      "params_total_local": 512,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.decoder.layers.3",
+      "type": "DeformableTransformerDecoderLayer",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.decoder.layers.3.self_attn",
+      "type": "MultiheadAttention",
+      "params_total_local": 197376,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.decoder.layers.3.self_attn.out_proj",
+      "type": "NonDynamicallyQuantizableLinear",
+      "params_total_local": 65792,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.decoder.layers.3.dropout1",
+      "type": "Dropout",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.decoder.layers.3.norm1",
+      "type": "LayerNorm",
+      "params_total_local": 512,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.decoder.layers.3.cross_attn",
+      "type": "MSDeformAttn",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.decoder.layers.3.cross_attn.sampling_offsets",
+      "type": "Linear",
+      "params_total_local": 49344,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.decoder.layers.3.cross_attn.attention_weights",
+      "type": "Linear",
+      "params_total_local": 24672,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.decoder.layers.3.cross_attn.value_proj",
+      "type": "Linear",
+      "params_total_local": 65792,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.decoder.layers.3.cross_attn.output_proj",
+      "type": "Linear",
+      "params_total_local": 65792,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.decoder.layers.3.dropout2",
+      "type": "Dropout",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.decoder.layers.3.norm2",
+      "type": "LayerNorm",
+      "params_total_local": 512,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.decoder.layers.3.linear1",
+      "type": "Linear",
+      "params_total_local": 263168,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.decoder.layers.3.act",
+      "type": "ReLU",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.decoder.layers.3.dropout3",
+      "type": "Dropout",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.decoder.layers.3.linear2",
+      "type": "Linear",
+      "params_total_local": 262400,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.decoder.layers.3.dropout4",
+      "type": "Dropout",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.decoder.layers.3.norm3",
+      "type": "LayerNorm",
+      "params_total_local": 512,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.decoder.layers.4",
+      "type": "DeformableTransformerDecoderLayer",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.decoder.layers.4.self_attn",
+      "type": "MultiheadAttention",
+      "params_total_local": 197376,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.decoder.layers.4.self_attn.out_proj",
+      "type": "NonDynamicallyQuantizableLinear",
+      "params_total_local": 65792,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.decoder.layers.4.dropout1",
+      "type": "Dropout",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.decoder.layers.4.norm1",
+      "type": "LayerNorm",
+      "params_total_local": 512,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.decoder.layers.4.cross_attn",
+      "type": "MSDeformAttn",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.decoder.layers.4.cross_attn.sampling_offsets",
+      "type": "Linear",
+      "params_total_local": 49344,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.decoder.layers.4.cross_attn.attention_weights",
+      "type": "Linear",
+      "params_total_local": 24672,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.decoder.layers.4.cross_attn.value_proj",
+      "type": "Linear",
+      "params_total_local": 65792,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.decoder.layers.4.cross_attn.output_proj",
+      "type": "Linear",
+      "params_total_local": 65792,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.decoder.layers.4.dropout2",
+      "type": "Dropout",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.decoder.layers.4.norm2",
+      "type": "LayerNorm",
+      "params_total_local": 512,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.decoder.layers.4.linear1",
+      "type": "Linear",
+      "params_total_local": 263168,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.decoder.layers.4.act",
+      "type": "ReLU",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.decoder.layers.4.dropout3",
+      "type": "Dropout",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.decoder.layers.4.linear2",
+      "type": "Linear",
+      "params_total_local": 262400,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.decoder.layers.4.dropout4",
+      "type": "Dropout",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.decoder.layers.4.norm3",
+      "type": "LayerNorm",
+      "params_total_local": 512,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.decoder.layers.5",
+      "type": "DeformableTransformerDecoderLayer",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.decoder.layers.5.self_attn",
+      "type": "MultiheadAttention",
+      "params_total_local": 197376,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.decoder.layers.5.self_attn.out_proj",
+      "type": "NonDynamicallyQuantizableLinear",
+      "params_total_local": 65792,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.decoder.layers.5.dropout1",
+      "type": "Dropout",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.decoder.layers.5.norm1",
+      "type": "LayerNorm",
+      "params_total_local": 512,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.decoder.layers.5.cross_attn",
+      "type": "MSDeformAttn",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.decoder.layers.5.cross_attn.sampling_offsets",
+      "type": "Linear",
+      "params_total_local": 49344,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.decoder.layers.5.cross_attn.attention_weights",
+      "type": "Linear",
+      "params_total_local": 24672,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.decoder.layers.5.cross_attn.value_proj",
+      "type": "Linear",
+      "params_total_local": 65792,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.decoder.layers.5.cross_attn.output_proj",
+      "type": "Linear",
+      "params_total_local": 65792,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.decoder.layers.5.dropout2",
+      "type": "Dropout",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.decoder.layers.5.norm2",
+      "type": "LayerNorm",
+      "params_total_local": 512,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.decoder.layers.5.linear1",
+      "type": "Linear",
+      "params_total_local": 263168,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.decoder.layers.5.act",
+      "type": "ReLU",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.decoder.layers.5.dropout3",
+      "type": "Dropout",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.decoder.layers.5.linear2",
+      "type": "Linear",
+      "params_total_local": 262400,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.decoder.layers.5.dropout4",
+      "type": "Dropout",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.decoder.layers.5.norm3",
+      "type": "LayerNorm",
+      "params_total_local": 512,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.denoising_class_embed",
+      "type": "Embedding",
+      "params_total_local": 20480,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.query_pos_head",
+      "type": "MLP",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.query_pos_head.layers",
+      "type": "ModuleList",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.query_pos_head.layers.0",
+      "type": "Linear",
+      "params_total_local": 2560,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.query_pos_head.layers.1",
+      "type": "Linear",
+      "params_total_local": 131328,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.enc_output",
+      "type": "Sequential",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.enc_output.0",
+      "type": "Linear",
+      "params_total_local": 65792,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.enc_output.1",
+      "type": "LayerNorm",
+      "params_total_local": 512,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.enc_score_head",
+      "type": "Linear",
+      "params_total_local": 20560,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.enc_bbox_head",
+      "type": "MLP",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.enc_bbox_head.layers",
+      "type": "ModuleList",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.enc_bbox_head.layers.0",
+      "type": "Linear",
+      "params_total_local": 65792,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.enc_bbox_head.layers.1",
+      "type": "Linear",
+      "params_total_local": 65792,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.enc_bbox_head.layers.2",
+      "type": "Linear",
+      "params_total_local": 1028,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.dec_score_head",
+      "type": "ModuleList",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.dec_score_head.0",
+      "type": "Linear",
+      "params_total_local": 20560,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.dec_score_head.1",
+      "type": "Linear",
+      "params_total_local": 20560,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.dec_score_head.2",
+      "type": "Linear",
+      "params_total_local": 20560,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.dec_score_head.3",
+      "type": "Linear",
+      "params_total_local": 20560,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.dec_score_head.4",
+      "type": "Linear",
+      "params_total_local": 20560,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.dec_score_head.5",
+      "type": "Linear",
+      "params_total_local": 20560,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.dec_bbox_head",
+      "type": "ModuleList",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.dec_bbox_head.0",
+      "type": "MLP",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.dec_bbox_head.0.layers",
+      "type": "ModuleList",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.dec_bbox_head.0.layers.0",
+      "type": "Linear",
+      "params_total_local": 65792,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.dec_bbox_head.0.layers.1",
+      "type": "Linear",
+      "params_total_local": 65792,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.dec_bbox_head.0.layers.2",
+      "type": "Linear",
+      "params_total_local": 1028,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.dec_bbox_head.1",
+      "type": "MLP",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.dec_bbox_head.1.layers",
+      "type": "ModuleList",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.dec_bbox_head.1.layers.0",
+      "type": "Linear",
+      "params_total_local": 65792,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.dec_bbox_head.1.layers.1",
+      "type": "Linear",
+      "params_total_local": 65792,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.dec_bbox_head.1.layers.2",
+      "type": "Linear",
+      "params_total_local": 1028,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.dec_bbox_head.2",
+      "type": "MLP",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.dec_bbox_head.2.layers",
+      "type": "ModuleList",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.dec_bbox_head.2.layers.0",
+      "type": "Linear",
+      "params_total_local": 65792,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.dec_bbox_head.2.layers.1",
+      "type": "Linear",
+      "params_total_local": 65792,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.dec_bbox_head.2.layers.2",
+      "type": "Linear",
+      "params_total_local": 1028,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.dec_bbox_head.3",
+      "type": "MLP",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.dec_bbox_head.3.layers",
+      "type": "ModuleList",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.dec_bbox_head.3.layers.0",
+      "type": "Linear",
+      "params_total_local": 65792,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.dec_bbox_head.3.layers.1",
+      "type": "Linear",
+      "params_total_local": 65792,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.dec_bbox_head.3.layers.2",
+      "type": "Linear",
+      "params_total_local": 1028,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.dec_bbox_head.4",
+      "type": "MLP",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.dec_bbox_head.4.layers",
+      "type": "ModuleList",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.dec_bbox_head.4.layers.0",
+      "type": "Linear",
+      "params_total_local": 65792,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.dec_bbox_head.4.layers.1",
+      "type": "Linear",
+      "params_total_local": 65792,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.dec_bbox_head.4.layers.2",
+      "type": "Linear",
+      "params_total_local": 1028,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.dec_bbox_head.5",
+      "type": "MLP",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.dec_bbox_head.5.layers",
+      "type": "ModuleList",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.dec_bbox_head.5.layers.0",
+      "type": "Linear",
+      "params_total_local": 65792,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.dec_bbox_head.5.layers.1",
+      "type": "Linear",
+      "params_total_local": 65792,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.28.dec_bbox_head.5.layers.2",
+      "type": "Linear",
+      "params_total_local": 1028,
+      "params_trainable_local": 0
+    }
+  ]
+}
