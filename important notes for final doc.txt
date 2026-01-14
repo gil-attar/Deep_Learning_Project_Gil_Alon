@@ -75,3 +75,5 @@ Expected gain: +10-15% mAP → 80-85% range
 
 We wanted to compare performance of different model sizes on the same data. since our data is really small (~2000 images) we decided to leverage this constraint and compare peformance of the same big model but with differenct number of parameters trained on the data (i.e deep should we go with transfer learning for fine truning).
 
+
+in the explenation of the masking vs occlusions we can explain with example (need to see if its good or not) : is pizza without peperonni still a pizza vs is half pizza still a pizza?
