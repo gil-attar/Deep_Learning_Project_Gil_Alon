@@ -5,15 +5,14 @@ before results are analyzed.
 
 ## Overview and Motivation
 The general goal of the experiments is to perform a controlled and reproducible comparison between
-a CNN-based detector (YOLOv8) and a Transformer-based detector (RT-DETR), and to evaluate
-their behavior under increasing levels of visual occlusion on the same test dataset, which we found to be the most related
-augmentation to true usage reality of our models.
+a CNN-based detector (YOLOv8m) and a Transformer-based detector (RT-DETR-L), and to evaluate
+their behavior on image object detection under a set of 3 experiments.
 
 The experiments defined here are designed to:
-- Establish fair baseline performance under identical conditions
-- Measure robustness degradation as occlusion severity increases
-- Empirically justify confidence-based filtering (Logic Gate)
-- Validate downstream recipe generation robustness
+- Establish fair baseline performance under identical conditions, using pre trained models on COCO dataset.
+- Measure the effect of a small dataset on fine-tuning a pre-trained big model as a function of #parameters re-learned.
+- Mesure effect of learning time in epochs on detection accuracy.
+- Examine masking internal layers of both models as a measure to increase occlusion robustness.
 
 All experiments are executed under shared constraints.
 
@@ -23,11 +22,7 @@ The following constraints apply to **all experiments (E1–E4)**:
 - **Test Set**:  
   All evaluations use the same frozen test set defined in  
   `data/processed/evaluation/test_index.json`
-
-- **Occlusion Difficulty Definition**:  
-  Difficulty levels (Easy / Medium / Hard) are introduces synthetically into the same test data set.
-  The parameters are fixed before each evaluation, ground truth labels remain unchanged.
-  
+ 
 - **Image Resolution**:  
   Identical image resolution is used for YOLOv8 and RT-DETR during evaluation
 
