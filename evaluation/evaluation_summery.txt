@@ -1,0 +1,84 @@
+Core Evaluation Module (evaluation/)
+
+1. io.py - Load & Save Data
+   load_predictions() - Reads prediction JSON → returns list of dicts
+   load_ground_truth() - Reads test/val/train_index.json → returns GT list
+   load_class_names() - Extracts class mapping from index
+   save_metrics() / save_summary_csv() - Export results
+
+2. matching.py - Box Matching Logic
+   compute_iou() - IoU between two boxes (intersection/union)
+   greedy_match_boxes() - Match preds to GT:
+   Compute all IoU pairs
+   Sort by IoU descending
+   Greedily assign (highest IoU first, one-to-one)
+   Return: matches, unmatched_preds (FP), unmatched_gts (FN)
+   match_predictions_to_ground_truth() - Run matching across all images, per-class
+
+3. metrics.py - The 3 Main Metrics
+   eval_detection_prf_at_iou() - Loop over conf_thresholds, match boxes, count TP/FP/FN, compute P/R/F1
+   eval_per_class_metrics_and_confusions() - Same matching, but group by class; build confusion matrix from matched pairs
+   eval_counting_quality() - Count objects per class (matched vs all), compute MAE per image
+
+4. plots.py - Visualization
+   plot_threshold_sweep() - Line plot: P/R/F1 vs conf_threshold
+   plot_per_class_f1() - Horizontal bar chart, sorted by F1
+   plot_confusion_matrix() - Heatmap with annotations
+   plot_count_mae_comparison() - Bar chart: matched vs all
+   plot_all_metrics() - Calls all 4 above in one function
+   Scripts (scripts/)
+
+5. build_evaluation_indices.py - Generate GT Indices
+   Loops over train/valid/test folders
+   For each image:
+   Parse YOLO label file → bbox + class
+   Compute max pairwise IoU → assign difficulty (easy/medium/hard)
+   Build JSON with all images + metadata
+   Saves: train_index.json, val_index.json, test_index.json
+
+6. evaluate_run.py - CLI Evaluation
+   Parse command-line args (paths, thresholds)
+   Load predictions + GT
+   Call all 3 metric functions
+   Save results JSON + CSV
+   Generate all 4 plots
+   Print summary to console
+   Notebook (notebooks/)
+
+7. test_evaluation_system.ipynb - Quick Test
+   Trains YOLOv8n for 5 epochs (just for testing!)
+   Runs inference → saves predictions JSON
+   Calls all 3 metrics
+   Generates plots
+   Tests CLI script
+   Purpose: Make sure nothing breaks before real experiments
+   Documentation (evaluation/)
+
+8. README_METRICS.md - Full Docs
+   Explains what TP/FP/FN mean
+   Matching algorithm details
+   How to use train/val/test correctly
+   JSON format specs
+   FAQ
+
+9. QUICK_START.md - Cheat Sheet
+   3-step quickstart
+   Example commands
+   Typical workflow
+   Troubleshooting
+
+How It All Flows:
+   1. build_evaluation_indices.py
+      → Creates train/val/test_index.json
+
+   2. Train model → save predictions.json
+      (Your training code)
+
+   3. evaluate_run.py
+      → Loads predictions + GT (io.py)
+      → Matches boxes (matching.py)
+      → Computes metrics (metrics.py)
+      → Generates plots (plots.py)
+      → Saves results
+   
+Key idea: Separate inference (slow, needs GPU) from evaluation (fast, CPU). Save predictions once, evaluate many times with different settings!
