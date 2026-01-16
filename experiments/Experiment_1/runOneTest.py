@@ -386,7 +386,7 @@ def run(model_name: str, freeze_id: str, epochs: int, imgsz: int, seed: int) -> 
     train_summary = train_one(ultra_model, save_dir=run_dir, epochs=epochs, imgsz=imgsz, seed=seed)
     save_json(run_dir / "train_summary.json", train_summary)
 
-    # Ultralytics val/test summaries (sanity/logging)
+    # Optional: Ultralytics val/test summaries (sanity/logging)
     val_summary = eval_split_ultralytics(ultra_model, split="val", save_dir=run_dir, imgsz=imgsz)
     save_json(run_dir / "val_metrics.json", val_summary)
 
@@ -406,4 +406,91 @@ def run(model_name: str, freeze_id: str, epochs: int, imgsz: int, seed: int) -> 
         index_path=val_index,
         out_path=val_pred_path,
         imgsz=imgsz,
-        conf_low=conf_l
+        conf_low=conf_low,
+        iou=iou_thr,
+    )
+    export_predictions_json(
+        ultra_model,
+        model_key=model_key,
+        freeze_id=freeze_id,
+        split="test",
+        index_path=test_index,
+        out_path=test_pred_path,
+        imgsz=imgsz,
+        conf_low=conf_low,
+        iou=iou_thr,
+    )
+
+    # Evaluate on VAL -> select best threshold
+    val_eval_dir = run_dir / "eval" / "val"
+    val_results = evaluate_with_eval_tools(
+        predictions_path=val_pred_path,
+        gt_index_path=val_index,
+        out_dir=val_eval_dir,
+        run_name=f"{model_key}-{freeze_id} (VAL)",
+        iou_threshold=iou_thr,
+        conf_thresholds=conf_sweep,
+        fixed_conf_for_perclass_and_counting=None,
+    )
+    best_thr = float(val_results["selected_conf_threshold"])
+
+    # Evaluate on TEST at VAL-best threshold
+    test_eval_dir = run_dir / "eval" / "test"
+    _ = evaluate_with_eval_tools(
+        predictions_path=test_pred_path,
+        gt_index_path=test_index,
+        out_dir=test_eval_dir,
+        run_name=f"{model_key}-{freeze_id} (TEST @ val_best={best_thr})",
+        iou_threshold=iou_thr,
+        conf_thresholds=conf_sweep,
+        fixed_conf_for_perclass_and_counting=best_thr,
+    )
+
+    # Roll-up summary
+    run_summary = {
+        "manifest": manifest,
+        "train": train_summary,
+        "ultralytics_val": val_summary,
+        "ultralytics_test": test_summary,
+        "val_selected_threshold": best_thr,
+        "artifacts": {
+            "val_predictions": str(val_pred_path),
+            "test_predictions": str(test_pred_path),
+            "val_eval_dir": str(val_eval_dir),
+            "test_eval_dir": str(test_eval_dir),
+        },
+    }
+    save_json(run_dir / "run_summary.json", run_summary)
+
+    print(f"[OK] Completed {model_key} {freeze_id}. Outputs in: {run_dir}")
+
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--model", required=True, choices=["yolov8m", "rtdetr-l"])
+    ap.add_argument("--freeze", required=True, choices=["F0", "F1", "F2", "F3"])
+    ap.add_argument("--epochs", type=int, default=50)
+    ap.add_argument("--imgsz", type=int, default=640)
+    ap.add_argument("--seed", type=int, default=0)
+    args = ap.parse_args()
+
+    # Fail early if required inputs are missing
+    if not DATA_YAML.exists():
+        raise FileNotFoundError(f"Missing data.yaml at {DATA_YAML}")
+
+    eval_indices_dir = REPO_ROOT / "data" / "processed" / "evaluation"
+    if not (eval_indices_dir / "val_index.json").exists():
+        raise FileNotFoundError(f"Missing val_index.json at {eval_indices_dir / 'val_index.json'}")
+    if not (eval_indices_dir / "test_index.json").exists():
+        raise FileNotFoundError(f"Missing test_index.json at {eval_indices_dir / 'test_index.json'}")
+
+    if args.model == "yolov8m" and not (WEIGHTS_DIR / "yolov8m.pt").exists():
+        raise FileNotFoundError(f"Missing weights: {WEIGHTS_DIR / 'yolov8m.pt'}")
+    if args.model == "rtdetr-l" and not (WEIGHTS_DIR / "rtdetr-l.pt").exists():
+        raise FileNotFoundError(f"Missing weights: {WEIGHTS_DIR / 'rtdetr-l.pt'}")
+
+    run(args.model, args.freeze, args.epochs, args.imgsz, args.seed)
+
+
+if __name__ == "__main__":
+    main()
