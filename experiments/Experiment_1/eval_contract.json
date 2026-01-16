@@ -1,0 +1,33 @@
+{
+  "experiment_id": "E1_freeze_ladder_finetune",
+  "version": "1.0",
+  "frozen_inputs": {
+    "split_manifest_path": "data/processed/splits/split_manifest.json",
+    "evaluation_indices_dir": "data/processed/evaluation",
+    "indices": {
+      "train": "data/processed/evaluation/train_index.json",
+      "val": "data/processed/evaluation/val_index.json",
+      "test": "data/processed/evaluation/test_index.json"
+    },
+    "policy": "Indices and split manifest are treated as immutable for Experiment 1. Do not regenerate unless the dataset changes."
+  },
+  "evaluation": {
+    "bbox_format": "xyxy_pixels",
+    "iou_threshold": 0.5,
+    "prediction_export_conf_low": 0.01,
+    "threshold_sweep": {
+      "split_for_selection": "val",
+      "thresholds": [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9],
+      "selection_metric": "f1",
+      "selection_rule": "Choose the confidence threshold that maximizes F1 on the validation split."
+    },
+    "test_reporting": {
+      "split": "test",
+      "policy": "Report final test metrics at the selected validation threshold. Do not select thresholds on test."
+    }
+  },
+  "notes": [
+    "Export predictions with low confidence cutoff (prediction_export_conf_low) so the evaluator can sweep thresholds post-hoc.",
+    "The evaluator consumes predictions JSON + *_index.json ground truth, not Ultralytics val() summaries."
+  ]
+}
