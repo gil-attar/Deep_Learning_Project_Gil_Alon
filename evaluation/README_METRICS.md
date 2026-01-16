@@ -1,298 +1,200 @@
-```markdown
-# Evaluation Metrics Guide
+# Evaluation System Guide
 
-This document explains the three core evaluation metrics used in this project for object detection evaluation.
-
-## Overview
-
-We implement three complementary metrics to evaluate detection quality:
-
-1. **Detection P/R/F1 at IoU Threshold** - Box-level correctness
-2. **Per-Class Metrics + Confusion Matrix** - Class-specific performance
-3. **Counting Quality (MAE)** - Accuracy for duplicate objects
-
-All metrics use **greedy one-to-one matching** with IoU thresholds for consistency.
+This document explains the evaluation system for the CNN vs Transformer object detection project.
 
 ---
 
-## 1. Detection P/R/F1 at IoU Threshold
+## Overview: JSON Files & Workflow
 
-### Purpose
-Evaluate box-level correctness: Does the model detect objects correctly?
+### Complete Workflow
 
-### Definitions
-
-**True Positive (TP):**
-- Predicted box matched to a ground truth box with IoU ≥ threshold (default: 0.5)
-- One-to-one matching: each GT can match at most one prediction
-
-**False Positive (FP):**
-- Predicted box that doesn't match any ground truth
-
-**False Negative (FN):**
-- Ground truth box that doesn't match any prediction
-
-**Metrics:**
-- **Precision** = TP / (TP + FP) — What fraction of predictions are correct?
-- **Recall** = TP / (TP + FN) — What fraction of GT objects are detected?
-- **F1 Score** = 2 × (P × R) / (P + R) — Harmonic mean of P and R
-
-### Matching Strategy
-
-**Greedy Matching (per image, per class):**
-1. Compute IoU between all predicted and GT boxes
-2. Sort pairs by IoU descending
-3. Greedily assign matches (highest IoU first)
-4. Each prediction can match at most one GT
-5. Each GT can match at most one prediction
-6. Match is valid only if IoU ≥ threshold
-
-### Threshold Sweep
-
-We evaluate at **multiple confidence thresholds** (e.g., 0.0, 0.1, ..., 0.9):
-- Filter predictions by confidence before matching
-- Plot P/R/F1 vs confidence to find optimal threshold
-- Use **validation set** to select best threshold
-- Report test set metrics at that threshold
-
-### Usage
-
-```python
-from evaluation.metrics import eval_detection_prf_at_iou
-from evaluation.io import load_predictions, load_ground_truth
-
-preds = load_predictions("path/to/predictions.json")
-gts = load_ground_truth("path/to/test_index.json")
-
-results = eval_detection_prf_at_iou(
-    preds, gts,
-    iou_threshold=0.5,
-    conf_thresholds=[0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8]
-)
-
-# Find best threshold by F1
-best_thr = max(results.keys(), key=lambda k: results[k]['f1'])
-print(f"Best F1={results[best_thr]['f1']:.3f} at conf={best_thr}")
 ```
+1. BUILD INDICES (run ONCE before experiments)
+   python scripts/build_evaluation_indices.py
+
+2. TRAIN MODEL (your experiment)
+   → saves weights to models/
+
+3. GENERATE PREDICTIONS (run after training)
+   Run inference, save detections to JSON
+
+4. EVALUATE (run to get metrics & plots)
+   python scripts/evaluate_run.py
+```
+
+### JSON Files Created
+
+| File | Location | When Created | Purpose |
+|------|----------|--------------|---------|
+| `train_index.json` | `data/processed/evaluation/` | Once (Step 1) | Ground truth for train set |
+| `val_index.json` | `data/processed/evaluation/` | Once (Step 1) | Ground truth for val set |
+| `test_index.json` | `data/processed/evaluation/` | Once (Step 1) | Ground truth for test set |
+| `{experiment}_predictions.json` | `evaluation/metrics/` | Per experiment (Step 3) | Model predictions |
+| `metrics.json` | `evaluation/results/{experiment}/` | Per evaluation (Step 4) | Computed metrics |
+| `summary.csv` | `evaluation/results/{experiment}/` | Per evaluation (Step 4) | Quick table view |
+
+### What About Legacy Files?
+
+**We do NOT use legacy files.** The following are from old notebooks (02, 04) and use Ultralytics' built-in evaluation:
+
+```
+evaluation/metrics/baseline_yolo_*.json    ← Legacy, don't use
+evaluation/metrics/baseline_rtdetr_*.json  ← Legacy, don't use
+evaluation/metrics/e3_*.json               ← Legacy, don't use
+```
+
+Our new system computes metrics ourselves for more control and transparency.
 
 ---
 
-## 2. Per-Class Metrics + Confusion Matrix
+## Step 1: Build Ground Truth Indices
 
-### Purpose
-Identify which ingredient classes are hard to detect and what confusions occur.
+Run **once** before starting experiments:
 
-### Per-Class Metrics
-
-For each class, compute:
-- **Precision**: Of all predictions for this class, what fraction are correct?
-- **Recall**: Of all GT objects of this class, what fraction are detected?
-- **F1 Score**: Harmonic mean
-- **Support**: Number of GT objects of this class
-
-### Confusion Matrix
-
-**What it shows:**
-- Rows = True class
-- Cols = Predicted class
-- Cell (i, j) = number of times true class i was predicted as class j
-
-**Important:**
-- Only includes **matched detections** (IoU ≥ threshold)
-- Unmatched predictions → FP (not in confusion matrix)
-- Unmatched GT → FN (not in confusion matrix)
-
-**Top Confusions:**
-- Extract off-diagonal elements (true ≠ pred)
-- Sort by frequency
-- Example: "Garlic → Onion: 5 times"
-
-### Usage
-
-```python
-from evaluation.metrics import eval_per_class_metrics_and_confusions
-
-results = eval_per_class_metrics_and_confusions(
-    preds, gts,
-    iou_threshold=0.5,
-    conf_threshold=0.5,  # Use best threshold from threshold sweep
-    class_names=class_names
-)
-
-# Per-class F1
-for class_name, metrics in results['per_class'].items():
-    print(f"{class_name}: F1={metrics['f1']:.3f}, support={metrics['support']}")
-
-# Top confusions
-for conf in results['top_confusions'][:5]:
-    print(f"{conf['true_class']} → {conf['pred_class']}: {conf['count']} times")
+```bash
+python scripts/build_evaluation_indices.py \
+    --dataset_root data/raw \
+    --output_dir data/processed/evaluation
 ```
 
----
+**Creates:**
+- `data/processed/evaluation/train_index.json` (1384 images)
+- `data/processed/evaluation/val_index.json` (200 images)
+- `data/processed/evaluation/test_index.json` (400 images)
 
-## 3. Counting Quality (MAE)
-
-### Purpose
-Evaluate accuracy for images with **duplicate objects** (e.g., "2 carrots, 3 potatoes").
-
-Standard detection metrics (P/R/F1) are box-level and don't capture counting errors well.
-
-### Why Counting Matters
-
-Example:
-- GT: 3 carrots
-- Pred: 1 carrot (correctly detected)
-- Standard metrics: TP=1, FN=2 (doesn't emphasize counting)
-- Counting metric: |1 - 3| = 2 error
-
-### Two Counting Methods
-
-We compute **both methods** for robustness:
-
-#### Method 1: Matched-Only (Recommended)
-- **pred_count** = number of **TPs** (matched detections)
-- Robust to false positive spam
-- Conservative: only counts correctly detected objects
-
-#### Method 2: All-Predictions
-- **pred_count** = all predicted boxes above conf_threshold
-- May be inflated by false positives
-- Simpler, more direct
-
-### MAE (Mean Absolute Error)
-
-For each image:
-1. Count GT objects per class: `gt_count[class]`
-2. Count predicted objects per class: `pred_count[class]`
-3. Compute error: `sum over classes |pred_count[class] - gt_count[class]|`
-
-**Global MAE** = average error over all images
-
-### Usage
-
-```python
-from evaluation.metrics import eval_counting_quality
-
-results = eval_counting_quality(
-    preds, gts,
-    iou_threshold=0.5,
-    conf_threshold=0.5,
-    class_names=class_names
-)
-
-print(f"Matched-only MAE: {results['matched_only']['global_mae']:.4f}")
-print(f"All-predictions MAE: {results['all_predictions']['global_mae']:.4f}")
-
-# Per-class MAE
-for class_name, mae in results['matched_only']['per_class_mae'].items():
-    print(f"{class_name}: MAE={mae:.4f}")
-```
-
----
-
-## Threshold Selection Protocol
-
-**IMPORTANT:** Use validation set for hyperparameter selection, test set for final reporting.
-
-### Step 1: Evaluate Validation Set
-
-```python
-# Evaluate on validation set at multiple thresholds
-val_preds = load_predictions("path/to/val_predictions.json")
-val_gts = load_ground_truth("path/to/val_index.json")
-
-val_results = eval_detection_prf_at_iou(
-    val_preds, val_gts,
-    conf_thresholds=[0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
-)
-
-# Select best threshold by F1 on validation
-best_conf_thr = max(val_results.keys(), key=lambda k: val_results[k]['f1'])
-```
-
-### Step 2: Evaluate Test Set
-
-```python
-# Evaluate test set at the chosen threshold
-test_preds = load_predictions("path/to/test_predictions.json")
-test_gts = load_ground_truth("path/to/test_index.json")
-
-test_results = eval_detection_prf_at_iou(
-    test_preds, test_gts,
-    conf_thresholds=[best_conf_thr]  # Only the selected threshold
-)
-
-# Report test F1
-print(f"Test F1 at conf={best_conf_thr}: {test_results[best_conf_thr]['f1']:.4f}")
-```
-
-### Step 3: Report Both
-
-**In your report/paper:**
-- "Best threshold selected on validation: 0.5 (F1=0.78)"
-- "Test set performance at this threshold: F1=0.76"
-
-**Never:**
-- Pick threshold based on test set
-- Report only test metrics without validation justification
-
----
-
-## Train/Val/Test Usage
-
-### When to Evaluate Each Split
-
-**Train Set:**
-- Check for overfitting
-- Expected: Very high metrics (model should fit training data)
-- If train F1 << val F1: underfitting
-
-**Validation Set:**
-- Hyperparameter selection (conf_threshold, freeze depth, epochs, etc.)
-- Model checkpointing (save best val epoch)
-- Expected: Lower than train (generalization gap)
-
-**Test Set:**
-- Final reporting only
-- Never use for hyperparameter tuning
-- Expected: Similar to val (slight drop is normal)
-
-### Typical Pattern
-
-```
-Train F1:  0.95  ← Model fits training data well
-Val F1:    0.78  ← Some generalization gap (normal)
-Test F1:   0.76  ← Similar to val (good!)
-```
-
-**Red flags:**
-- Val << Train: Overfitting
-- Test << Val: Lucky val split or data distribution shift
-
----
-
-## File Formats
-
-### Predictions JSON
-
+**Index Format:**
 ```json
 {
-  "run_id": "baseline_yolo",
+  "metadata": {
+    "split": "test",
+    "num_images": 400,
+    "total_objects": 856,
+    "num_classes": 26,
+    "class_names": {"0": "Asparagus", "1": "Avocado", ...}
+  },
+  "images": [
+    {
+      "image_id": "image_001",
+      "image_filename": "image_001.jpg",
+      "image_width": 640,
+      "image_height": 480,
+      "ground_truth": [
+        {
+          "class_id": 9,
+          "class_name": "Capsicum",
+          "bbox_xyxy": [100, 150, 300, 400],
+          "bbox_yolo": [0.31, 0.57, 0.31, 0.52]
+        }
+      ],
+      "difficulty": "easy"
+    }
+  ]
+}
+```
+
+**Important:** Ground truth bboxes are stored in **actual pixel coordinates** (not normalized). The script reads each image to get its real dimensions.
+
+---
+
+## Step 2: Train Your Model
+
+Train however you want (notebook, script, etc.). Save the best weights.
+
+---
+
+## Step 3: Generate Predictions
+
+After training, run inference and save predictions to JSON.
+
+**Example code:**
+
+```python
+from ultralytics import YOLO  # or RTDETR
+from pathlib import Path
+import json
+
+# Load trained model
+model = YOLO('path/to/your/trained_weights.pt')
+
+# Load test index
+with open('data/processed/evaluation/test_index.json') as f:
+    test_index = json.load(f)
+
+# Generate predictions
+predictions = []
+for img_data in test_index['images']:
+    image_path = Path('data/raw/test/images') / img_data['image_filename']
+
+    # IMPORTANT: Use very low conf threshold (0.01)
+    # We filter by threshold during evaluation, not here
+    results = model.predict(
+        source=str(image_path),
+        conf=0.01,  # Save almost everything
+        imgsz=640,
+        verbose=False
+    )[0]
+
+    # Extract detections
+    detections = []
+    if len(results.boxes) > 0:
+        for i in range(len(results.boxes)):
+            detections.append({
+                "class_id": int(results.boxes.cls[i].item()),
+                "class_name": results.names[int(results.boxes.cls[i].item())],
+                "confidence": float(results.boxes.conf[i].item()),
+                "bbox": results.boxes.xyxy[i].tolist(),
+                "bbox_format": "xyxy"
+            })
+
+    predictions.append({
+        "image_id": img_data['image_id'],
+        "detections": detections
+    })
+
+# Save predictions JSON
+pred_json = {
+    "run_id": "YOUR_EXPERIMENT_NAME",
+    "split": "test",
+    "model_family": "yolo",  # or "rtdetr"
+    "model_name": "yolov8n",
+    "inference_settings": {
+        "conf_threshold": 0.01,
+        "iou_threshold": 0.50,
+        "imgsz": 640
+    },
+    "predictions": predictions
+}
+
+output_path = "evaluation/metrics/YOUR_EXPERIMENT_test_predictions.json"
+Path(output_path).parent.mkdir(parents=True, exist_ok=True)
+
+with open(output_path, 'w') as f:
+    json.dump(pred_json, f, indent=2)
+
+print(f"Saved predictions to {output_path}")
+```
+
+**Predictions Format:**
+```json
+{
+  "run_id": "e1_freeze_backbone_50epochs",
   "split": "test",
   "model_family": "yolo",
+  "model_name": "yolov8n_frozen_backbone",
   "inference_settings": {
     "conf_threshold": 0.01,
-    "iou_threshold": 0.50
+    "iou_threshold": 0.50,
+    "imgsz": 640
   },
   "predictions": [
     {
-      "image_id": "img_001",
+      "image_id": "image_001",
       "detections": [
         {
           "class_id": 9,
           "class_name": "Capsicum",
-          "confidence": 0.89,
-          "bbox": [236, 1, 534, 170],
+          "confidence": 0.87,
+          "bbox": [105, 148, 298, 395],
           "bbox_format": "xyxy"
         }
       ]
@@ -301,119 +203,193 @@ Test F1:   0.76  ← Similar to val (good!)
 }
 ```
 
-### Ground Truth JSON
-
-```json
-{
-  "metadata": {
-    "split": "test",
-    "num_images": 400,
-    "class_names": {"0": "Asparagus", "1": "Avocado", ...}
-  },
-  "images": [
-    {
-      "image_id": "img_001",
-      "image_filename": "img_001.jpg",
-      "ground_truth": [
-        {
-          "class_id": 9,
-          "class_name": "Capsicum",
-          "bbox_xyxy": [236, 1, 534, 170]
-        }
-      ]
-    }
-  ]
-}
-```
-
 ---
 
-## CLI Usage
+## Step 4: Run Evaluation
 
-### Standalone Evaluation
+### Option A: CLI Script
 
 ```bash
-# Evaluate from saved predictions
 python scripts/evaluate_run.py \
-  --predictions evaluation/metrics/baseline_yolo_test_predictions.json \
-  --ground_truth data/processed/evaluation/test_index.json \
-  --output_dir evaluation/results/baseline_yolo/test/ \
-  --run_name "Baseline YOLO" \
-  --conf_thresholds 0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9
+    --predictions evaluation/metrics/YOUR_EXPERIMENT_test_predictions.json \
+    --ground_truth data/processed/evaluation/test_index.json \
+    --output_dir evaluation/results/YOUR_EXPERIMENT/test/ \
+    --run_name "Your Experiment Name" \
+    --conf_thresholds 0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8
 ```
 
-This generates:
-- `metrics.json` - All metrics in one file
-- `summary.csv` - Quick table for reports
-- `threshold_sweep.png` - P/R/F1 vs confidence
-- `per_class_f1.png` - Bar chart per class
-- `confusion_matrix.png` - Confusion heatmap
-- `count_mae_comparison.png` - Counting comparison
-
----
-
-## Notebook Usage
+### Option B: Notebook
 
 ```python
-# Import evaluation module
+from evaluation.io import load_predictions, load_ground_truth, load_class_names
 from evaluation.metrics import (
     eval_detection_prf_at_iou,
     eval_per_class_metrics_and_confusions,
     eval_counting_quality
 )
-from evaluation.io import load_predictions, load_ground_truth
 from evaluation.plots import plot_all_metrics
 
 # Load data
-preds = load_predictions("path/to/predictions.json")
-gts = load_ground_truth("path/to/index.json")
+preds = load_predictions("evaluation/metrics/YOUR_EXPERIMENT_test_predictions.json")
+gts = load_ground_truth("data/processed/evaluation/test_index.json")
+class_names = load_class_names("data/processed/evaluation/test_index.json")
 
-# Run metrics
-prf = eval_detection_prf_at_iou(preds, gts)
-per_class = eval_per_class_metrics_and_confusions(preds, gts, conf_threshold=0.5)
-counting = eval_counting_quality(preds, gts, conf_threshold=0.5)
+# Run all 3 metrics
+threshold_sweep = eval_detection_prf_at_iou(preds, gts, iou_threshold=0.5)
+per_class = eval_per_class_metrics_and_confusions(preds, gts, conf_threshold=0.5, class_names=class_names)
+counting = eval_counting_quality(preds, gts, conf_threshold=0.5, class_names=class_names)
 
 # Generate plots
 plot_all_metrics(
-    threshold_sweep=prf,
+    threshold_sweep=threshold_sweep,
     per_class_results=per_class['per_class'],
     confusion_data=per_class,
     counting_results=counting,
-    output_dir="results/my_run/",
-    run_name="My Experiment"
+    output_dir="evaluation/results/YOUR_EXPERIMENT/test/",
+    run_name="Your Experiment"
 )
+```
+
+### Output Files
+
+After evaluation, you'll find in `evaluation/results/YOUR_EXPERIMENT/`:
+
+| File | Description |
+|------|-------------|
+| `metrics.json` | All computed metrics in JSON format |
+| `summary.csv` | Quick table for copy-paste into reports |
+| `threshold_sweep.png` | P/R/F1 vs confidence threshold plot |
+| `per_class_f1.png` | Bar chart of F1 per class |
+| `confusion_matrix.png` | Heatmap of class confusions |
+| `count_mae_comparison.png` | Counting accuracy comparison |
+
+---
+
+## The 3 Evaluation Metrics
+
+### Metric 1: Detection P/R/F1 at IoU Threshold
+
+**Purpose:** Evaluate box-level correctness across confidence thresholds.
+
+**Definitions:**
+- **True Positive (TP):** Prediction matched to GT with IoU ≥ 0.5
+- **False Positive (FP):** Prediction with no matching GT
+- **False Negative (FN):** GT with no matching prediction
+
+**Formulas:**
+- Precision = TP / (TP + FP)
+- Recall = TP / (TP + FN)
+- F1 = 2 × P × R / (P + R)
+
+**Output:** Results at multiple confidence thresholds to find the optimal operating point.
+
+### Metric 2: Per-Class Metrics + Confusion Matrix
+
+**Purpose:** Identify which classes are hard and what confusions occur.
+
+**Per-Class:** Precision, Recall, F1, Support for each of the 26 classes.
+
+**Confusion Matrix:**
+- Rows = True class, Columns = Predicted class
+- Only includes matched detections (IoU ≥ threshold)
+- Diagonal = correct class predictions
+- Off-diagonal = class confusions
+
+### Metric 3: Counting Quality (MAE)
+
+**Purpose:** Measure counting accuracy for images with multiple objects.
+
+**Two Methods:**
+- **Matched-Only:** Count = number of TPs (robust to false positives)
+- **All-Predictions:** Count = all boxes above threshold (simpler)
+
+**MAE:** Mean Absolute Error between predicted count and GT count per image.
+
+---
+
+## Threshold Selection Protocol
+
+**IMPORTANT:** Use validation set for threshold selection, test set for final reporting only.
+
+### Correct Workflow:
+
+```python
+# 1. Evaluate validation set at multiple thresholds
+val_results = eval_detection_prf_at_iou(val_preds, val_gts,
+    conf_thresholds=[0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8])
+
+# 2. Find best threshold on validation
+best_threshold = max(val_results.keys(), key=lambda k: val_results[k]['f1'])
+
+# 3. Report test set metrics at that threshold
+test_results = eval_detection_prf_at_iou(test_preds, test_gts,
+    conf_thresholds=[best_threshold])
+```
+
+**Never** pick threshold based on test set performance!
+
+---
+
+## Matching Algorithm
+
+We use **greedy one-to-one matching** (per image, per class):
+
+1. Compute IoU between all prediction-GT pairs
+2. Sort pairs by IoU descending
+3. Greedily assign matches (highest IoU first)
+4. Each prediction matches at most one GT
+5. Each GT matches at most one prediction
+6. Match valid only if IoU ≥ threshold (default: 0.5)
+
+---
+
+## Directory Structure
+
+```
+evaluation/
+├── __init__.py
+├── io.py                 # Load/save predictions and ground truth
+├── matching.py           # IoU computation and greedy matching
+├── metrics.py            # 3 core evaluation functions
+├── plots.py              # Visualization functions
+├── README_METRICS.md     # This file
+├── QUICK_START.md        # Quick reference guide
+├── metrics/              # Prediction JSONs go here
+│   └── {experiment}_predictions.json
+└── results/              # Evaluation outputs go here
+    └── {experiment}/
+        ├── metrics.json
+        ├── summary.csv
+        └── *.png (plots)
+
+data/processed/evaluation/
+├── train_index.json      # Ground truth indices
+├── val_index.json
+└── test_index.json
+
+scripts/
+├── build_evaluation_indices.py   # Create GT indices (run once)
+└── evaluate_run.py               # CLI evaluation script
 ```
 
 ---
 
 ## FAQ
 
+**Q: Why not use Ultralytics' built-in `model.val()`?**
+A: We want more control over metrics. Our system lets us compute P/R/F1 at multiple thresholds, per-class breakdowns, confusion matrices, and counting metrics - all with consistent matching logic.
+
+**Q: Why save predictions with conf=0.01?**
+A: We filter by confidence during evaluation, not inference. This lets us evaluate the same predictions at different thresholds without re-running inference.
+
 **Q: Why greedy matching instead of Hungarian algorithm?**
-A: Greedy is simpler, faster, and standard in detection evaluation. Hungarian gives marginally better global matching but is overkill for one-to-one constraints.
+A: Greedy is simpler, faster, and standard in detection evaluation (COCO, PASCAL VOC).
 
-**Q: Why IoU=0.5 as default?**
-A: Standard in COCO and PASCAL VOC. Higher IoU (0.75) is stricter, lower (0.25) is lenient. We use 0.5 for fair comparison.
-
-**Q: Should I use matched-only or all-predictions for counting?**
-A: **Matched-only is recommended** (robust to FP spam). Report both for completeness.
-
-**Q: How do I compare YOLO vs RT-DETR?**
-A: Run evaluation on both using the **same test set** and **same thresholds**. Use validation to pick best conf_threshold for each model separately.
-
-**Q: Can I change the evaluation code after running experiments?**
-A: **No!** Freeze evaluation code before experiments. Changing metrics mid-project invalidates comparisons.
-
----
-
-## References
-
-- COCO Detection Evaluation: https://cocodataset.org/#detection-eval
-- PASCAL VOC: http://host.robots.ox.ac.uk/pascal/VOC/
-- Greedy vs Hungarian Matching: https://arxiv.org/abs/1406.4729
+**Q: How do I compare YOLO vs RT-DETR fairly?**
+A: Run both on the **same test set** with the **same evaluation code**. Use validation to pick best threshold for each model separately.
 
 ---
 
 ## Contact
 
-For questions or issues with the evaluation system, open an issue in the repo or contact the project maintainers.
-```
+For questions about the evaluation system, open an issue in the repo.
