@@ -77,3 +77,149 @@ We wanted to compare performance of different model sizes on the same data. sinc
 
 
 in the explenation of the masking vs occlusions we can explain with example (need to see if its good or not) : is pizza without peperonni still a pizza vs is half pizza still a pizza?
+
+
+
+What the Confusion Matrix Shows
+The diagonal values (Bacon→Bacon=4, Capsicum→Capsicum=21, etc.) are True Positives - the model correctly detected and classified these objects.
+
+Why nothing off-diagonal?
+
+Our confusion matrix only records matched detections (where IoU ≥ 0.5). For a confusion to appear off-diagonal, the model would need to:
+
+Detect a box that overlaps well with a ground truth box (IoU ≥ 0.5)
+BUT predict the wrong class
+In practice, this is rare because:
+
+When the model detects something in the right location, it usually gets the class right too
+When the model predicts the wrong class, it often also has poor localization (IoU < 0.5), so it becomes a False Positive instead of a "confusion"
+What's NOT Shown
+The confusion matrix doesn't show:
+
+False Positives (FP): Model detected something where there's no GT, or detected with wrong class AND wrong location
+False Negatives (FN): GT objects the model missed entirely
+Is This Expected?
+Yes! For a well-trained detector:
+
+Most correct detections land on the diagonal
+Off-diagonal confusions are relatively rare
+The bigger issues are usually FPs and FNs (not class confusions)
+
+Plot 1: P/R/F1 vs Confidence Threshold
+What it shows:
+This plot shows how Precision, Recall, and F1 Score change as you vary the confidence threshold from 0.1 to 0.8.
+
+Blue line (Precision): Of all detections the model made, what % were correct?
+Orange line (Recall): Of all ground truth objects, what % did the model find?
+Green dashed line (F1): Harmonic mean of Precision and Recall (balances both)
+Pink dotted line: Best F1 threshold (conf=0.3)
+The Trade-off:
+Low threshold (0.1): Model keeps almost everything → High Recall (0.68), Low Precision (0.35)
+High threshold (0.8): Model only keeps very confident detections → High Precision (0.50), Low Recall (0.07)
+Sweet spot (0.3): Best balance with F1=0.556
+What you learn:
+Best operating point: Use conf=0.3 for this model (F1=0.556)
+Precision climbs then drops: Peaks around 0.6-0.7, then drops at 0.8 (too few detections)
+Recall steadily drops: As threshold increases, model rejects more detections
+
+Plot 2: Per-Class F1 Score
+What it shows:
+This bar chart shows the F1 score for each class (food ingredient), sorted from worst to best. The (n=X) indicates support - how many ground truth objects of that class were in the test set.
+
+Reading the results:
+Top performers:
+
+Bacon: F1=0.800 (n=5) - Best detection, but small sample
+Capsicum: F1=0.646 (n=29) - Good detection, large sample ✓
+Egg: F1=0.600 (n=6)
+Mushroom: F1=0.554 (n=29) - Decent, large sample ✓
+Poor performers:
+
+Corn: F1=0.286 (n=5) - Struggles with this class
+Banana, Carrot, Cucumber, Chicken, Pork, Tomato, Ham: F1=0.000 - Model completely missed these!
+What you learn:
+Class imbalance matters: Classes with n=0 or n=1 aren't reliable metrics (too few samples)
+
+Some classes are harder: The model struggles with certain foods - could be due to:
+
+Visual similarity to other classes
+Fewer training examples
+More variation in appearance
+Reliable insights come from classes with larger support:
+
+Capsicum (n=29): F1=0.646 ✓
+Mushroom (n=29): F1=0.554 ✓
+Zero F1 classes: Model either:
+
+Never predicted these classes, OR
+Predicted them but with wrong location (IoU < 0.5)
+Does it match your confusion matrix?
+YES! The confusion matrix showed:
+
+Capsicum: 21 correct detections (highest on diagonal)
+Mushroom: 18 correct detections
+Bacon: 4 correct detections
+These are exactly the classes with the best F1 scores in this plot!
+
+
+
+
+Plot 4: Count MAE Comparison
+What it shows:
+This plot compares two methods of measuring counting accuracy - how well does the model count the number of objects per class in each image?
+
+MAE = Mean Absolute Error (lower is better)
+
+MAE of 0.76 means on average, the count is off by ~0.76 objects per image/class
+The Two Methods:
+Green Bar - Matched-Only (MAE = 0.760):
+
+Only counts True Positives (correctly detected objects)
+Ignores False Positives
+More robust to FP spam (model can't cheat by predicting everything)
+Red Bar - All-Predictions (MAE = 1.120):
+
+Counts all predicted boxes above confidence threshold
+Includes False Positives
+Penalizes models that over-detect
+What you learn:
+Matched-Only is better (0.76 < 1.12): This means the model is making extra False Positive predictions that hurt the count
+
+The gap (1.12 - 0.76 = 0.36): On average, the model predicts ~0.36 extra objects per image that don't match ground truth
+
+Interpretation:
+
+If GT has 3 Capsicums in an image
+Matched-Only might say: 2 detected (count error = 1)
+All-Predictions might say: 4 predicted (count error = 1, but includes 2 FPs)
+When to use which?
+Method	Use When
+Matched-Only	You want to measure detection quality, ignoring FPs
+All-Predictions	You want to penalize over-detection (e.g., for inventory counting)
+
+
+
+What each method actually counts:
+Matched-Only (Green, MAE = 0.760):
+
+Predicted count = Number of True Positives only
+Compare to GT count
+Error = |TP_count - GT_count|
+All-Predictions (Red, MAE = 1.120):
+
+Predicted count = Number of all detections above threshold (TP + FP)
+Compare to GT count
+Error = |(TP + FP)_count - GT_count|
+Example to illustrate:
+Say an image has GT = 3 Capsicums
+
+Scenario	TPs	FPs	FNs	Matched-Only Count	All-Pred Count
+Perfect	3	0	0	3 (error=0)	3 (error=0)
+Missed 1	2	0	1	2 (error=1)	2 (error=1)
+Over-detect	3	2	0	3 (error=0)	5 (error=2)
+Mixed	2	3	1	2 (error=1)	5 (error=2)
+The gap explained correctly:
+Matched-Only MAE = 0.760: Mostly reflects missed objects (FNs)
+All-Predictions MAE = 1.120: Reflects both FNs and extra FPs
+The gap (0.36): The additional error caused by False Positives
+So you're right - the green bar error comes primarily from missing objects, not extra predictions. Thanks for the correction!

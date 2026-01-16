@@ -121,8 +121,8 @@ def plot_per_class_f1(
     for i, (f1, support) in enumerate(zip(f1_scores, supports)):
         ax.text(f1 + 0.02, i, f'{f1:.3f} (n={support})', va='center', fontsize=9)
 
-    ax.set_xlabel('F1 Score', fontsize=12)
-    ax.set_ylabel('Class', fontsize=12)
+    ax.set_xlabel('F1 Score (Percentage)', fontsize=12)
+    ax.set_ylabel('Class (Number of Instances)', fontsize=12)
     ax.set_title(title, fontsize=14, fontweight='bold')
     ax.set_xlim([0, 1.1])
     ax.grid(axis='x', alpha=0.3)
