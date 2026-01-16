@@ -1,0 +1,21 @@
+{
+  "topk_backbone_k": 2,
+  "yolov8m": {
+    "backbone": [0, 9],
+    "neck": [10, 21],
+    "head": [22, 22],
+    "evidence": {
+      "neck_starts_at": "model.10 Upsample + model.11 Concat",
+      "head_contains": "Detect/DFL"
+    }
+  },
+  "rtdetr-l": {
+    "backbone": [0, 11],
+    "neck": [12, 27],
+    "head": [28, 28],
+    "evidence": {
+      "neck_contains": "Upsample/Concat blocks",
+      "head_contains": "DeformableTransformerDecoder*"
+    }
+  }
+}

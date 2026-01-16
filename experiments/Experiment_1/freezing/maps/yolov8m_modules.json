@@ -1,0 +1,1776 @@
+{
+  "global_params_total": 25902640,
+  "global_params_trainable": 0,
+  "modules": [
+    {
+      "name": "",
+      "type": "DetectionModel",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model",
+      "type": "Sequential",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.0",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.0.conv",
+      "type": "Conv2d",
+      "params_total_local": 1296,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.0.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 96,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.0.act",
+      "type": "SiLU",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.1",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.1.conv",
+      "type": "Conv2d",
+      "params_total_local": 41472,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.1.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 192,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.2",
+      "type": "C2f",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.2.cv1",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.2.cv1.conv",
+      "type": "Conv2d",
+      "params_total_local": 9216,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.2.cv1.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 192,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.2.cv2",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.2.cv2.conv",
+      "type": "Conv2d",
+      "params_total_local": 18432,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.2.cv2.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 192,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.2.m",
+      "type": "ModuleList",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.2.m.0",
+      "type": "Bottleneck",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.2.m.0.cv1",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.2.m.0.cv1.conv",
+      "type": "Conv2d",
+      "params_total_local": 20736,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.2.m.0.cv1.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 96,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.2.m.0.cv2",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.2.m.0.cv2.conv",
+      "type": "Conv2d",
+      "params_total_local": 20736,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.2.m.0.cv2.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 96,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.2.m.1",
+      "type": "Bottleneck",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.2.m.1.cv1",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.2.m.1.cv1.conv",
+      "type": "Conv2d",
+      "params_total_local": 20736,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.2.m.1.cv1.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 96,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.2.m.1.cv2",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.2.m.1.cv2.conv",
+      "type": "Conv2d",
+      "params_total_local": 20736,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.2.m.1.cv2.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 96,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.3",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.3.conv",
+      "type": "Conv2d",
+      "params_total_local": 165888,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.3.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 384,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.4",
+      "type": "C2f",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.4.cv1",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.4.cv1.conv",
+      "type": "Conv2d",
+      "params_total_local": 36864,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.4.cv1.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 384,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.4.cv2",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.4.cv2.conv",
+      "type": "Conv2d",
+      "params_total_local": 110592,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.4.cv2.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 384,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.4.m",
+      "type": "ModuleList",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.4.m.0",
+      "type": "Bottleneck",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.4.m.0.cv1",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.4.m.0.cv1.conv",
+      "type": "Conv2d",
+      "params_total_local": 82944,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.4.m.0.cv1.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 192,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.4.m.0.cv2",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.4.m.0.cv2.conv",
+      "type": "Conv2d",
+      "params_total_local": 82944,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.4.m.0.cv2.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 192,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.4.m.1",
+      "type": "Bottleneck",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.4.m.1.cv1",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.4.m.1.cv1.conv",
+      "type": "Conv2d",
+      "params_total_local": 82944,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.4.m.1.cv1.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 192,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.4.m.1.cv2",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.4.m.1.cv2.conv",
+      "type": "Conv2d",
+      "params_total_local": 82944,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.4.m.1.cv2.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 192,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.4.m.2",
+      "type": "Bottleneck",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.4.m.2.cv1",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.4.m.2.cv1.conv",
+      "type": "Conv2d",
+      "params_total_local": 82944,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.4.m.2.cv1.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 192,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.4.m.2.cv2",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.4.m.2.cv2.conv",
+      "type": "Conv2d",
+      "params_total_local": 82944,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.4.m.2.cv2.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 192,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.4.m.3",
+      "type": "Bottleneck",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.4.m.3.cv1",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.4.m.3.cv1.conv",
+      "type": "Conv2d",
+      "params_total_local": 82944,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.4.m.3.cv1.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 192,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.4.m.3.cv2",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.4.m.3.cv2.conv",
+      "type": "Conv2d",
+      "params_total_local": 82944,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.4.m.3.cv2.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 192,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.5",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.5.conv",
+      "type": "Conv2d",
+      "params_total_local": 663552,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.5.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 768,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.6",
+      "type": "C2f",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.6.cv1",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.6.cv1.conv",
+      "type": "Conv2d",
+      "params_total_local": 147456,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.6.cv1.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 768,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.6.cv2",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.6.cv2.conv",
+      "type": "Conv2d",
+      "params_total_local": 442368,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.6.cv2.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 768,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.6.m",
+      "type": "ModuleList",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.6.m.0",
+      "type": "Bottleneck",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.6.m.0.cv1",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.6.m.0.cv1.conv",
+      "type": "Conv2d",
+      "params_total_local": 331776,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.6.m.0.cv1.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 384,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.6.m.0.cv2",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.6.m.0.cv2.conv",
+      "type": "Conv2d",
+      "params_total_local": 331776,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.6.m.0.cv2.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 384,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.6.m.1",
+      "type": "Bottleneck",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.6.m.1.cv1",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.6.m.1.cv1.conv",
+      "type": "Conv2d",
+      "params_total_local": 331776,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.6.m.1.cv1.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 384,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.6.m.1.cv2",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.6.m.1.cv2.conv",
+      "type": "Conv2d",
+      "params_total_local": 331776,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.6.m.1.cv2.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 384,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.6.m.2",
+      "type": "Bottleneck",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.6.m.2.cv1",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.6.m.2.cv1.conv",
+      "type": "Conv2d",
+      "params_total_local": 331776,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.6.m.2.cv1.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 384,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.6.m.2.cv2",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.6.m.2.cv2.conv",
+      "type": "Conv2d",
+      "params_total_local": 331776,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.6.m.2.cv2.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 384,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.6.m.3",
+      "type": "Bottleneck",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.6.m.3.cv1",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.6.m.3.cv1.conv",
+      "type": "Conv2d",
+      "params_total_local": 331776,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.6.m.3.cv1.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 384,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.6.m.3.cv2",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.6.m.3.cv2.conv",
+      "type": "Conv2d",
+      "params_total_local": 331776,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.6.m.3.cv2.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 384,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.7",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.7.conv",
+      "type": "Conv2d",
+      "params_total_local": 1990656,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.7.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 1152,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.8",
+      "type": "C2f",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.8.cv1",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.8.cv1.conv",
+      "type": "Conv2d",
+      "params_total_local": 331776,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.8.cv1.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 1152,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.8.cv2",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.8.cv2.conv",
+      "type": "Conv2d",
+      "params_total_local": 663552,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.8.cv2.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 1152,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.8.m",
+      "type": "ModuleList",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.8.m.0",
+      "type": "Bottleneck",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.8.m.0.cv1",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.8.m.0.cv1.conv",
+      "type": "Conv2d",
+      "params_total_local": 746496,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.8.m.0.cv1.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 576,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.8.m.0.cv2",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.8.m.0.cv2.conv",
+      "type": "Conv2d",
+      "params_total_local": 746496,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.8.m.0.cv2.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 576,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.8.m.1",
+      "type": "Bottleneck",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.8.m.1.cv1",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.8.m.1.cv1.conv",
+      "type": "Conv2d",
+      "params_total_local": 746496,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.8.m.1.cv1.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 576,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.8.m.1.cv2",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.8.m.1.cv2.conv",
+      "type": "Conv2d",
+      "params_total_local": 746496,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.8.m.1.cv2.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 576,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.9",
+      "type": "SPPF",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.9.cv1",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.9.cv1.conv",
+      "type": "Conv2d",
+      "params_total_local": 165888,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.9.cv1.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 576,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.9.cv2",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.9.cv2.conv",
+      "type": "Conv2d",
+      "params_total_local": 663552,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.9.cv2.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 1152,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.9.m",
+      "type": "MaxPool2d",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.10",
+      "type": "Upsample",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.11",
+      "type": "Concat",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.12",
+      "type": "C2f",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.12.cv1",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.12.cv1.conv",
+      "type": "Conv2d",
+      "params_total_local": 368640,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.12.cv1.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 768,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.12.cv2",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.12.cv2.conv",
+      "type": "Conv2d",
+      "params_total_local": 294912,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.12.cv2.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 768,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.12.m",
+      "type": "ModuleList",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.12.m.0",
+      "type": "Bottleneck",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.12.m.0.cv1",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.12.m.0.cv1.conv",
+      "type": "Conv2d",
+      "params_total_local": 331776,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.12.m.0.cv1.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 384,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.12.m.0.cv2",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.12.m.0.cv2.conv",
+      "type": "Conv2d",
+      "params_total_local": 331776,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.12.m.0.cv2.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 384,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.12.m.1",
+      "type": "Bottleneck",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.12.m.1.cv1",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.12.m.1.cv1.conv",
+      "type": "Conv2d",
+      "params_total_local": 331776,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.12.m.1.cv1.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 384,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.12.m.1.cv2",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.12.m.1.cv2.conv",
+      "type": "Conv2d",
+      "params_total_local": 331776,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.12.m.1.cv2.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 384,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.13",
+      "type": "Upsample",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.14",
+      "type": "Concat",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.15",
+      "type": "C2f",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.15.cv1",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.15.cv1.conv",
+      "type": "Conv2d",
+      "params_total_local": 110592,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.15.cv1.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 384,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.15.cv2",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.15.cv2.conv",
+      "type": "Conv2d",
+      "params_total_local": 73728,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.15.cv2.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 384,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.15.m",
+      "type": "ModuleList",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.15.m.0",
+      "type": "Bottleneck",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.15.m.0.cv1",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.15.m.0.cv1.conv",
+      "type": "Conv2d",
+      "params_total_local": 82944,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.15.m.0.cv1.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 192,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.15.m.0.cv2",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.15.m.0.cv2.conv",
+      "type": "Conv2d",
+      "params_total_local": 82944,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.15.m.0.cv2.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 192,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.15.m.1",
+      "type": "Bottleneck",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.15.m.1.cv1",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.15.m.1.cv1.conv",
+      "type": "Conv2d",
+      "params_total_local": 82944,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.15.m.1.cv1.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 192,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.15.m.1.cv2",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.15.m.1.cv2.conv",
+      "type": "Conv2d",
+      "params_total_local": 82944,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.15.m.1.cv2.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 192,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.16",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.16.conv",
+      "type": "Conv2d",
+      "params_total_local": 331776,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.16.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 384,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.17",
+      "type": "Concat",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.18",
+      "type": "C2f",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.18.cv1",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.18.cv1.conv",
+      "type": "Conv2d",
+      "params_total_local": 221184,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.18.cv1.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 768,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.18.cv2",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.18.cv2.conv",
+      "type": "Conv2d",
+      "params_total_local": 294912,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.18.cv2.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 768,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.18.m",
+      "type": "ModuleList",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.18.m.0",
+      "type": "Bottleneck",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.18.m.0.cv1",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.18.m.0.cv1.conv",
+      "type": "Conv2d",
+      "params_total_local": 331776,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.18.m.0.cv1.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 384,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.18.m.0.cv2",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.18.m.0.cv2.conv",
+      "type": "Conv2d",
+      "params_total_local": 331776,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.18.m.0.cv2.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 384,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.18.m.1",
+      "type": "Bottleneck",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.18.m.1.cv1",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.18.m.1.cv1.conv",
+      "type": "Conv2d",
+      "params_total_local": 331776,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.18.m.1.cv1.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 384,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.18.m.1.cv2",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.18.m.1.cv2.conv",
+      "type": "Conv2d",
+      "params_total_local": 331776,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.18.m.1.cv2.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 384,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.19",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.19.conv",
+      "type": "Conv2d",
+      "params_total_local": 1327104,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.19.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 768,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.20",
+      "type": "Concat",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.21",
+      "type": "C2f",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.21.cv1",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.21.cv1.conv",
+      "type": "Conv2d",
+      "params_total_local": 552960,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.21.cv1.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 1152,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.21.cv2",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.21.cv2.conv",
+      "type": "Conv2d",
+      "params_total_local": 663552,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.21.cv2.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 1152,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.21.m",
+      "type": "ModuleList",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.21.m.0",
+      "type": "Bottleneck",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.21.m.0.cv1",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.21.m.0.cv1.conv",
+      "type": "Conv2d",
+      "params_total_local": 746496,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.21.m.0.cv1.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 576,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.21.m.0.cv2",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.21.m.0.cv2.conv",
+      "type": "Conv2d",
+      "params_total_local": 746496,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.21.m.0.cv2.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 576,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.21.m.1",
+      "type": "Bottleneck",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.21.m.1.cv1",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.21.m.1.cv1.conv",
+      "type": "Conv2d",
+      "params_total_local": 746496,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.21.m.1.cv1.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 576,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.21.m.1.cv2",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.21.m.1.cv2.conv",
+      "type": "Conv2d",
+      "params_total_local": 746496,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.21.m.1.cv2.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 576,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.22",
+      "type": "Detect",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.22.cv2",
+      "type": "ModuleList",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.22.cv2.0",
+      "type": "Sequential",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.22.cv2.0.0",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.22.cv2.0.0.conv",
+      "type": "Conv2d",
+      "params_total_local": 110592,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.22.cv2.0.0.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 128,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.22.cv2.0.1",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.22.cv2.0.1.conv",
+      "type": "Conv2d",
+      "params_total_local": 36864,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.22.cv2.0.1.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 128,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.22.cv2.0.2",
+      "type": "Conv2d",
+      "params_total_local": 4160,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.22.cv2.1",
+      "type": "Sequential",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.22.cv2.1.0",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.22.cv2.1.0.conv",
+      "type": "Conv2d",
+      "params_total_local": 221184,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.22.cv2.1.0.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 128,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.22.cv2.1.1",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.22.cv2.1.1.conv",
+      "type": "Conv2d",
+      "params_total_local": 36864,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.22.cv2.1.1.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 128,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.22.cv2.1.2",
+      "type": "Conv2d",
+      "params_total_local": 4160,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.22.cv2.2",
+      "type": "Sequential",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.22.cv2.2.0",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.22.cv2.2.0.conv",
+      "type": "Conv2d",
+      "params_total_local": 331776,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.22.cv2.2.0.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 128,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.22.cv2.2.1",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.22.cv2.2.1.conv",
+      "type": "Conv2d",
+      "params_total_local": 36864,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.22.cv2.2.1.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 128,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.22.cv2.2.2",
+      "type": "Conv2d",
+      "params_total_local": 4160,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.22.cv3",
+      "type": "ModuleList",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.22.cv3.0",
+      "type": "Sequential",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.22.cv3.0.0",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.22.cv3.0.0.conv",
+      "type": "Conv2d",
+      "params_total_local": 331776,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.22.cv3.0.0.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 384,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.22.cv3.0.1",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.22.cv3.0.1.conv",
+      "type": "Conv2d",
+      "params_total_local": 331776,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.22.cv3.0.1.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 384,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.22.cv3.0.2",
+      "type": "Conv2d",
+      "params_total_local": 15440,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.22.cv3.1",
+      "type": "Sequential",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.22.cv3.1.0",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.22.cv3.1.0.conv",
+      "type": "Conv2d",
+      "params_total_local": 663552,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.22.cv3.1.0.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 384,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.22.cv3.1.1",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.22.cv3.1.1.conv",
+      "type": "Conv2d",
+      "params_total_local": 331776,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.22.cv3.1.1.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 384,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.22.cv3.1.2",
+      "type": "Conv2d",
+      "params_total_local": 15440,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.22.cv3.2",
+      "type": "Sequential",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.22.cv3.2.0",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.22.cv3.2.0.conv",
+      "type": "Conv2d",
+      "params_total_local": 995328,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.22.cv3.2.0.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 384,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.22.cv3.2.1",
+      "type": "Conv",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.22.cv3.2.1.conv",
+      "type": "Conv2d",
+      "params_total_local": 331776,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.22.cv3.2.1.bn",
+      "type": "BatchNorm2d",
+      "params_total_local": 384,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.22.cv3.2.2",
+      "type": "Conv2d",
+      "params_total_local": 15440,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.22.dfl",
+      "type": "DFL",
+      "params_total_local": 0,
+      "params_trainable_local": 0
+    },
+    {
+      "name": "model.22.dfl.conv",
+      "type": "Conv2d",
+      "params_total_local": 16,
+      "params_trainable_local": 0
+    }
+  ]
+}

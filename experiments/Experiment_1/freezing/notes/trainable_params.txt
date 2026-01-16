@@ -1,0 +1,12 @@
+
+YOLOv8m
+F0 {'total': 25902640, 'trainable': 3822016}
+F1 {'total': 25902640, 'trainable': 14046784}
+F2 {'total': 25902640, 'trainable': 18863872}
+F3 {'total': 25902640, 'trainable': 25902640}
+
+RT-DETR-L
+F0 {'total': 32970476, 'trainable': 7466252}
+F1 {'total': 32970476, 'trainable': 18102540}
+F2 {'total': 32970476, 'trainable': 19417100}
+F3 {'total': 32970476, 'trainable': 32970476}
