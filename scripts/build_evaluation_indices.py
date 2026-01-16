@@ -27,6 +27,7 @@ from pathlib import Path
 from datetime import datetime
 from typing import List, Dict, Tuple
 import yaml
+from PIL import Image
 
 
 def parse_args():
@@ -211,9 +212,13 @@ def build_index_for_split(
         image_id = img_file.stem
         image_filename = img_file.name
 
-        # Load ground truth from label file
+        # Get actual image dimensions
+        with Image.open(img_file) as img:
+            image_width, image_height = img.size
+
+        # Load ground truth from label file with actual image dimensions
         label_file = labels_dir / f"{image_id}.txt"
-        ground_truth = parse_yolo_label(label_file)
+        ground_truth = parse_yolo_label(label_file, image_width, image_height)
 
         # Add class names to ground truth
         for obj in ground_truth:
@@ -230,6 +235,8 @@ def build_index_for_split(
         images_data.append({
             'image_id': image_id,
             'image_filename': image_filename,
+            'image_width': image_width,
+            'image_height': image_height,
             'ground_truth': ground_truth,
             'num_objects': len(ground_truth),
             'max_iou': round(max_iou, 4),
