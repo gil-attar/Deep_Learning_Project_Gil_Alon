@@ -17,7 +17,7 @@ export CUDA_VISIBLE_DEVICES="${CUDA_VISIBLE_DEVICES:-0}"
 export OMP_NUM_THREADS="${OMP_NUM_THREADS:-2}"
 
 # Path to our runner 
-RUNNER="./runOneTest.py"
+RUNNER="experiments/Experiment_1/runOneTest.py"
 
 # --------- KEEPALIVE (prevents idle disconnect due to no output) ---------
 keepalive() {
