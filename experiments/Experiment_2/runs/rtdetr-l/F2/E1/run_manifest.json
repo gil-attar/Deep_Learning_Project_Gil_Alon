@@ -1,0 +1,50 @@
+{
+  "experiment": "Experiment_2",
+  "option": "A_epoch_budget_sweep",
+  "model": "rtdetr-l",
+  "freeze_id": "F2",
+  "epochs": 1,
+  "imgsz": 320,
+  "seed": 0,
+  "timestamp_utc": "20260117_153544",
+  "system": {
+    "platform": "Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+    "python": "3.12.3",
+    "torch": "2.9.1+cpu",
+    "cuda_available": false
+  },
+  "paths": {
+    "repo_root": "/home/alonshorr/dev/Deep_Learn_Project/ProjectRepo",
+    "runs_dir": "/home/alonshorr/dev/Deep_Learn_Project/ProjectRepo/experiments/Experiment_2/runs",
+    "run_dir": "/home/alonshorr/dev/Deep_Learn_Project/ProjectRepo/experiments/Experiment_2/runs/rtdetr-l/F2/E1"
+  },
+  "data_yaml": "/home/alonshorr/dev/Deep_Learn_Project/ProjectRepo/data/processed/data.yaml",
+  "weights_dir": "/home/alonshorr/dev/Deep_Learn_Project/ProjectRepo/artifacts/weights",
+  "indices": {
+    "test_index": "/home/alonshorr/dev/Deep_Learn_Project/ProjectRepo/data/processed/evaluation/test_index.json"
+  },
+  "param_counts": {
+    "total": 32970476,
+    "trainable": 19417100
+  },
+  "evaluation_contract": {
+    "bbox_format": "xyxy_pixels",
+    "iou_threshold": 0.5,
+    "prediction_export_conf_low": 0.01,
+    "threshold_sweep": [
+      0.0,
+      0.1,
+      0.2,
+      0.3,
+      0.4,
+      0.5,
+      0.6,
+      0.7,
+      0.8,
+      0.9
+    ],
+    "threshold_selection_policy": "fixed",
+    "reporting_conf_threshold": 0.25,
+    "test_reporting_policy": "test_evaluated_at_fixed_threshold"
+  }
+}

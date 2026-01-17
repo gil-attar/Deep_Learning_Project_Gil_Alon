@@ -1,19 +1,14 @@
 """
-Experiment 2 runner: one run per (model, freeze_id, epochs).
+Experiment 2 runner: one run per (model, freeze_id, epochs) with STRICT absolute paths.
 
-Pipeline per run:
-1) Load COCO-pretrained weights from artifacts/weights
-2) Apply a FIXED freeze preset (chosen externally; still passed as --freeze for bookkeeping)
-3) Train (Ultralytics) for a specified epoch budget (NO early stopping)
-4) Export evaluator-compatible predictions JSON for test using test_index.json
-5) Run custom evaluation on test:
-   - Always compute threshold sweep curves (for plots)
-   - Report per-class + counting metrics at a FIXED confidence threshold (default 0.25)
-6) Save run_summary.json (includes training time / time-per-epoch)
+Key differences vs Experiment 1 runner:
+- E2 is TEST-only (no val_index dependency).
+- E2 reports metrics at a FIXED confidence threshold (--report-conf) to keep epochs as the variable.
+- Adds training wall-clock timing and seconds/epoch.
+- Run directory includes epoch budget: runs/<model>/<freeze>/E<epochs>/...
 
-Notes / fixes inherited from E1:
-- Avoid Ultralytics fp16 None crash: never pass half=None to predict(); always a bool.
-- Avoid CUDA OOM during prediction export: run predict() in chunks + small inference batch + cache cleanup.
+Ultralytics caveat:
+- Ultralytics may change working directories internally. This file therefore uses absolute, resolved paths everywhere.
 """
 
 from __future__ import annotations
@@ -28,33 +23,35 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-import yaml  
 import torch
-from ultralytics import YOLO, RTDETR
+import yaml
+from ultralytics import RTDETR, YOLO
 
 # -----------------------------------------------------------------------------
-# Paths
+# Absolute paths (CWD-agnostic)
 # -----------------------------------------------------------------------------
-REPO_ROOT = Path(__file__).resolve().parents[2]  
-E2_ROOT = Path(__file__).resolve().parent       
-RUNS_DIR = E2_ROOT / "runs"
+THIS_FILE = Path(__file__).resolve()
+E2_ROOT = THIS_FILE.parent.resolve()              # .../experiments/Experiment_2
+REPO_ROOT = THIS_FILE.parents[2].resolve()        # .../<repo_root>
 
-DATA_YAML = REPO_ROOT / "data" / "processed" / "data.yaml"
-WEIGHTS_DIR = REPO_ROOT / "artifacts" / "weights"
-EVAL_INDICES_DIR = REPO_ROOT / "data" / "processed" / "evaluation"
+RUNS_DIR = (E2_ROOT / "runs").resolve()
 
-# Enable importing repo-root modules (evaluation/*)
+DATA_YAML = (REPO_ROOT / "data" / "processed" / "data.yaml").resolve()
+WEIGHTS_DIR = (REPO_ROOT / "artifacts" / "weights").resolve()
+EVAL_INDICES_DIR = (REPO_ROOT / "data" / "processed" / "evaluation").resolve()
+
+# Ensure repo modules import regardless of CWD
 sys.path.insert(0, str(REPO_ROOT))
 
-# Enable importing Experiment_1 freezing code
-E1_ROOT = REPO_ROOT / "experiments" / "Experiment_1"
+# Freeze presets currently live under Experiment_1/freezing/*
+E1_ROOT = (REPO_ROOT / "experiments" / "Experiment_1").resolve()
 sys.path.insert(0, str(E1_ROOT))
 
-from freezing.freeze_presets import (  # noqa: E402
-    YOLOV8M_PRESETS,
+from freezing.freeze_presets import (  # noqa: E402 # type: ignore
     RTDETR_L_PRESETS,
-    unfreeze_by_prefixes,
+    YOLOV8M_PRESETS,
     count_params,
+    unfreeze_by_prefixes,
 )
 
 # -----------------------------------------------------------------------------
@@ -69,13 +66,9 @@ def utc_iso() -> str:
 
 
 def save_json(path: Path, payload: Dict[str, Any]) -> None:
+    path = path.resolve()
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(payload, indent=2))
-
-
-def load_data_yaml() -> Dict[str, Any]:
-    with open(DATA_YAML, "r") as f:
-        return yaml.safe_load(f)
 
 
 def cuda_cleanup() -> None:
@@ -92,23 +85,26 @@ def get_device_for_inference() -> str | int:
     return 0 if torch.cuda.is_available() else "cpu"
 
 
-# -----------------------------------------------------------------------------
-# Dataset split / image-path resolution (robust)
-# -----------------------------------------------------------------------------
-def _split_aliases(split: str) -> List[str]:
-    s = (split or "").strip().lower()
-    if s in {"val", "valid", "validation"}:
-        return ["valid", "val", "validation"]
-    return [s]
+def load_index_images(index_path: Path) -> List[Dict[str, Any]]:
+    index_path = index_path.resolve()
+    with open(index_path, "r") as f:
+        idx = json.load(f)
+    images = idx.get("images", [])
+    if not images:
+        raise ValueError(f"No images found in index: {index_path}")
+    return images
 
 
 def _resolve_images_dir(split: str) -> Optional[Path]:
+    s = (split or "").strip().lower()
+    aliases = ["valid", "val", "validation"] if s in {"val", "valid", "validation"} else [s]
+
     candidates: List[Path] = []
-    for alias in _split_aliases(split):
+    for a in aliases:
         candidates.extend(
             [
-                REPO_ROOT / "data" / "raw" / alias / "images",
-                REPO_ROOT / "data" / "processed" / alias / "images",
+                (REPO_ROOT / "data" / "raw" / a / "images").resolve(),
+                (REPO_ROOT / "data" / "processed" / a / "images").resolve(),
             ]
         )
     for d in candidates:
@@ -124,34 +120,22 @@ def _locate_image_path(filename: str, split: str) -> Path:
 
     images_dir = _resolve_images_dir(split)
     if images_dir is not None:
-        p = images_dir / fn
+        p = (images_dir / fn).resolve()
         if p.is_file():
             return p
 
-    data_root = REPO_ROOT / "data"
+    # Fallback: search under repo's data/ subtree
+    data_root = (REPO_ROOT / "data").resolve()
     if data_root.is_dir():
         for p in data_root.rglob(fn):
             if p.is_file():
-                return p
+                return p.resolve()
 
     msg = [f"Image not found: {fn}"]
     if images_dir is not None:
         msg.append(f"Resolved images_dir: {images_dir}")
-        msg.append(f"Tried: {images_dir / fn}")
+        msg.append(f"Tried: {(images_dir / fn).resolve()}")
     raise FileNotFoundError("\n".join(msg))
-
-
-def load_index(index_path: Path) -> Dict[str, Any]:
-    with open(index_path, "r") as f:
-        return json.load(f)
-
-
-def load_index_images(index_path: Path) -> List[Dict[str, Any]]:
-    idx = load_index(index_path)
-    images = idx.get("images", [])
-    if not images:
-        raise ValueError(f"No images found in index: {index_path}")
-    return images
 
 
 # -----------------------------------------------------------------------------
@@ -159,10 +143,10 @@ def load_index_images(index_path: Path) -> List[Dict[str, Any]]:
 # -----------------------------------------------------------------------------
 def load_ultralytics_model(model_name: str):
     if model_name == "yolov8m":
-        weights = WEIGHTS_DIR / "yolov8m.pt"
+        weights = (WEIGHTS_DIR / "yolov8m.pt").resolve()
         return YOLO(str(weights)), "yolov8m"
     if model_name == "rtdetr-l":
-        weights = WEIGHTS_DIR / "rtdetr-l.pt"
+        weights = (WEIGHTS_DIR / "rtdetr-l.pt").resolve()
         return RTDETR(str(weights)), "rtdetr-l"
     raise ValueError(f"Unsupported model_name={model_name}")
 
@@ -187,12 +171,15 @@ def apply_freeze(ultra_model, model_key: str, freeze_id: str) -> Dict[str, Any]:
 
 
 # -----------------------------------------------------------------------------
-# Train
+# Train (absolute project dir)
 # -----------------------------------------------------------------------------
 def train_one(ultra_model, save_dir: Path, epochs: int, imgsz: int, seed: int) -> Dict[str, Any]:
+    save_dir = save_dir.resolve()
     save_dir.mkdir(parents=True, exist_ok=True)
-    project = str(save_dir.parent)
-    name = str(save_dir.name)
+
+    # Ultralytics uses project/name. Use absolute project to avoid CWD issues.
+    project = str(save_dir.parent.resolve())
+    name = save_dir.name
 
     results = ultra_model.train(
         data=str(DATA_YAML),
@@ -229,21 +216,26 @@ def export_predictions_json(
     infer_batch: int = 8,
     run_id_prefix: str = "Experiment_2",
 ) -> Dict[str, Any]:
+    index_path = index_path.resolve()
+    out_path = out_path.resolve()
+
     index_images = load_index_images(index_path)
 
+    # Build absolute image paths
     img_paths: List[str] = []
     for item in index_images:
+        # honor explicit image_path if present
         if isinstance(item, dict) and item.get("image_path"):
             ip = Path(str(item["image_path"]))
             if not ip.is_absolute():
                 ip = (REPO_ROOT / ip).resolve()
             if ip.is_file():
-                img_paths.append(str(ip))
+                img_paths.append(str(ip.resolve()))
                 continue
 
         fname = item["image_filename"]
         p = _locate_image_path(fname, split)
-        img_paths.append(str(p))
+        img_paths.append(str(p.resolve()))
 
     half_flag = bool(half) if half is not None else False  # never None
 
@@ -346,7 +338,7 @@ def export_predictions_json(
 
 
 # -----------------------------------------------------------------------------
-# Custom evaluation wrapper (your repo's evaluation package)
+# Custom evaluation wrapper (same API as E1; E2 enforces fixed threshold)
 # -----------------------------------------------------------------------------
 def evaluate_with_eval_tools(
     predictions_path: Path,
@@ -358,8 +350,12 @@ def evaluate_with_eval_tools(
     fixed_conf_for_perclass_and_counting: Optional[float] = None,
 ) -> Dict[str, Any]:
     from evaluation.io import load_predictions, load_ground_truth, load_class_names, save_metrics, save_summary_csv
-    from evaluation.metrics import eval_detection_prf_at_iou, eval_per_class_metrics_and_confusions, eval_counting_quality
+    from evaluation.metrics import eval_counting_quality, eval_detection_prf_at_iou, eval_per_class_metrics_and_confusions
     from evaluation.plots import plot_all_metrics
+
+    predictions_path = predictions_path.resolve()
+    gt_index_path = gt_index_path.resolve()
+    out_dir = out_dir.resolve()
 
     preds = load_predictions(str(predictions_path))
     gts = load_ground_truth(str(gt_index_path))
@@ -369,7 +365,7 @@ def evaluate_with_eval_tools(
         preds, gts, iou_threshold=iou_threshold, conf_thresholds=conf_thresholds
     )
 
-    # For E2 we DO NOT select threshold from val; we report at a fixed threshold.
+    # E2: no selection-on-val; must be forced
     if fixed_conf_for_perclass_and_counting is None:
         raise ValueError("E2 requires fixed_conf_for_perclass_and_counting (do not select threshold on test).")
 
@@ -400,10 +396,10 @@ def evaluate_with_eval_tools(
     }
 
     out_dir.mkdir(parents=True, exist_ok=True)
-    save_metrics(results, str(out_dir / "metrics.json"))
-    save_summary_csv(results, str(out_dir / "summary.csv"))
+    save_metrics(results, str((out_dir / "metrics.json").resolve()))
+    save_summary_csv(results, str((out_dir / "summary.csv").resolve()))
 
-    plots_dir = out_dir / "plots"
+    plots_dir = (out_dir / "plots").resolve()
     plot_all_metrics(
         threshold_sweep=threshold_sweep,
         per_class_results=per_class_results["per_class"],
@@ -422,14 +418,14 @@ def evaluate_with_eval_tools(
 def run(model_name: str, freeze_id: str, epochs: int, imgsz: int, seed: int, report_conf: float) -> None:
     ultra_model, model_key = load_ultralytics_model(model_name)
 
-    run_dir = RUNS_DIR / model_key / freeze_id / f"E{epochs}"
+    run_dir = (RUNS_DIR / model_key / freeze_id / f"E{epochs}").resolve()
     run_dir.mkdir(parents=True, exist_ok=True)
 
-    # Freeze
+    # Apply freeze preset
     param_counts = apply_freeze(ultra_model, model_key=model_key, freeze_id=freeze_id)
 
-    # Indices (E2 uses TEST ONLY)
-    test_index = EVAL_INDICES_DIR / "test_index.json"
+    # Indices (E2 uses TEST only)
+    test_index = (EVAL_INDICES_DIR / "test_index.json").resolve()
 
     # Eval knobs
     conf_low = 0.01
@@ -451,6 +447,11 @@ def run(model_name: str, freeze_id: str, epochs: int, imgsz: int, seed: int, rep
             "torch": torch.__version__,
             "cuda_available": torch.cuda.is_available(),
         },
+        "paths": {
+            "repo_root": str(REPO_ROOT),
+            "runs_dir": str(RUNS_DIR),
+            "run_dir": str(run_dir),
+        },
         "data_yaml": str(DATA_YAML),
         "weights_dir": str(WEIGHTS_DIR),
         "indices": {"test_index": str(test_index)},
@@ -462,7 +463,7 @@ def run(model_name: str, freeze_id: str, epochs: int, imgsz: int, seed: int, rep
             "threshold_sweep": conf_sweep,
             "threshold_selection_policy": "fixed",
             "reporting_conf_threshold": report_conf,
-            "reporting_policy": "test_evaluated_at_fixed_threshold",
+            "test_reporting_policy": "test_evaluated_at_fixed_threshold",
         },
     }
     save_json(run_dir / "run_manifest.json", manifest)
@@ -487,12 +488,14 @@ def run(model_name: str, freeze_id: str, epochs: int, imgsz: int, seed: int, rep
     cuda_cleanup()
 
     # --------------------------
-    # Export predictions (TEST)
+    # Export predictions JSON (TEST)
     # --------------------------
-    preds_dir = run_dir / "predictions"
-    test_pred_path = preds_dir / "test_predictions.json"
+    preds_dir = (run_dir / "predictions").resolve()
+    test_pred_path = (preds_dir / "test_predictions.json").resolve()
 
     device_for_predict = get_device_for_inference()
+
+    # Conservative defaults to avoid OOM
     chunk_size = 16 if torch.cuda.is_available() else 64
     infer_batch = 4 if torch.cuda.is_available() else 16
 
@@ -507,38 +510,47 @@ def run(model_name: str, freeze_id: str, epochs: int, imgsz: int, seed: int, rep
         conf_low=conf_low,
         iou=iou_thr,
         device=device_for_predict,
-        half=False,
-        chunk_size=chunk_size,
-        infer_batch=infer_batch,
+        half=False,               # never None
+        chunk_size=chunk_size,    # OOM-safe
+        infer_batch=infer_batch,  # OOM-safe
         run_id_prefix="Experiment_2",
     )
     cuda_cleanup()
 
     # --------------------------
-    # Evaluate TEST (fixed threshold)
+    # Evaluate (TEST @ fixed threshold)
     # --------------------------
-    test_eval_dir = run_dir / "eval" / "test"
-    _ = evaluate_with_eval_tools(
+    test_eval_dir = (run_dir / "eval" / "test").resolve()
+    eval_results = evaluate_with_eval_tools(
         predictions_path=test_pred_path,
         gt_index_path=test_index,
         out_dir=test_eval_dir,
-        run_name=f"{model_key}-{freeze_id} (TEST @ fixed_conf={report_conf})",
+        run_name=f"{model_key}-{freeze_id}-E{epochs} (TEST fixed_conf={report_conf})",
         iou_threshold=iou_thr,
         conf_thresholds=conf_sweep,
         fixed_conf_for_perclass_and_counting=report_conf,
     )
 
+    # Summary artifact for resume logic + bookkeeping
     run_summary = {
         "manifest": manifest,
         "train": train_summary,
+        "eval": {
+            "test": {
+                "selected_conf_threshold": report_conf,
+                "eval_dir": str(test_eval_dir),
+            }
+        },
         "artifacts": {
             "test_predictions": str(test_pred_path),
-            "test_eval_dir": str(test_eval_dir),
+            "test_eval_metrics": str((test_eval_dir / "metrics.json").resolve()),
+            "test_eval_summary_csv": str((test_eval_dir / "summary.csv").resolve()),
         },
     }
     save_json(run_dir / "run_summary.json", run_summary)
 
     print(f"[OK] Completed E2 {model_key} {freeze_id} E{epochs}. Outputs in: {run_dir}")
+    _ = eval_results  # keep variable for debugging if you breakpoint
 
 
 def main() -> None:
@@ -556,22 +568,21 @@ def main() -> None:
     )
     args = ap.parse_args()
 
-    # Hard requirements
+    # Hard requirements (absolute paths)
     if not DATA_YAML.exists():
         raise FileNotFoundError(f"Missing data.yaml at {DATA_YAML}")
 
-    test_index = EVAL_INDICES_DIR / "test_index.json"
+    test_index = (EVAL_INDICES_DIR / "test_index.json").resolve()
     if not test_index.exists():
         raise FileNotFoundError(f"Missing test_index.json at {test_index}")
 
     if args.model == "yolov8m" and not (WEIGHTS_DIR / "yolov8m.pt").exists():
-        raise FileNotFoundError(f"Missing weights: {WEIGHTS_DIR / 'yolov8m.pt'}")
+        raise FileNotFoundError(f"Missing weights: {(WEIGHTS_DIR / 'yolov8m.pt').resolve()}")
     if args.model == "rtdetr-l" and not (WEIGHTS_DIR / "rtdetr-l.pt").exists():
-        raise FileNotFoundError(f"Missing weights: {WEIGHTS_DIR / 'rtdetr-l.pt'}")
+        raise FileNotFoundError(f"Missing weights: {(WEIGHTS_DIR / 'rtdetr-l.pt').resolve()}")
 
     if args.epochs <= 0:
         raise ValueError("--epochs must be > 0")
-
     if not (0.0 <= args.report_conf <= 1.0):
         raise ValueError("--report-conf must be in [0, 1]")
 
