@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # Runs: 2 models × 5 epoch budgets = 10 runs
+# Epoch sweep (default): 5 10 20 40 80
 # Level-1 RESUME ENABLED:
 #   - Skip a run if run_summary.json exists AND matches (EPOCHS, IMGSZ, SEED).
 #   - Optionally archive incomplete run dirs (missing run_summary.json) before re-running.
@@ -28,7 +29,7 @@ export CUDA_VISIBLE_DEVICES="${CUDA_VISIBLE_DEVICES:-0}"
 # Optional: reduce noisy parallelism on Colab
 export OMP_NUM_THREADS="${OMP_NUM_THREADS:-2}"
 
-# Path to our E2 runner (we will implement this in Step B)
+# Path to our E2 runner
 RUNNER="experiments/Experiment_2/runOneTest.py"
 
 # Resume behavior knobs:
