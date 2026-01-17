@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 # Experiment 1: run all 8 runs (2 models × F0–F3), with per-run retry (max 2 attempts).
-# Colab-compatible: paste into a Colab cell (prefix with !bash run_all_e1.sh) or run directly.
+# Level-1 RESUME ENABLED:
+#   - Skip a run if run_summary.json exists AND matches (EPOCHS, IMGSZ, SEED).
+#   - Optionally archive incomplete run dirs (missing run_summary.json) before re-running.
 
 set -u  # error on unset vars
 
@@ -16,8 +18,13 @@ export CUDA_VISIBLE_DEVICES="${CUDA_VISIBLE_DEVICES:-0}"
 # Optional: reduce noisy parallelism on Colab
 export OMP_NUM_THREADS="${OMP_NUM_THREADS:-2}"
 
-# Path to our runner 
+# Path to our runner
 RUNNER="experiments/Experiment_1/runOneTest.py"
+
+# Resume behavior knobs:
+#  - ARCHIVE_INCOMPLETE=1 moves partial run dirs aside before re-running (safer).
+#  - ARCHIVE_INCOMPLETE=0 leaves partial dirs in place (may mix old/new artifacts).
+ARCHIVE_INCOMPLETE="${ARCHIVE_INCOMPLETE:-1}"
 
 # --------- KEEPALIVE (prevents idle disconnect due to no output) ---------
 keepalive() {
@@ -36,6 +43,58 @@ cleanup() {
 trap cleanup EXIT
 
 # --------- HELPERS ---------
+
+# Return 0 (true) if run_summary.json exists AND matches this sweep's EPOCHS/IMGSZ/SEED.
+# Return nonzero otherwise.
+is_completed_and_matching() {
+  local model="$1"
+  local freeze="$2"
+  local summary="experiments/Experiment_1/runs/${model}/${freeze}/run_summary.json"
+
+  [[ -f "$summary" ]] || return 1
+
+  python3 - <<PY
+import json, sys
+p = r"$summary"
+want_epochs = int(r"$EPOCHS")
+want_imgsz  = int(r"$IMGSZ")
+want_seed   = int(r"$SEED")
+
+with open(p, "r") as f:
+    j = json.load(f)
+
+m = j.get("manifest", {})
+ok = (
+    int(m.get("epochs", -1)) == want_epochs and
+    int(m.get("imgsz",  -1)) == want_imgsz and
+    int(m.get("seed",   -1)) == want_seed
+)
+sys.exit(0 if ok else 2)
+PY
+}
+
+archive_if_incomplete() {
+  local model="$1"
+  local freeze="$2"
+  local run_dir="experiments/Experiment_1/runs/${model}/${freeze}"
+  local summary="${run_dir}/run_summary.json"
+
+  [[ -d "$run_dir" ]] || return 0
+  [[ -f "$summary" ]] && return 0
+
+  if [[ "${ARCHIVE_INCOMPLETE}" == "1" ]]; then
+    local archive_dir="experiments/Experiment_1/runs/_incomplete_archive"
+    mkdir -p "$archive_dir"
+    local ts
+    ts="$(date -u '+%Y%m%d_%H%M%S')"
+    local dest="${archive_dir}/${model}_${freeze}_${ts}"
+    echo "[RESUME] Incomplete run detected at ${run_dir}. Archiving to ${dest}"
+    mv "$run_dir" "$dest"
+  else
+    echo "[RESUME] Incomplete run detected at ${run_dir}. Leaving in place (may overwrite/merge artifacts)."
+  fi
+}
+
 run_one() {
   local model="$1"
   local freeze="$2"
@@ -43,6 +102,15 @@ run_one() {
   echo "============================================================"
   echo "[RUN] model=${model} freeze=${freeze} epochs=${EPOCHS} imgsz=${IMGSZ} seed=${SEED}"
   echo "============================================================"
+
+  # Level-1 resume: skip if already complete and matches current settings
+  if is_completed_and_matching "$model" "$freeze"; then
+    echo "[SKIP] model=${model} freeze=${freeze} already completed (matching epochs/imgsz/seed)."
+    return 0
+  fi
+
+  # If partial outputs exist, optionally archive before re-running
+  archive_if_incomplete "$model" "$freeze"
 
   # Attempt 1
   python3 "$RUNNER" --model "$model" --freeze "$freeze" --epochs "$EPOCHS" --imgsz "$IMGSZ" --seed "$SEED"
