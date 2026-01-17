@@ -214,6 +214,26 @@ export ROBOFLOW_API_KEY="your_api_key"
 
 ---
 
+## Experiments
+
+### Experiment 1: Freezing Ladder
+Measures how the number of trainable parameters during fine-tuning affects performance when adapting COCO-pretrained detectors to our ingredient dataset.
+
+- **Location:** `experiments/Experiment_1/`
+- **Notebook:** `notebooks/E1_run_evaluate.ipynb`
+- **Presets:** F0 (head only) → F3 (full fine-tune)
+
+### Experiment 3: Internal Masking vs Occlusion Training
+Tests whether internal channel masking during training can improve robustness to occlusions.
+
+- **Location:** `experiments/Experiment_3/`
+- **Notebook:** `experiments/Experiment_3/experiment3_run.ipynb`
+- **Sessions:** 6 per model (clean baseline, occluded training, 4 masking locations)
+- **Models:** YOLOv8m, RT-DETR-L
+- **See:** [Experiment 3 README](experiments/Experiment_3/README.md)
+
+---
+
 ## Project Roadmap
 
 - [x] Step 1: Repository & Environment Setup
@@ -223,6 +243,8 @@ export ROBOFLOW_API_KEY="your_api_key"
   - [x] 3.2: Training & Baseline Performance (metrics + predictions JSONs)
   - [ ] 3.3: Occlusion Difficulty Analysis (slice by Easy/Medium/Hard)
   - [ ] 3.4: Confidence Threshold Sweep
+- [x] Experiment 1: Freezing Ladder (YOLOv8m vs RT-DETR-L)
+- [ ] Experiment 3: Internal Masking vs Occlusion Training
 - [ ] Step 4: Performance Visualization
 - [ ] Step 5: Hyperparameter Tuning (Phase 1)
 - [ ] Step 6: Final Training (Phase 2 - 80/20 split)

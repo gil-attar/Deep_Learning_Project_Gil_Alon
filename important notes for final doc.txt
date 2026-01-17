@@ -223,3 +223,92 @@ Matched-Only MAE = 0.760: Mostly reflects missed objects (FNs)
 All-Predictions MAE = 1.120: Reflects both FNs and extra FPs
 The gap (0.36): The additional error caused by False Positives
 So you're right - the green bar error comes primarily from missing objects, not extra predictions. Thanks for the correction!
+
+
+What are Forward Hooks?
+A forward hook is a function that PyTorch calls automatically every time a layer produces an output.
+
+
+# Without hook:
+input → [Conv Layer] → output
+
+# With hook:
+input → [Conv Layer] → output → [YOUR HOOK FUNCTION] → modified_output
+Example:
+
+
+def my_hook(module, input, output):
+    # This runs every time the layer processes data
+    print(f"Layer output shape: {output.shape}")
+    return output * 0.5  # Modify the output (e.g., scale by 0.5)
+
+# Attach hook to a specific layer
+model.backbone.conv1.register_forward_hook(my_hook)
+Key points:
+
+Hooks let you intercept and modify activations without changing model code
+They're temporary - you can add/remove them
+Perfect for experiments where you want to modify behavior at specific layers
+How is Masking Different from Dropout?
+This is the important question. Let me compare:
+
+Standard Dropout
+Aspect	Dropout
+Where	Usually after fully-connected layers
+What it masks	Individual neurons/values
+When	Every forward pass during training
+Scale	Rescales remaining values by 1/(1-p)
+Purpose	Regularization to prevent overfitting
+
+# Dropout masks individual values
+# Input:  [0.5, 0.3, 0.8, 0.2, 0.9]
+# Mask:   [1,   0,   1,   0,   1  ]
+# Output: [1.0, 0,   1.6, 0,   1.8]  # Scaled by 2 if p=0.5
+Our Proposed Channel Masking (for E3)
+Aspect	Channel Masking
+Where	Specific architectural locations (backbone_early, neck, etc.)
+What it masks	Entire feature channels (not individual values)
+When	Probabilistically (p_apply chance per batch)
+Scale	No rescaling (we want to simulate information loss)
+Purpose	Simulate occlusion-like information loss at feature level
+
+# Channel masking zeros entire channels
+# Feature map shape: [Batch, Channels, Height, Width]
+# Example with 4 channels:
+# Channel 0: [[0.5, 0.3], [0.2, 0.4]]  → KEEP
+# Channel 1: [[0.8, 0.1], [0.3, 0.2]]  → ZERO (masked)
+# Channel 2: [[0.4, 0.6], [0.1, 0.5]]  → KEEP
+# Channel 3: [[0.9, 0.2], [0.7, 0.3]]  → ZERO (masked)
+Visual Comparison
+
+DROPOUT (element-wise):
+┌─────────────────┐
+│ 0.5  X   0.8  X │   X = zeroed elements (random positions)
+│ 0.3  0.2  X  0.4│
+│  X  0.7  0.1  X │
+└─────────────────┘
+
+CHANNEL MASKING (entire channels):
+┌─────────────────┐
+│ CH0  CH1  CH2  CH3 │
+│ ███  000  ███  000 │   ███ = kept channels
+│ ███  000  ███  000 │   000 = zeroed channels (entire channel gone)
+│ ███  000  ███  000 │
+└─────────────────┘
+Why Channel Masking for Occlusion Robustness?
+The hypothesis is:
+
+Occlusions block visual features → parts of the image become uninformative
+This propagates through the network → certain feature channels lose information
+Channel masking simulates this → forces the network to be robust when some features are missing
+Training on clean images + channel masking → might be equivalent to (or better than) training on occluded images
+
+What are p_apply and p_channels?
+p_apply = Probability of applying masking to a batch
+
+p_apply = 0.5 means 50% of training batches get masking, 50% train normally
+This prevents the model from always seeing "damaged" features
+p_channels = Fraction of channels to zero when masking IS applied
+
+p_channels = 0.2 means 20% of channels are zeroed
+Higher = more aggressive masking = harder training - we dont have enogh data for higher channel masking that why we go for 20%
