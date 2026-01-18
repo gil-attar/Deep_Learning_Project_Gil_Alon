@@ -227,7 +227,7 @@ Measures how the number of trainable parameters during fine-tuning affects perfo
 Tests whether internal channel masking during training can improve robustness to occlusions.
 
 - **Location:** `experiments/Experiment_3/`
-- **Notebook:** `experiments/Experiment_3/experiment3_run.ipynb`
+- **Notebook:** `experiments/Experiment_3/E3_run_evaluate.ipynb`
 - **Sessions:** 6 per model (clean baseline, occluded training, 4 masking locations)
 - **Models:** YOLOv8m, RT-DETR-L
 - **See:** [Experiment 3 README](experiments/Experiment_3/README.md)
