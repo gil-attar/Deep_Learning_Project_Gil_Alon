@@ -8,7 +8,10 @@
 
 ## Step 2: Add these 4 code blocks to your notebook
 
-### BLOCK 1: Add AFTER cell-9 (after imports)
+### BLOCK 1: Add AFTER cell-6 (after output_dir is defined, NOT after cell-9!)
+
+**IMPORTANT**: This cell uses `output_dir` and `RUN_ID` which are defined in cell-6.
+Place this IMMEDIATELY after cell-6, before any other imports.
 
 ```python
 # ============================================================
