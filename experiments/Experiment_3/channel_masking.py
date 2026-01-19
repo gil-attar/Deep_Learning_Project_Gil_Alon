@@ -6,11 +6,15 @@ layers during training. Masking is ONLY applied during training, not inference.
 
 Channel masking zeros out entire feature channels (not individual values),
 simulating information loss similar to what occlusions cause.
+
+IMPORTANT: For Ultralytics models, use MaskingCallbacks instead of directly
+adding hooks to model.model. The trainer creates a different model object
+internally, so hooks must be added via callbacks.
 """
 
 import torch
 import torch.nn as nn
-from typing import List, Callable, Optional
+from typing import List, Callable, Optional, Dict, Any
 import random
 
 
@@ -336,6 +340,137 @@ def apply_channel_masking(
     num_hooks = manager.add_masking_to_layers(layer_prefixes)
     print(f"Added {num_hooks} masking hooks to layers: {layer_prefixes}")
     return manager
+
+
+class MaskingCallbacks:
+    """
+    Ultralytics callback-based masking that hooks into trainer.model.
+
+    IMPORTANT: This is the correct way to add masking to Ultralytics models!
+    The trainer creates its own model object internally, so we must add hooks
+    via callbacks AFTER the trainer is initialized.
+
+    Usage:
+        from ultralytics import YOLO
+        from experiments.Experiment_3.channel_masking import MaskingCallbacks
+
+        model = YOLO("yolov8m.pt")
+        callbacks = MaskingCallbacks(
+            layer_prefixes=["model.5", "model.6"],
+            p_apply=0.5,
+            p_channels=0.2
+        )
+        callbacks.register(model)
+
+        # Train - masking will be applied automatically
+        model.train(data="data.yaml", epochs=50)
+
+        # Get stats after training
+        callbacks.print_summary()
+    """
+
+    def __init__(
+        self,
+        layer_prefixes: List[str],
+        p_apply: float = 0.5,
+        p_channels: float = 0.2,
+        verbose: bool = False
+    ):
+        """
+        Args:
+            layer_prefixes: List of layer name prefixes to mask (e.g., ["model.5", "model.6"])
+            p_apply: Probability of applying masking per forward pass
+            p_channels: Fraction of channels to zero when masking
+            verbose: If True, print when masking fires
+        """
+        self.layer_prefixes = layer_prefixes
+        self.p_apply = p_apply
+        self.p_channels = p_channels
+        self.verbose = verbose
+        self.manager: Optional[MaskingManager] = None
+        self._trainer = None
+
+    def _on_pretrain_routine_start(self, trainer):
+        """
+        Called before training starts but after trainer.model is set up.
+        This is where we add our hooks to the actual training model.
+        """
+        self._trainer = trainer
+
+        # trainer.model is the actual model used for forward passes
+        actual_model = trainer.model
+
+        if self.verbose:
+            print(f"\n[MaskingCallbacks] on_pretrain_routine_start")
+            print(f"[MaskingCallbacks] trainer.model type: {type(actual_model)}")
+            print(f"[MaskingCallbacks] trainer.model.training: {actual_model.training}")
+
+        # Add hooks to trainer.model
+        self.manager = MaskingManager(
+            actual_model,
+            p_apply=self.p_apply,
+            p_channels=self.p_channels,
+            verbose=self.verbose
+        )
+        num_hooks = self.manager.add_masking_to_layers(self.layer_prefixes)
+
+        print(f"[MaskingCallbacks] Added {num_hooks} masking hooks to trainer.model")
+        print(f"[MaskingCallbacks] Layer prefixes: {self.layer_prefixes}")
+        print(f"[MaskingCallbacks] Config: p_apply={self.p_apply}, p_channels={self.p_channels}")
+
+        if num_hooks == 0:
+            print(f"[MaskingCallbacks] WARNING: No hooks added! Check layer_prefixes.")
+
+    def _on_train_epoch_end(self, trainer):
+        """Called at end of each training epoch - log masking stats."""
+        if self.manager and self.verbose:
+            stats = self.manager.get_detailed_stats()
+            agg = stats['aggregate']
+            print(f"[MaskingCallbacks] Epoch end - "
+                  f"mask_applications={agg['total_mask_applications']}, "
+                  f"forward_calls={agg['total_calls']}")
+
+    def _on_train_end(self, trainer):
+        """Called when training ends - print final summary."""
+        if self.manager:
+            self.manager.print_debug_summary()
+
+    def register(self, model) -> "MaskingCallbacks":
+        """
+        Register callbacks with an Ultralytics model.
+
+        Args:
+            model: YOLO or RTDETR model instance
+
+        Returns:
+            self (for chaining)
+        """
+        model.add_callback("on_pretrain_routine_start", self._on_pretrain_routine_start)
+        model.add_callback("on_train_epoch_end", self._on_train_epoch_end)
+        model.add_callback("on_train_end", self._on_train_end)
+        return self
+
+    def get_manager(self) -> Optional[MaskingManager]:
+        """Get the MaskingManager (only available after training starts)."""
+        return self.manager
+
+    def get_stats(self) -> Optional[Dict[str, Any]]:
+        """Get masking statistics (only available after training starts)."""
+        if self.manager:
+            return self.manager.get_detailed_stats()
+        return None
+
+    def print_summary(self):
+        """Print masking summary."""
+        if self.manager:
+            self.manager.print_debug_summary()
+        else:
+            print("[MaskingCallbacks] No stats available - training hasn't started yet")
+
+    def remove_hooks(self):
+        """Remove all hooks (called automatically at end of training)."""
+        if self.manager:
+            self.manager.remove_all_hooks()
 
 
 if __name__ == "__main__":

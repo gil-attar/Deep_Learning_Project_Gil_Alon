@@ -1,114 +1,67 @@
 # Quick Debug Guide for Experiment 3
 
-## Step 1: Pull the code in Colab
+## ROOT CAUSE FOUND - MASKING FIX
+
+The smoke test revealed that **masking hooks were never firing** (0 activations for all S3-S6 sessions).
+
+### The Problem
+When we do:
+```python
+model = YOLO("yolov8m.pt")
+masking_manager = MaskingManager(model.model, ...)  # Add hooks here
+model.train(...)  # But training uses a DIFFERENT model internally!
+```
+
+Ultralytics creates a **separate model object internally** (`trainer.model`) that is used for actual forward passes. Our hooks on `model.model` are never called because training doesn't go through that object.
+
+### The Fix
+We now use **callback-based masking** that adds hooks to `trainer.model` AFTER the trainer is initialized:
+
+```python
+from experiments.Experiment_3.channel_masking import MaskingCallbacks
+
+model = YOLO("yolov8m.pt")
+callbacks = MaskingCallbacks(
+    layer_prefixes=["model.5", "model.6"],
+    p_apply=0.5,
+    p_channels=0.2
+)
+callbacks.register(model)  # Register callbacks
+model.train(...)  # Hooks added via on_pretrain_routine_start callback
+```
+
+## Step 1: Pull the updated code in Colab
 
 ```python
 !cd /content/Deep_Learning_Gil_Alon && git pull
 ```
 
-## Step 2: Add these 4 code blocks to your notebook
+## Step 2: Replace cell-21 with the FIXED training function
 
-### BLOCK 1: Add AFTER cell-6 (after output_dir is defined, NOT after cell-9!)
+The training function has been completely rewritten to use callback-based masking.
 
-**IMPORTANT**: This cell uses `output_dir` and `RUN_ID` which are defined in cell-6.
-Place this IMMEDIATELY after cell-6, before any other imports.
-
-```python
-# ============================================================
-# DEBUG IMPORTS
-# ============================================================
-from experiments.Experiment_3.debug_logger import (
-    ExperimentDebugLogger,
-    verify_data_yaml,
-    verify_labels_exist,
-    verify_occluded_test_data,
-    get_environment_info,
-    analyze_prediction_confidences
-)
-
-# Initialize debug logger
-DEBUG_LOG_DIR = output_dir / "debug_logs"
-debug_logger = ExperimentDebugLogger(DEBUG_LOG_DIR, RUN_ID)
-print(f"Debug logs will be saved to: {DEBUG_LOG_DIR}")
-
-# Log environment
-env_info = get_environment_info()
-debug_logger.log_environment(env_info)
-print(f"GPU: {env_info.get('gpu_name', 'N/A')}")
-```
-
-### BLOCK 2: Add AFTER cell-17 (after creating data.yaml files)
+Copy this ENTIRE cell to replace your existing `train_session_debug` function:
 
 ```python
-# ============================================================
-# DATA VERIFICATION - RUN THIS BEFORE TRAINING!
-# ============================================================
-print("="*70)
-print("DATA VERIFICATION")
-print("="*70)
+# Import the new callback-based masking
+from experiments.Experiment_3.channel_masking import MaskingCallbacks
 
-# 1. Clean training data
-print("\n1. CLEAN TRAINING DATA:")
-clean_info = verify_data_yaml("data/processed/data_clean.yaml")
-print(f"   Path: {clean_info['train_path']}")
-print(f"   Exists: {clean_info['train_exists']}")
-print(f"   Images: {clean_info['num_train_images']}")
-
-clean_labels = verify_labels_exist("data/raw/train/images")
-print(f"   Labels: {clean_labels['total_boxes']} boxes")
-
-# 2. Occluded training data (S2)
-print("\n2. OCCLUDED TRAINING DATA (S2):")
-occ_info = verify_data_yaml("data/processed/data_occ_train.yaml")
-print(f"   Path: {occ_info['train_path']}")
-print(f"   Exists: {occ_info['train_exists']}")
-print(f"   Images: {occ_info['num_train_images']}")
-
-occ_labels = verify_labels_exist("data/occluded_train_040/level_040/images")
-print(f"   Labels dir exists: {occ_labels['labels_dir_exists']}")
-print(f"   Total boxes: {occ_labels['total_boxes']}")
-print(f"   Missing labels: {occ_labels['num_missing_labels']}")
-
-if occ_labels['num_missing_labels'] > 0:
-    print(f"   *** CRITICAL: {occ_labels['num_missing_labels']} images missing labels! ***")
-
-# 3. Occluded test data
-print("\n3. OCCLUDED TEST DATA:")
-occ_test = verify_occluded_test_data("data/synthetic_occlusion/level_040")
-print(f"   Exists: {occ_test['exists']}")
-print(f"   Images: {occ_test.get('num_images', 0)}")
-
-# Summary
-print("\n" + "="*70)
-issues = []
-if occ_labels.get('num_missing_labels', 0) > 0:
-    issues.append(f"Occluded training missing {occ_labels['num_missing_labels']} labels!")
-if not occ_test.get('exists', False):
-    issues.append("Occluded test data not found!")
-
-if issues:
-    print("*** ISSUES FOUND: ***")
-    for issue in issues:
-        print(f"  - {issue}")
-else:
-    print("All checks passed!")
-print("="*70)
-```
-
-### BLOCK 3: REPLACE cell-19 (train_session function)
-
-Replace the entire `train_session` function with this (uses debug logging):
-
-```python
-def train_session(
+def train_session_debug(
     model_name: str,
     session_name: str,
     epochs: int,
     output_dir: Path,
+    debug_logger: ExperimentDebugLogger,
     p_apply: float = 0.5,
-    p_channels: float = 0.2
+    p_channels: float = 0.2,
+    verbose_masking: bool = True
 ) -> dict:
-    """Train a single session with debug logging."""
+    """
+    Train a single session with comprehensive debug logging.
+
+    FIXED: Uses callback-based masking that hooks into trainer.model
+    (the actual model used for forward passes during training).
+    """
     import time
     session_config = get_session_config(session_name)
     run_name = f"{model_name}__{session_name}"
@@ -117,6 +70,8 @@ def train_session(
     print(f"\n{'='*60}")
     print(f"TRAINING: {run_name}")
     print(f"{'='*60}")
+    print(f"Description: {session_config['description']}")
+    print(f"Epochs: {epochs}")
 
     # Start debug logging
     debug_logger.start_session(model_name, session_name)
@@ -124,10 +79,11 @@ def train_session(
     # Check if already completed
     if is_session_complete(output_dir, model_name, session_name):
         print(f"Session already completed. Skipping.")
+        debug_logger.log_warning("Session skipped - already complete")
         debug_logger.end_session(success=True)
         return {"status": "skipped", "run_dir": str(run_dir)}
 
-    # Select data.yaml
+    # Select data.yaml based on session
     if session_config['train_data'] == 'occluded':
         data_yaml = 'data/processed/data_occ_train.yaml'
     else:
@@ -135,7 +91,7 @@ def train_session(
 
     print(f"Data: {data_yaml}")
 
-    # Log data config
+    # Log data configuration
     try:
         data_info = verify_data_yaml(data_yaml)
         debug_logger.log_data_config(
@@ -145,123 +101,199 @@ def train_session(
             num_train_images=data_info['num_train_images'],
             num_val_images=data_info['num_val_images']
         )
+
+        if session_config['train_data'] == 'occluded':
+            if 'occluded' not in data_info['train_path'].lower() and 'occ' not in data_info['train_path'].lower():
+                debug_logger.log_warning(f"S2 should use occluded data but train_path is: {data_info['train_path']}")
     except Exception as e:
-        debug_logger.log_error(f"Failed to verify data: {e}")
+        debug_logger.log_error(f"Failed to verify data.yaml: {e}")
 
     # Load model
     model = get_model(model_name)
 
-    # Setup masking if needed
-    masking_manager = None
+    # Log model architecture (first time only)
+    if session_name == "S1_clean_train":
+        debug_logger.log_model_architecture_check(model_name, model.model)
+
+    # Setup CALLBACK-BASED masking if needed
+    # This is the FIX - hooks are added via callbacks to trainer.model
+    masking_callbacks = None
     mask_location = session_config['mask_location']
 
     if mask_location is not None:
         model_type = get_model_type(model_name)
         layer_prefixes = get_mask_prefixes(model_type, mask_location)
 
-        print(f"Masking: {mask_location} -> {layer_prefixes}")
+        print(f"Masking: {mask_location} -> layers {layer_prefixes}")
+        print(f"Masking params: p_apply={p_apply}, p_channels={p_channels}")
+        print(f"Using CALLBACK-BASED masking (hooks trainer.model)")
 
-        # VERBOSE=True to see if masking fires!
-        masking_manager = MaskingManager(model.model, p_apply, p_channels, verbose=True)
-        num_hooks = masking_manager.add_masking_to_layers(layer_prefixes)
-        print(f"Added {num_hooks} masking hooks")
-
-        hooked_names = [hook.name for _, hook in masking_manager.hooks]
-        debug_logger.log_masking_config(
-            enabled=True, mask_location=mask_location,
-            layer_prefixes=layer_prefixes, p_apply=p_apply,
-            p_channels=p_channels, num_hooks_added=num_hooks,
-            hooked_layer_names=hooked_names
+        # Create callbacks and register with model
+        masking_callbacks = MaskingCallbacks(
+            layer_prefixes=layer_prefixes,
+            p_apply=p_apply,
+            p_channels=p_channels,
+            verbose=verbose_masking
         )
+        masking_callbacks.register(model)
 
-        if num_hooks == 0:
-            debug_logger.log_warning(f"No hooks added for {mask_location}!")
+        debug_logger.log_masking_config(
+            enabled=True,
+            mask_location=mask_location,
+            layer_prefixes=layer_prefixes,
+            p_apply=p_apply,
+            p_channels=p_channels,
+            num_hooks_added=-1,
+            hooked_layer_names=[]
+        )
     else:
+        print("Masking: None")
         debug_logger.log_masking_config(
-            enabled=False, mask_location=None, layer_prefixes=[],
-            p_apply=p_apply, p_channels=p_channels,
-            num_hooks_added=0, hooked_layer_names=[]
+            enabled=False,
+            mask_location=None,
+            layer_prefixes=[],
+            p_apply=p_apply,
+            p_channels=p_channels,
+            num_hooks_added=0,
+            hooked_layer_names=[]
         )
 
-    # Train
+    # Train with timing
     abs_output_dir = output_dir.resolve()
     start_time = time.time()
 
     try:
         results = model.train(
-            data=data_yaml, epochs=epochs, imgsz=IMGSZ, batch=BATCH,
-            patience=PATIENCE, save=True, project=str(abs_output_dir),
-            name=run_name, exist_ok=True, pretrained=True,
-            optimizer='auto', verbose=True, seed=SEED
+            data=data_yaml,
+            epochs=epochs,
+            imgsz=IMGSZ,
+            batch=BATCH,
+            patience=PATIENCE,
+            save=True,
+            project=str(abs_output_dir),
+            name=run_name,
+            exist_ok=True,
+            pretrained=True,
+            optimizer='auto',
+            verbose=True,
+            seed=SEED
         )
 
         training_time = time.time() - start_time
 
-        # Log masking stats
-        if masking_manager:
-            masking_manager.print_debug_summary()
-            stats = masking_manager.get_detailed_stats()
-            debug_logger.log_masking_summary(
-                total_activations=stats['aggregate']['total_mask_applications'],
-                hooked_layers_summary=stats['per_hook']
-            )
-
-        # Mark done
+        # Get masking stats from callbacks
         run_dir = abs_output_dir / run_name
         run_dir.mkdir(parents=True, exist_ok=True)
+
+        if masking_callbacks:
+            stats = masking_callbacks.get_stats()
+            if stats:
+                debug_logger.log_masking_summary(
+                    total_activations=stats['aggregate']['total_mask_applications'],
+                    hooked_layers_summary=stats['per_hook']
+                )
+
+                with open(run_dir / "masking_detailed_stats.json", 'w') as f:
+                    json.dump(stats, f, indent=2)
+
+                manager = masking_callbacks.get_manager()
+                if manager:
+                    with open(run_dir / "masking_summary.json", 'w') as f:
+                        json.dump(manager.get_summary(), f, indent=2)
+            else:
+                debug_logger.log_warning("Masking callbacks did not return stats!")
+
         (run_dir / "DONE").touch()
 
-        if masking_manager:
-            with open(run_dir / "masking_summary.json", 'w') as f:
-                json.dump(masking_manager.get_summary(), f, indent=2)
-
-        debug_logger.log_training_complete(str(run_dir / "weights" / "best.pt"), training_time)
+        debug_logger.log_training_complete(
+            weights_path=str(run_dir / "weights" / "best.pt"),
+            training_time_seconds=training_time
+        )
         debug_logger.end_session(success=True)
 
-        return {"status": "success", "run_dir": str(run_dir), "weights_path": str(run_dir / "weights" / "best.pt")}
+        print(f"\nTraining complete: {run_name}")
+        print(f"Time: {training_time:.1f}s")
+        print(f"Saved to: {run_dir}")
+
+        return {
+            "status": "success",
+            "run_dir": str(run_dir),
+            "weights_path": str(run_dir / "weights" / "best.pt")
+        }
 
     except Exception as e:
         debug_logger.log_error(f"Training failed: {e}", e)
         debug_logger.end_session(success=False)
+
+        print(f"\nTraining FAILED: {run_name}")
+        print(f"Error: {e}")
+
+        run_dir = abs_output_dir / run_name
         run_dir.mkdir(parents=True, exist_ok=True)
         (run_dir / "FAILED").write_text(str(e))
+
         return {"status": "failed", "error": str(e), "run_dir": str(run_dir)}
 
     finally:
-        if masking_manager:
-            masking_manager.remove_all_hooks()
+        if masking_callbacks:
+            masking_callbacks.remove_hooks()
 
-print("Training function defined with debug logging!")
+print("Training function defined (CALLBACK-BASED masking)!")
 ```
 
-### BLOCK 4: Add at END of training loop (cell-21)
-
-Add this at the end of cell-21, after the training loop completes:
-
-```python
-# Finalize debug log
-debug_logger.finalize()
-
-print(f"\n*** Debug logs saved to: {DEBUG_LOG_DIR} ***")
-print("Check debug_log.txt for human-readable summary")
-```
-
-## Step 3: Run Smoke Test (EPOCHS=1)
+## Step 3: Run Another Smoke Test (EPOCHS=1)
 
 1. Set `EPOCHS = 1` in config cell
-2. Use a NEW RUN_ID (not your existing 50-epoch run): comment out the RUN_ID line
-3. Run all cells
-4. Check `debug_logs/debug_log.txt` on your Drive
+2. Use a NEW RUN_ID: `RUN_ID = "E3_SMOKE_TEST_FIX"`
+3. Delete the old E3_SMOKE_TEST folder on Drive (or rename it)
+4. Run all cells
+5. Look for this output during S3-S6 training:
+   ```
+   [MaskingCallbacks] on_pretrain_routine_start
+   [MaskingCallbacks] trainer.model type: <class '...'>
+   [MaskingCallbacks] Added XX masking hooks to trainer.model
+   ```
 
-## What to Look For in debug_log.txt
+## What Success Looks Like
 
-1. **Masking activations** - Should see `total_activations: XXXX` (not 0!) for S3-S6
-2. **Data paths** - S2 should show path containing "occluded"
-3. **Labels** - Should NOT say "missing labels"
-4. **Warnings** - Look for any `*** WARNING ***` messages
+In the POST-TRAINING DEBUG ANALYSIS, you should now see:
 
-## If Smoke Test Looks Good
+```
+1. MASKING ACTIVATION CHECK:
+[N/A]  yolov8m__S1_clean_train: No masking (baseline or S2)
+[N/A]  yolov8m__S2_occ_train: No masking (baseline or S2)
+[OK]   yolov8m__S3_mask_backbone_early: 12,345 mask activations
+[OK]   yolov8m__S4_mask_backbone_late: 23,456 mask activations
+[OK]   yolov8m__S5_mask_neck: 34,567 mask activations
+[OK]   yolov8m__S6_mask_head: 5,678 mask activations
+```
+
+Instead of the previous failure:
+```
+[FAIL] yolov8m__S3_mask_backbone_early: Masking enabled but 0 activations!
+```
+
+## If Smoke Test Shows Masking Working
 
 1. Set `EPOCHS = 50`
-2. Set a new RUN_ID or let it auto-generate
-3. Run full experiment overnight
+2. Set a new RUN_ID for the full run (or let it auto-generate with timestamp)
+3. Run overnight
+
+## Files Changed
+
+1. `experiments/Experiment_3/channel_masking.py` - Added `MaskingCallbacks` class
+2. `experiments/Experiment_3/E3_debug_cells.py` - Updated `train_session_debug` to use callbacks
+3. `experiments/Experiment_3/QUICK_DEBUG_GUIDE.md` - This file
+
+## Technical Details
+
+The key insight is that Ultralytics' training pipeline creates a new model object:
+- `YOLO("model.pt").model` → The model you get when loading
+- `trainer.model` → The model actually used during training forward passes
+
+These can be different objects, especially with features like:
+- Distributed Data Parallel (DDP)
+- Model compilation
+- Internal model copying
+
+By using the `on_pretrain_routine_start` callback, we add hooks to `trainer.model` which is guaranteed to be the model used for forward passes.

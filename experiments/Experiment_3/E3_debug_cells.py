@@ -12,6 +12,10 @@ full debug logging that saves to Google Drive.
 # ADD THIS AFTER YOUR IMPORTS
 # ============================================================
 DEBUG_CELL_IMPORTS = '''
+# Define output_dir first
+output_dir = Path("runs/exp3").resolve()
+output_dir.mkdir(parents=True, exist_ok=True)
+
 # Import debug logger and utilities
 from experiments.Experiment_3.debug_logger import (
     ExperimentDebugLogger,
@@ -25,12 +29,10 @@ from experiments.Experiment_3.channel_masking import MaskingManager
 from PIL import Image
 import glob
 
-# Initialize debug logger (saves to Drive for crash safety)
 DEBUG_LOG_DIR = output_dir / "debug_logs"
 debug_logger = ExperimentDebugLogger(DEBUG_LOG_DIR, RUN_ID)
 print(f"Debug logs will be saved to: {DEBUG_LOG_DIR}")
 
-# Log environment info at the start
 env_info = get_environment_info()
 debug_logger.log_environment(env_info)
 print(f"GPU: {env_info.get('gpu_name', 'N/A')}")
@@ -137,10 +139,21 @@ print("="*70)
 
 
 # ============================================================
-# CELL: Updated train_session function with debug logging
+# CELL: Updated train_session function with CALLBACK-BASED masking
 # REPLACE YOUR EXISTING train_session FUNCTION WITH THIS
+#
+# THE FIX: Ultralytics creates a DIFFERENT model object internally
+# during training (trainer.model). Adding hooks to model.model
+# before calling model.train() doesn't work because the hooks
+# are on the wrong object!
+#
+# SOLUTION: Use Ultralytics callbacks to add hooks to trainer.model
+# AFTER the trainer is initialized.
 # ============================================================
 TRAIN_SESSION_DEBUG = '''
+# Import the new callback-based masking
+from experiments.Experiment_3.channel_masking import MaskingCallbacks
+
 def train_session_debug(
     model_name: str,
     session_name: str,
@@ -149,10 +162,13 @@ def train_session_debug(
     debug_logger: ExperimentDebugLogger,
     p_apply: float = 0.5,
     p_channels: float = 0.2,
-    verbose_masking: bool = True  # Enable verbose mode for first epoch
+    verbose_masking: bool = True
 ) -> dict:
     """
     Train a single session with comprehensive debug logging.
+
+    FIXED: Uses callback-based masking that hooks into trainer.model
+    (the actual model used for forward passes during training).
     """
     import time
     session_config = get_session_config(session_name)
@@ -208,8 +224,9 @@ def train_session_debug(
     if session_name == "S1_clean_train":
         debug_logger.log_model_architecture_check(model_name, model.model)
 
-    # Setup masking if needed
-    masking_manager = None
+    # Setup CALLBACK-BASED masking if needed
+    # This is the FIX - hooks are added via callbacks to trainer.model
+    masking_callbacks = None
     mask_location = session_config['mask_location']
 
     if mask_location is not None:
@@ -218,31 +235,27 @@ def train_session_debug(
 
         print(f"Masking: {mask_location} -> layers {layer_prefixes}")
         print(f"Masking params: p_apply={p_apply}, p_channels={p_channels}")
+        print(f"Using CALLBACK-BASED masking (hooks trainer.model)")
 
-        # Use verbose mode to see if masking fires
-        masking_manager = MaskingManager(
-            model.model,
-            p_apply,
-            p_channels,
+        # Create callbacks and register with model
+        masking_callbacks = MaskingCallbacks(
+            layer_prefixes=layer_prefixes,
+            p_apply=p_apply,
+            p_channels=p_channels,
             verbose=verbose_masking
         )
-        num_hooks = masking_manager.add_masking_to_layers(layer_prefixes)
-        print(f"Added {num_hooks} masking hooks")
+        masking_callbacks.register(model)
 
-        # Log hooked layer names
-        hooked_names = [hook.name for _, hook in masking_manager.hooks]
+        # Log config (hooks will be added when training starts)
         debug_logger.log_masking_config(
             enabled=True,
             mask_location=mask_location,
             layer_prefixes=layer_prefixes,
             p_apply=p_apply,
             p_channels=p_channels,
-            num_hooks_added=num_hooks,
-            hooked_layer_names=hooked_names
+            num_hooks_added=-1,  # Will be set when callbacks fire
+            hooked_layer_names=[]  # Will be populated when callbacks fire
         )
-
-        if num_hooks == 0:
-            debug_logger.log_warning(f"No hooks added for {mask_location}! Check layer prefixes.")
     else:
         print("Masking: None")
         debug_logger.log_masking_config(
@@ -260,9 +273,6 @@ def train_session_debug(
     start_time = time.time()
 
     try:
-        # Log that training is starting
-        debug_logger.log_epoch_start(0, model.model.training)
-
         results = model.train(
             data=data_yaml,
             epochs=epochs,
@@ -281,29 +291,33 @@ def train_session_debug(
 
         training_time = time.time() - start_time
 
-        # Get masking stats BEFORE removing hooks
-        if masking_manager:
-            masking_manager.print_debug_summary()
-            detailed_stats = masking_manager.get_detailed_stats()
-
-            debug_logger.log_masking_summary(
-                total_activations=detailed_stats['aggregate']['total_mask_applications'],
-                hooked_layers_summary=detailed_stats['per_hook']
-            )
-
-            # Save detailed stats to file
-            with open(run_dir / "masking_detailed_stats.json", 'w') as f:
-                json.dump(detailed_stats, f, indent=2)
-
-        # Mark as done
+        # Get masking stats from callbacks
         run_dir = abs_output_dir / run_name
         run_dir.mkdir(parents=True, exist_ok=True)
-        (run_dir / "DONE").touch()
 
-        # Save masking summary
-        if masking_manager:
-            with open(run_dir / "masking_summary.json", 'w') as f:
-                json.dump(masking_manager.get_summary(), f, indent=2)
+        if masking_callbacks:
+            # Callbacks print summary automatically via on_train_end
+            stats = masking_callbacks.get_stats()
+            if stats:
+                debug_logger.log_masking_summary(
+                    total_activations=stats['aggregate']['total_mask_applications'],
+                    hooked_layers_summary=stats['per_hook']
+                )
+
+                # Save detailed stats to file
+                with open(run_dir / "masking_detailed_stats.json", 'w') as f:
+                    json.dump(stats, f, indent=2)
+
+                # Save summary
+                manager = masking_callbacks.get_manager()
+                if manager:
+                    with open(run_dir / "masking_summary.json", 'w') as f:
+                        json.dump(manager.get_summary(), f, indent=2)
+            else:
+                debug_logger.log_warning("Masking callbacks did not return stats!")
+
+        # Mark as done
+        (run_dir / "DONE").touch()
 
         debug_logger.log_training_complete(
             weights_path=str(run_dir / "weights" / "best.pt"),
@@ -328,14 +342,16 @@ def train_session_debug(
         print(f"\\nTraining FAILED: {run_name}")
         print(f"Error: {e}")
 
+        run_dir = abs_output_dir / run_name
         run_dir.mkdir(parents=True, exist_ok=True)
         (run_dir / "FAILED").write_text(str(e))
 
         return {"status": "failed", "error": str(e), "run_dir": str(run_dir)}
 
     finally:
-        if masking_manager:
-            masking_manager.remove_all_hooks()
+        # Cleanup hooks
+        if masking_callbacks:
+            masking_callbacks.remove_hooks()
 '''
 
 
