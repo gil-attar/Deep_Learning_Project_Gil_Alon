@@ -31,18 +31,29 @@ class ChannelMaskingHook:
         self,
         p_apply: float = 0.5,
         p_channels: float = 0.2,
-        name: str = "unnamed"
+        name: str = "unnamed",
+        verbose: bool = False
     ):
         """
         Args:
             p_apply: Probability of applying masking on each forward pass (0-1)
             p_channels: Fraction of channels to zero when masking is applied (0-1)
             name: Layer name for debugging/logging
+            verbose: If True, print when masking is applied (for debugging)
         """
         self.p_apply = p_apply
         self.p_channels = p_channels
         self.name = name
-        self.mask_count = 0  # Track how many times masking was applied
+        self.verbose = verbose
+
+        # Detailed tracking for debugging
+        self.mask_count = 0           # Times masking was actually applied
+        self.call_count = 0           # Total forward pass calls
+        self.skip_not_training = 0    # Skipped because model.training=False
+        self.skip_probability = 0     # Skipped due to probability
+        self.skip_wrong_type = 0      # Skipped due to non-tensor output
+        self.skip_wrong_dims = 0      # Skipped due to wrong dimensions
+        self.channels_masked_total = 0  # Total channels masked across all calls
 
     def __call__(
         self,
@@ -61,21 +72,27 @@ class ChannelMaskingHook:
         Returns:
             Possibly masked output tensor
         """
+        self.call_count += 1
+
         # Only mask during training
         if not module.training:
+            self.skip_not_training += 1
             return output
 
         # Only mask with probability p_apply
         if random.random() > self.p_apply:
+            self.skip_probability += 1
             return output
 
         # Handle different output types
         if not isinstance(output, torch.Tensor):
             # Some layers return tuples or other types - skip masking
+            self.skip_wrong_type += 1
             return output
 
         # Need at least 4 dims for channel masking: [B, C, H, W]
         if output.dim() < 4:
+            self.skip_wrong_dims += 1
             return output
 
         # Apply channel masking
@@ -92,8 +109,28 @@ class ChannelMaskingHook:
 
         # Apply mask (no rescaling - we want information loss)
         self.mask_count += 1
+        self.channels_masked_total += num_to_mask
+
+        # Log first few applications for debugging
+        if self.verbose and self.mask_count <= 3:
+            print(f"[MASK] {self.name}: masked {num_to_mask}/{num_channels} channels "
+                  f"(output shape: {output.shape})")
 
         return output * mask
+
+    def get_stats(self) -> dict:
+        """Get detailed statistics for debugging."""
+        return {
+            "name": self.name,
+            "call_count": self.call_count,
+            "mask_count": self.mask_count,
+            "mask_rate": self.mask_count / max(1, self.call_count),
+            "skip_not_training": self.skip_not_training,
+            "skip_probability": self.skip_probability,
+            "skip_wrong_type": self.skip_wrong_type,
+            "skip_wrong_dims": self.skip_wrong_dims,
+            "channels_masked_total": self.channels_masked_total
+        }
 
 
 class MaskingManager:
@@ -104,16 +141,24 @@ class MaskingManager:
     identified by their name prefixes.
     """
 
-    def __init__(self, model: nn.Module, p_apply: float = 0.5, p_channels: float = 0.2):
+    def __init__(
+        self,
+        model: nn.Module,
+        p_apply: float = 0.5,
+        p_channels: float = 0.2,
+        verbose: bool = False
+    ):
         """
         Args:
             model: The model to add masking to
             p_apply: Probability of applying masking per batch
             p_channels: Fraction of channels to zero when masking
+            verbose: If True, print debugging info when masking fires
         """
         self.model = model
         self.p_apply = p_apply
         self.p_channels = p_channels
+        self.verbose = verbose
         self.hooks = []  # List of (handle, hook_object) tuples
         self.enabled = False
 
@@ -139,11 +184,14 @@ class MaskingManager:
                     hook = ChannelMaskingHook(
                         p_apply=self.p_apply,
                         p_channels=self.p_channels,
-                        name=name
+                        name=name,
+                        verbose=self.verbose
                     )
                     handle = module.register_forward_hook(hook)
                     self.hooks.append((handle, hook))
                     hooks_added += 1
+                    if self.verbose:
+                        print(f"  [HOOK] Added masking hook to: {name} ({type(module).__name__})")
 
         self.enabled = hooks_added > 0
         return hooks_added
@@ -182,6 +230,67 @@ class MaskingManager:
             "total_mask_applications": self.get_mask_count(),
             "hooked_layers": [hook.name for _, hook in self.hooks]
         }
+
+    def get_detailed_stats(self) -> dict:
+        """Get detailed per-hook statistics for debugging."""
+        hook_stats = [hook.get_stats() for _, hook in self.hooks]
+
+        # Aggregate stats
+        total_calls = sum(s["call_count"] for s in hook_stats)
+        total_masks = sum(s["mask_count"] for s in hook_stats)
+        total_skip_not_training = sum(s["skip_not_training"] for s in hook_stats)
+        total_skip_probability = sum(s["skip_probability"] for s in hook_stats)
+        total_skip_wrong_type = sum(s["skip_wrong_type"] for s in hook_stats)
+        total_skip_wrong_dims = sum(s["skip_wrong_dims"] for s in hook_stats)
+
+        return {
+            "enabled": self.enabled,
+            "num_hooks": len(self.hooks),
+            "config": {
+                "p_apply": self.p_apply,
+                "p_channels": self.p_channels
+            },
+            "aggregate": {
+                "total_calls": total_calls,
+                "total_mask_applications": total_masks,
+                "effective_mask_rate": total_masks / max(1, total_calls),
+                "skip_not_training": total_skip_not_training,
+                "skip_probability": total_skip_probability,
+                "skip_wrong_type": total_skip_wrong_type,
+                "skip_wrong_dims": total_skip_wrong_dims
+            },
+            "per_hook": hook_stats
+        }
+
+    def print_debug_summary(self):
+        """Print a human-readable debug summary."""
+        stats = self.get_detailed_stats()
+
+        print("\n" + "="*60)
+        print("MASKING DEBUG SUMMARY")
+        print("="*60)
+        print(f"Enabled: {stats['enabled']}")
+        print(f"Hooks: {stats['num_hooks']}")
+        print(f"Config: p_apply={stats['config']['p_apply']}, p_channels={stats['config']['p_channels']}")
+        print()
+        print("Aggregate Stats:")
+        agg = stats['aggregate']
+        print(f"  Total forward calls: {agg['total_calls']}")
+        print(f"  Masking applied: {agg['total_mask_applications']} ({agg['effective_mask_rate']:.2%})")
+        print(f"  Skipped (not training): {agg['skip_not_training']}")
+        print(f"  Skipped (probability): {agg['skip_probability']}")
+        print(f"  Skipped (wrong type): {agg['skip_wrong_type']}")
+        print(f"  Skipped (wrong dims): {agg['skip_wrong_dims']}")
+
+        if agg['total_mask_applications'] == 0 and stats['enabled']:
+            print()
+            print("*** WARNING: MASKING NEVER ACTIVATED! ***")
+            if agg['skip_not_training'] > 0:
+                print("    -> Model was in eval mode during forward passes")
+            if agg['skip_wrong_dims'] > 0:
+                print("    -> Outputs had wrong dimensions (need 4D: [B,C,H,W])")
+
+        print("="*60)
 
     def __enter__(self):
         """Context manager entry."""
