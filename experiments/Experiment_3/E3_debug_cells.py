@@ -44,6 +44,7 @@ print(f"GPU: {env_info.get('gpu_name', 'N/A')}")
 # ADD THIS BEFORE TRAINING LOOP
 # ============================================================
 VERIFY_DATA_CELL = '''
+import matplotlib.pyplot as plt
 print("="*70)
 print("DATA VERIFICATION (CRITICAL - CHECK THESE BEFORE RUNNING FULL EXPERIMENT)")
 print("="*70)
