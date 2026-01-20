@@ -390,10 +390,14 @@ class MaskingCallbacks:
         self.manager: Optional[MaskingManager] = None
         self._trainer = None
 
-    def _on_pretrain_routine_start(self, trainer):
+    def _on_pretrain_routine_end(self, trainer):
         """
-        Called before training starts but after trainer.model is set up.
-        This is where we add our hooks to the actual training model.
+        Called AFTER the pretrain routine completes - trainer.model is now available.
+
+        NOTE: We use on_pretrain_routine_END (not START) because:
+        - The model is set up DURING the pretrain routine
+        - trainer.model is NOT available at on_pretrain_routine_start
+        - trainer.model IS available at on_pretrain_routine_end
         """
         self._trainer = trainer
 
@@ -401,7 +405,7 @@ class MaskingCallbacks:
         actual_model = trainer.model
 
         if self.verbose:
-            print(f"\n[MaskingCallbacks] on_pretrain_routine_start")
+            print(f"\n[MaskingCallbacks] on_pretrain_routine_end")
             print(f"[MaskingCallbacks] trainer.model type: {type(actual_model)}")
             print(f"[MaskingCallbacks] trainer.model.training: {actual_model.training}")
 
@@ -445,7 +449,7 @@ class MaskingCallbacks:
         Returns:
             self (for chaining)
         """
-        model.add_callback("on_pretrain_routine_start", self._on_pretrain_routine_start)
+        model.add_callback("on_pretrain_routine_end", self._on_pretrain_routine_end)
         model.add_callback("on_train_epoch_end", self._on_train_epoch_end)
         model.add_callback("on_train_end", self._on_train_end)
         return self
