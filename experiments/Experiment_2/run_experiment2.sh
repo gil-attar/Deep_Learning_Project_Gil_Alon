@@ -56,6 +56,42 @@ trap cleanup EXIT
 # --------- HELPERS ---------
 
 # Return 0 if run_summary.json exists AND matches (epochs/imgsz/seed) for this specific run.
+required_artifacts_exist() {
+  local model="$1"
+  local freeze="$2"
+  local epochs="$3"
+  local run_dir="experiments/Experiment_2/runs/${model}/${freeze}/E${epochs}"
+
+  # Contract-required artifacts for E2 (test-only + plots)
+  local req=(
+    "run_manifest.json"
+    "run_summary.json"
+    "train_summary.json"
+    "predictions/test_predictions.json"
+    "eval/test/metrics.json"
+    "eval/test/summary.csv"
+    "weights/best.pt"
+    "weights/last.pt"
+    # plots live under eval/<split>/plots/
+    "eval/test/plots/threshold_sweep.png"
+    "eval/test/plots/per_class_f1.png"
+    "eval/test/plots/confusion_matrix.png"
+    "eval/test/plots/count_mae_comparison.png"
+  )
+
+  for rel in "${req[@]}"; do
+    if [[ ! -f "${run_dir}/${rel}" ]]; then
+      return 1
+    fi
+  done
+
+  # args.yaml can be in one of several acceptable locations
+  if [[ -f "${run_dir}/ultralytics/args.yaml" ]] || [[ -f "${run_dir}/args.yaml" ]]; then
+    return 0
+  fi
+  return 1
+}
+
 is_completed_and_matching() {
   local model="$1"
   local freeze="$2"
@@ -82,6 +118,13 @@ ok = (
 )
 sys.exit(0 if ok else 2)
 PY
+
+  local rc=$?
+  [[ $rc -eq 0 ]] || return 1
+
+  required_artifacts_exist "$model" "$freeze" "$epochs" || return 1
+  return 0
+
 }
 
 archive_if_incomplete() {
