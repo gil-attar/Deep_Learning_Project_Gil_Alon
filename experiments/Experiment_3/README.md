@@ -60,19 +60,19 @@ All sessions use:
 
 | File | Purpose |
 |------|---------|
-| `experiment3_run.ipynb` | Main notebook (run in Colab) |
+| `E3_run_evaluate.ipynb` | Main notebook (run in Colab) |
 | `channel_masking.py` | Forward hook implementation |
 | `mask_presets.py` | Layer definitions & session configs |
 
 ## Running the Experiment
 
 ### Smoke Test (1 epoch)
-1. Open `experiment3_run.ipynb` in Google Colab
+1. Open `E3_run_evaluate.ipynb` in Google Colab
 2. Keep `EPOCHS = 1` in config cell
 3. Run all cells
 
 ### Full Experiment
-1. Open `experiment3_run.ipynb` in Google Colab
+1. Open `E3_run_evaluate.ipynb` in Google Colab
 2. Set `EPOCHS = 50` in config cell
 3. Run all cells (takes several hours)
 
