@@ -1,8 +1,8 @@
-# CNN vs Transformer for Occluded Object Detection
+# which detector “understands the scene” better? CNN detector (YOLOv8m)   VS   Transformer detector (RT-DETR-L)
 
 Deep Learning course project comparing YOLOv8 (CNN) vs RT-DETR (Transformer) architectures for ingredient detection, with focus on occlusion robustness.
 
-**Authors:** Gil & Alon
+**Authors:** Gil Attar & Alon Shorr
 
 ---
 
@@ -11,7 +11,8 @@ Deep Learning course project comparing YOLOv8 (CNN) vs RT-DETR (Transformer) arc
 This project investigates two research questions:
 
 1. **Experiment 1 (Freezing Ladder):** How does the number of trainable layers during fine-tuning affect detection performance?
-2. **Experiment 3 (Channel Masking):** Can internal feature masking during training improve occlusion robustness?
+2. **Experiment 2 (Training Duration):** How does training duration affects performance?
+3. **Experiment 3 (Channel Masking):** Can internal feature masking during training improve occlusion robustness?
 
 ### Models
 - **YOLOv8m** - CNN-based single-stage detector
@@ -28,6 +29,8 @@ This project investigates two research questions:
 
 ```
 Deep_Learning_Gil_Alon/
+├── artifacts/                    # Run data can be stored here (unless storing it on google drive)
+│
 ├── data/
 │   ├── raw/                      # Original dataset (downloaded via script)
 │   └── processed/
@@ -48,14 +51,21 @@ Deep_Learning_Gil_Alon/
 │   │   ├── runOneTest.py
 │   │   └── eval_contract.json
 │   │
+│   ├── Experiment_2/             # Training Duration (see README inside)
+│   │   ├── README.md
+│   │   ├── E2_run_evaluate.ipynb
+│   │   └── runOneTest.py
+│   │
 │   └── Experiment_3/             # Channel Masking (see README inside)
 │       ├── README.md
 │       ├── mask_presets.py
 │       ├── channel_masking.py
 │       └── debug_logger.py
 │
+├── legacy/                       # Legacy files, only for documantation purposes
+│
 ├── notebooks/
-│   └── test_evaluation_system.ipynb
+│   └── evaluation_system_mockup.ipynb  # general pipeline to test data pull & evaluation system
 │
 ├── scripts/
 │   ├── download_dataset.py       # Download from Roboflow
@@ -96,6 +106,7 @@ python scripts/build_evaluation_indices.py \
 Each experiment has its own README with detailed instructions:
 
 - **Experiment 1:** See [experiments/Experiment_1/README.md](experiments/Experiment_1/README.md)
+- **Experiment 2:** See [experiments/Experiment_2/README.md](experiments/Experiment_2/README.md)
 - **Experiment 3:** See [experiments/Experiment_3/README.md](experiments/Experiment_3/README.md)
 
 Experiments are designed to run in **Google Colab** with GPU acceleration.
@@ -142,18 +153,28 @@ print(f"Best F1: {max(r['f1'] for r in results.values())}")
 
 **Key Finding:** F2 (partial fine-tuning) achieved best balance of performance and generalization.
 
+### Experiment 2: Training Duration
+
+**Question:** How does training duration affects performance?
+
+| Epochs | Purpose |
+|--------|---------|
+| 5, 10, 20, 40, 80 | Compare convergence and generalization |
+
+**Key Finding:** Transformer can reach the same results as CNN but it takes more epochs.
+
 ### Experiment 3: Channel Masking vs Occlusion Training
 
 **Question:** Can masking feature channels simulate occlusion robustness?
 
 | Session | Training Data | Masking Location |
 |---------|---------------|------------------|
-| S1 | Clean | None (baseline) |
-| S2 | 40% Occluded | None |
-| S3 | Clean | Backbone Early |
-| S4 | Clean | Backbone Late |
-| S5 | Clean | Neck |
-| S6 | Clean | Head |
+| S1      | Clean         | None (baseline)  |
+| S2      | 40% Occluded  | None             |
+| S3      | Clean         | Backbone Early   |
+| S4      | Clean         | Backbone Late    |
+| S5      | Clean         | Neck             |
+| S6      | Clean         | Head             |
 
 **Key Finding:** Channel masking does NOT improve occlusion robustness. S2 (occluded training) achieved 81% F1 on occluded images but exhibited catastrophic forgetting on clean images.
 
