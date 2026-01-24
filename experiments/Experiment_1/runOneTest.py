@@ -24,7 +24,7 @@ import sys
 import time
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Callable
 
 import yaml  # pip install pyyaml
 import torch
@@ -204,10 +204,54 @@ def apply_freeze(ultra_model, model_key: str, freeze_id: str) -> Dict[str, Any]:
 # -----------------------------------------------------------------------------
 # Train + Ultralytics sanity eval
 # -----------------------------------------------------------------------------
-def train_one(ultra_model, save_dir: Path, epochs: int, imgsz: int, seed: int) -> Dict[str, Any]:
+
+
+def register_freeze_callbacks(ultra_model, model_key: str, freeze_id: str, save_dir: Path) -> None:
+    """
+    Ultralytics may swap/recreate the nn.Module inside train(). To preserve *our* freeze regime,
+    re-apply the freeze preset onto the Trainer's live model at the earliest callback hooks.
+
+    Writes runs/<model>/<freeze_id>/freeze_debug.json as definitive evidence of the effective freeze.
+    """
+    presets = get_presets(model_key)
+    if freeze_id not in presets:
+        raise ValueError(f"freeze_id={freeze_id} not in presets={list(presets.keys())}")
+    prefixes = presets[freeze_id]
+
+    def _apply(trainer):
+        torch_model = getattr(trainer, "model", None)
+        if torch_model is None:
+            return
+
+        unfreeze_by_prefixes(torch_model, prefixes)
+        pc = count_params(torch_model)
+
+        dbg = {
+            "event": "freeze_applied_via_callback",
+            "model_key": model_key,
+            "freeze_id": freeze_id,
+            "prefixes": list(prefixes),
+            "param_counts": pc,
+            "trainer_model_id": int(id(torch_model)),
+        }
+        save_json(save_dir / "freeze_debug.json", dbg)
+
+    # Prefer the earliest hook to affect optimizer construction; keep a fallback.
+    if hasattr(ultra_model, "add_callback"):
+        ultra_model.add_callback("on_pretrain_routine_start", _apply)
+        ultra_model.add_callback("on_train_start", _apply)
+    else:
+        cbs = getattr(ultra_model, "callbacks", None)
+        if isinstance(cbs, dict):
+            cbs.setdefault("on_pretrain_routine_start", []).append(_apply)
+            cbs.setdefault("on_train_start", []).append(_apply)
+def train_one(ultra_model, model_key: str, freeze_id: str, save_dir: Path, epochs: int, imgsz: int, seed: int) -> Dict[str, Any]:
     save_dir.mkdir(parents=True, exist_ok=True)
     project = str(save_dir.parent)
     name = str(save_dir.name)
+
+    # Critical: enforce our freeze regime on the Trainer's live model (Ultralytics may recreate it inside train()).
+    register_freeze_callbacks(ultra_model, model_key=model_key, freeze_id=freeze_id, save_dir=save_dir)
 
     results = ultra_model.train(
         data=str(DATA_YAML),
@@ -221,6 +265,12 @@ def train_one(ultra_model, save_dir: Path, epochs: int, imgsz: int, seed: int) -
 
     out: Dict[str, Any] = {"status": "ok"}
     out["results_dict"] = getattr(results, "results_dict", None)
+
+    # Best-effort: capture effective param counts from the trainer's model (post-callback).
+    trainer = getattr(ultra_model, "trainer", None)
+    if trainer is not None and getattr(trainer, "model", None) is not None:
+        out["effective_param_counts"] = count_params(trainer.model)
+
     return out
 
 
@@ -533,8 +583,13 @@ def run(model_name: str, freeze_id: str, epochs: int, imgsz: int, seed: int) -> 
     save_json(run_dir / "run_manifest.json", manifest)
 
     # Train
-    train_summary = train_one(ultra_model, save_dir=run_dir, epochs=epochs, imgsz=imgsz, seed=seed)
+    train_summary = train_one(ultra_model, model_key=model_key, freeze_id=freeze_id, save_dir=run_dir, epochs=epochs, imgsz=imgsz, seed=seed)
     save_json(run_dir / "train_summary.json", train_summary)
+
+    # If available, persist the *effective* param counts that were applied inside Ultralytics Trainer.
+    if isinstance(train_summary, dict) and train_summary.get("effective_param_counts") is not None:
+        manifest["param_counts"] = train_summary["effective_param_counts"]
+        save_json(run_dir / "run_manifest.json", manifest)
     cuda_cleanup()
 
     # Ultralytics sanity val/test (optional but kept)
