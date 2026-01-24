@@ -48,7 +48,7 @@ data/processed/evaluation/
 
 ## Step 2: Train Your Model
 
-Train however you want. Save the best weights.
+Train using the experiment notebooks in `experiments/`. Each experiment saves weights to Google Drive.
 
 ---
 
@@ -93,7 +93,7 @@ pred_json = {
     "predictions": predictions
 }
 
-with open('evaluation/metrics/my_experiment_test_predictions.json', 'w') as f:
+with open('predictions.json', 'w') as f:
     json.dump(pred_json, f, indent=2)
 ```
 
@@ -107,14 +107,14 @@ with open('evaluation/metrics/my_experiment_test_predictions.json', 'w') as f:
 
 ```bash
 python scripts/evaluate_run.py \
-    --predictions evaluation/metrics/my_experiment_test_predictions.json \
+    --predictions predictions.json \
     --ground_truth data/processed/evaluation/test_index.json \
-    --output_dir evaluation/results/my_experiment/test/ \
+    --output_dir results/ \
     --run_name "My Experiment" \
     --conf_thresholds 0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8
 ```
 
-### Option B: Notebook
+### Option B: In Notebook (used by experiments)
 
 ```python
 from evaluation.io import load_predictions, load_ground_truth, load_class_names
@@ -126,7 +126,7 @@ from evaluation.metrics import (
 from evaluation.plots import plot_all_metrics
 
 # Load
-preds = load_predictions("evaluation/metrics/my_experiment_test_predictions.json")
+preds = load_predictions("predictions.json")
 gts = load_ground_truth("data/processed/evaluation/test_index.json")
 class_names = load_class_names("data/processed/evaluation/test_index.json")
 
@@ -141,7 +141,7 @@ plot_all_metrics(
     per_class_results=per_class['per_class'],
     confusion_data=per_class,
     counting_results=counting,
-    output_dir="evaluation/results/my_experiment/test/",
+    output_dir="results/",
     run_name="My Experiment"
 )
 ```
@@ -151,7 +151,7 @@ plot_all_metrics(
 ## Output Files
 
 ```
-evaluation/results/my_experiment/test/
+results/
 ├── metrics.json              # All metrics
 ├── summary.csv               # Quick table
 ├── threshold_sweep.png       # P/R/F1 vs confidence
@@ -159,16 +159,6 @@ evaluation/results/my_experiment/test/
 ├── confusion_matrix.png      # Class confusions
 └── count_mae_comparison.png  # Counting accuracy
 ```
-
----
-
-## File Locations Summary
-
-| What | Where |
-|------|-------|
-| Ground truth indices | `data/processed/evaluation/*_index.json` |
-| Prediction JSONs | `evaluation/metrics/{experiment}_predictions.json` |
-| Results & plots | `evaluation/results/{experiment}/` |
 
 ---
 
@@ -181,46 +171,6 @@ evaluation/results/my_experiment/test/
 
 ---
 
-## Threshold Selection Protocol
-
-```python
-# 1. Evaluate validation set
-val_results = eval_detection_prf_at_iou(val_preds, val_gts,
-    conf_thresholds=[0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8])
-
-# 2. Find best threshold
-best_thr = max(val_results.keys(), key=lambda k: val_results[k]['f1'])
-
-# 3. Report test set at that threshold
-test_results = eval_detection_prf_at_iou(test_preds, test_gts,
-    conf_thresholds=[best_thr])
-```
-
----
-
-## Test the System
-
-Run the test notebook:
-```bash
-# In Google Colab or locally
-notebooks/test_evaluation_system.ipynb
-```
-
-This downloads data, trains a small model, and runs the full evaluation.
-
----
-
-## Troubleshooting
-
-| Error | Solution |
-|-------|----------|
-| `FileNotFoundError: predictions` | Run inference first, save predictions JSON |
-| `Predictions count != GT count` | Check image_ids match between files |
-| `Import error: evaluation` | Run from project root directory |
-| `All zeros in results` | Check bbox format (must be xyxy pixels, not normalized) |
-
----
-
 ## Full Documentation
 
 See [README_METRICS.md](README_METRICS.md) for:
@@ -228,7 +178,3 @@ See [README_METRICS.md](README_METRICS.md) for:
 - Matching algorithm explanation
 - JSON format specifications
 - FAQ
-
----
-
-Good luck with your experiments!

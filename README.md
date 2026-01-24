@@ -32,17 +32,21 @@ Deep_Learning_Gil_Alon/
 ├── artifacts/                    # Run data can be stored here (unless storing it on google drive)
 │
 ├── data/
-│   ├── raw/                      # Original dataset (downloaded via script)
+│   ├── raw/                      # Original dataset (downloaded when running experiments)
 │   └── processed/
 │       ├── evaluation/           # Ground truth indices (train/val/test_index.json)
 │       └── splits/               # Split manifest for reproducibility
 │
 ├── evaluation/                   # Custom evaluation pipeline
-│   ├── __init__.py
-│   ├── io.py                     # Load predictions and ground truth
-│   ├── matching.py               # IoU-based prediction-to-GT matching
+│   ├── __init__.py               # Python package initialization
+│   ├── io.py                     # Load/save predictions and ground truth
+│   ├── matching.py               # IoU computation and greedy matching
 │   ├── metrics.py                # P/R/F1, per-class metrics, counting MAE
-│   └── plots.py                  # Visualization functions
+│   ├── plots.py                  # Visualization functions
+│   ├── plots/                    # Empty placeholder (plots saved to results dir)
+│   ├── QUICK_START.md           # Updated - quick reference guide
+│   ├── README_METRICS.md        # Updated - full documentation
+│   └── evaluation_summery.txt   # Updated - module overview
 │
 ├── experiments/
 │   ├── Experiment_1/             # Freezing Ladder (see README inside)
@@ -58,19 +62,26 @@ Deep_Learning_Gil_Alon/
 │   │
 │   └── Experiment_3/             # Channel Masking (see README inside)
 │       ├── README.md
+│       ├── E3_full_run/
+│       │   ├── E3_run_evaluate_FINAL_RUN.ipynb       # Final full run
+│       │   └── E3_run_evaluate_S2_DEBUGCHECK.ipynb   # Debug run (S2 only - proves domain shift)
+│       ├── E3_run_evaluate.ipynb
 │       ├── mask_presets.py
 │       ├── channel_masking.py
 │       └── debug_logger.py
 │
-├── legacy/                       # Legacy files, only for documantation purposes
+├── legacy/                       # Legacy dir, only for documantation purposes
 │
 ├── notebooks/
 │   └── evaluation_system_mockup.ipynb  # general pipeline to test data pull & evaluation system
 │
 ├── scripts/
-│   ├── download_dataset.py       # Download from Roboflow
-│   ├── build_evaluation_indices.py
-│   └── generate_synthetic_occlusions.py
+│   ├── download_dataset.py           # Download dataset from Roboflow
+│   ├── build_evaluation_indices.py   # Create train/val/test index JSONs
+│   ├── create_data_yaml.py           # Create data.yaml for Ultralytics
+│   ├── generate_synthetic_occlusions.py  # Create occluded test sets (E3)
+│   ├── evaluate_run.py               # Standalone evaluation from predictions
+│   └── fetch_weights.sh              # Download pretrained model weights
 │
 ├── requirements.txt
 └── README.md

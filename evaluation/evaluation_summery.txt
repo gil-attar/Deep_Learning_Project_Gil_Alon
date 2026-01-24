@@ -1,4 +1,5 @@
-Core Evaluation Module (evaluation/)
+Evaluation Module Summary
+=========================
 
 1. io.py - Load & Save Data
    load_predictions() - Reads prediction JSON → returns list of dicts
@@ -9,15 +10,15 @@ Core Evaluation Module (evaluation/)
 2. matching.py - Box Matching Logic
    compute_iou() - IoU between two boxes (intersection/union)
    greedy_match_boxes() - Match preds to GT:
-   Compute all IoU pairs
-   Sort by IoU descending
-   Greedily assign (highest IoU first, one-to-one)
-   Return: matches, unmatched_preds (FP), unmatched_gts (FN)
+     - Compute all IoU pairs
+     - Sort by IoU descending
+     - Greedily assign (highest IoU first, one-to-one)
+     - Return: matches, unmatched_preds (FP), unmatched_gts (FN)
    match_predictions_to_ground_truth() - Run matching across all images, per-class
 
 3. metrics.py - The 3 Main Metrics
    eval_detection_prf_at_iou() - Loop over conf_thresholds, match boxes, count TP/FP/FN, compute P/R/F1
-   eval_per_class_metrics_and_confusions() - Same matching, but group by class; build confusion matrix from matched pairs
+   eval_per_class_metrics_and_confusions() - Same matching, but group by class; build confusion matrix
    eval_counting_quality() - Count objects per class (matched vs all), compute MAE per image
 
 4. plots.py - Visualization
@@ -26,59 +27,38 @@ Core Evaluation Module (evaluation/)
    plot_confusion_matrix() - Heatmap with annotations
    plot_count_mae_comparison() - Bar chart: matched vs all
    plot_all_metrics() - Calls all 4 above in one function
-   Scripts (scripts/)
+
+Scripts
+-------
 
 5. build_evaluation_indices.py - Generate GT Indices
-   Loops over train/valid/test folders
-   For each image:
-   Parse YOLO label file → bbox + class
-   Compute max pairwise IoU → assign difficulty (easy/medium/hard)
-   Build JSON with all images + metadata
-   Saves: train_index.json, val_index.json, test_index.json
+   - Loops over train/valid/test folders
+   - For each image: parse YOLO label → bbox + class
+   - Compute max pairwise IoU → assign difficulty (easy/medium/hard)
+   - Saves: train_index.json, val_index.json, test_index.json
 
 6. evaluate_run.py - CLI Evaluation
-   Parse command-line args (paths, thresholds)
-   Load predictions + GT
-   Call all 3 metric functions
-   Save results JSON + CSV
-   Generate all 4 plots
-   Print summary to console
-   Notebook (notebooks/)
+   - Parse command-line args (paths, thresholds)
+   - Load predictions + GT
+   - Call all 3 metric functions
+   - Save results JSON + CSV
+   - Generate all 4 plots
 
-7. test_evaluation_system.ipynb - Quick Test
-   Trains YOLOv8n for 5 epochs (just for testing!)
-   Runs inference → saves predictions JSON
-   Calls all 3 metrics
-   Generates plots
-   Tests CLI script
-   Purpose: Make sure nothing breaks before real experiments
-   Documentation (evaluation/)
+How It All Flows
+----------------
 
-8. README_METRICS.md - Full Docs
-   Explains what TP/FP/FN mean
-   Matching algorithm details
-   How to use train/val/test correctly
-   JSON format specs
-   FAQ
+1. build_evaluation_indices.py
+   → Creates train/val/test_index.json
 
-9. QUICK_START.md - Cheat Sheet
-   3-step quickstart
-   Example commands
-   Typical workflow
-   Troubleshooting
+2. Train model → save predictions.json
+   (Your training code in experiments/)
 
-How It All Flows:
-   1. build_evaluation_indices.py
-      → Creates train/val/test_index.json
+3. evaluate_run.py (or notebook)
+   → Loads predictions + GT (io.py)
+   → Matches boxes (matching.py)
+   → Computes metrics (metrics.py)
+   → Generates plots (plots.py)
+   → Saves results
 
-   2. Train model → save predictions.json
-      (Your training code)
-
-   3. evaluate_run.py
-      → Loads predictions + GT (io.py)
-      → Matches boxes (matching.py)
-      → Computes metrics (metrics.py)
-      → Generates plots (plots.py)
-      → Saves results
-   
-Key idea: Separate inference (slow, needs GPU) from evaluation (fast, CPU). Save predictions once, evaluate many times with different settings!
+Key idea: Separate inference (slow, needs GPU) from evaluation (fast, CPU).
+Save predictions once, evaluate many times with different settings!

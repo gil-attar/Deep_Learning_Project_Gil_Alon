@@ -1,122 +1,111 @@
-# Experiment 3: Internal Masking vs Occlusion Training
+# Experiment 3: Channel Masking vs Occlusion Training
 
-## Goal
-Test whether **internal channel masking during training** can improve robustness to occlusions, as an alternative to training on occluded images.
+## Research Question
+**Can internal feature channel masking during training improve robustness to occlusions, as an alternative to training on occluded images?**
 
 ## Hypothesis
 Randomly zeroing feature channels during training may force the network to learn redundant representations, improving robustness to partial occlusions at test time — similar to how Dropout improves generalization.
 
-## Experimental Design
+## Method
 
 ### Sessions (6 per model)
-| Session | Training Data | Masking Location | Description |
-|---------|---------------|------------------|-------------|
-| S1 | Clean | None | Baseline (no augmentation) |
-| S2 | Occluded (40%) | None | Standard practice (train on occluded images) |
-| S3 | Clean | backbone_early | Mask early backbone layers |
-| S4 | Clean | backbone_late | Mask late backbone layers |
-| S5 | Clean | neck | Mask neck/FPN layers |
-| S6 | Clean | head | Mask detection head |
+| Session | Training Data | Masking Location | Description                     |
+|---------|---------------|------------------|---------------------------------|
+| S1      | Clean         | None             | Baseline (no augmentation)      |
+| S2      | Occluded (40%)| None             | Standard occlusion augmentation |
+| S3      | Clean         | backbone_early   | Mask early backbone layers      |
+| S4      | Clean         | backbone_late    | Mask late backbone layers       |
+| S5      | Clean         | neck             | Mask neck/FPN layers            |
+| S6      | Clean         | head             | Mask detection head             |
 
 ### Models
 - **YOLOv8m** (CNN-based detector)
 - **RT-DETR-L** (Transformer-based detector)
 
 ### Evaluation
-All models tested on:
-- `test_clean` — original test images
-- `test_occluded` — same test images with 40% synthetic occlusion
+All models evaluated on:
+- **test_clean** — original test images
+- **test_occluded** — same images with 40% synthetic occlusion
 
 ## Implementation Details
 
-### Channel Masking
-- **Type**: Channel-wise zeroing (not element-wise dropout)
-- **p_apply = 0.5**: 50% of batches have masking applied
-- **p_channels = 0.2**: 20% of channels zeroed when masking is active
-- **Training only**: Masking disabled during evaluation (`model.eval()`)
+### Channel Masking Parameters
+- **p_apply = 0.3**: 30% of batches have masking applied
+- **p_channels = 0.1**: 10% of channels zeroed when masking is active
+- **Training only**: Masking disabled during evaluation
+**stronger masking may cause 0 detections**
 
 ### Layer Boundaries
-Based on architecture analysis from Experiment 1:
-
-**YOLOv8:**
+**YOLOv8m:**
 - backbone_early: `model.0` – `model.4`
 - backbone_late: `model.5` – `model.9`
 - neck: `model.10` – `model.21`
 - head: `model.22`
 
-**RT-DETR:**
+**RT-DETR-L:**
 - backbone_early: `model.0` – `model.5`
 - backbone_late: `model.6` – `model.11`
 - neck: `model.12` – `model.27`
 - head: `model.28`
 
-### Dataset Consistency
-All sessions use:
-- Same train/val/test split
-- Same occluded images (seed=42)
-- Same training seed (42)
-
 ## Files
 
 | File | Purpose |
-|------|---------|
-| `E3_run_evaluate.ipynb` | Main notebook (run in Colab) |
+|-------------------------|---------|
+| `E3_run_evaluate.ipynb` | Main notebook (run in Google Colab) |
 | `channel_masking.py` | Forward hook implementation |
 | `mask_presets.py` | Layer definitions & session configs |
+| `debug_logger.py` | Debug logging utilities |
+
+### Completed Run Notebooks
+| File | Purpose |
+|------|---------|
+| `E3_full_run/E3_run_evaluate_FINAL_RUN.ipynb` | Full experiment run with all sessions (S1-S6) |
+| `E3_full_run/E3_run_evaluate_S2_DEBUGCHECK.ipynb` | S2-only re-run to verify domain shift behavior |
 
 ## Running the Experiment
 
-### Smoke Test (1 epoch)
 1. Open `E3_run_evaluate.ipynb` in Google Colab
-2. Keep `EPOCHS = 1` in config cell
+2. Configure parameters in the config cell:
+   - `EPOCHS = 50` for full experiment
+   - `DRY_RUN = False`
 3. Run all cells
 
-### Full Experiment
-1. Open `E3_run_evaluate.ipynb` in Google Colab
-2. Set `EPOCHS = 50` in config cell
-3. Run all cells (takes several hours)
-
 ### Resume After Disconnect
-1. Check `LATEST_E3_RUN_ID.txt` on your Google Drive for the RUN_ID
-2. Uncomment and set `RUN_ID = "E3_..."` in the config cell
-3. Re-run all cells — completed sessions are automatically skipped
-
-### RUN_ID Behavior
-| Scenario | RUN_ID | Behavior |
-|----------|--------|----------|
-| Smoke test (EPOCHS=1) | `E3_SMOKE_TEST` (fixed) | Separate folder, won't interfere with full run |
-| Full run (EPOCHS=50) | `E3_20240117_...` (timestamp) | New unique folder each time |
-| Resume (manual) | Whatever you set | Looks for existing DONE markers |
+1. Check `LATEST_E3_RUN_ID.txt` on your Google Drive
+2. Set `PREVIOUS_RUN_ID = "E3_..."` in the config cell
+3. Re-run — completed sessions are automatically skipped
 
 ## Output Structure
 ```
 /content/drive/MyDrive/Colab_Outputs/Deep_Learning_Project_Gil_Alon/<RUN_ID>/
-├── RUN_ID.txt                    # Contains RUN_ID for resume
 ├── E3_runs/
 │   ├── yolov8m__S1_clean_train/
 │   │   ├── weights/best.pt
-│   │   ├── DONE
 │   │   └── results.csv
 │   ├── yolov8m__S2_occ_train/
 │   │   └── ...
-│   ├── evaluations/
-│   │   ├── yolov8m__S1_clean_train__test_clean/
-│   │   │   └── metrics.json
-│   │   └── ...
-│   ├── all_metrics.json
-│   ├── summary_metrics.csv
-│   └── plots/
-│       ├── comparison_f1_clean.png
-│       └── comparison_f1_occluded.png
-└── LATEST_E3_RUN_ID.txt          # Easy lookup for resume
+│   └── ...
+├── _plots/
+│   ├── comparison_f1_clean.png
+│   └── comparison_f1_occluded.png
+└── all_results.json
 ```
 
-## Key Metrics
-- **F1 Score** at optimal confidence threshold
-- **Precision / Recall**
-- **Count MAE** (ingredient counting error)
+## Key Results
 
-## Expected Insights
-1. Does masking at any location match or exceed training on occluded images?
-2. Which masking location (backbone vs neck vs head) is most effective?
-3. Do CNN (YOLO) and Transformer (RT-DETR) respond differently to masking?
+### Channel Masking Does NOT Improve Occlusion Robustness
+
+**Key Findings:**
+1. **Channel masking (S3-S6)** provides no improvement over baseline (S1) on occluded images
+2. **Occlusion training (S2)** dramatically improves occluded performance (81% F1) but causes **catastrophic forgetting** on clean images (3% F1)
+3. **Domain shift confirmed**: S2 models detect 15x more objects on occluded vs clean images
+
+### Why S2 Shows Domain Shift
+- Model trained exclusively on 40% occluded images
+- Learns occlusion-specific features (black grid patterns)
+- Completely fails on clean images (different visual domain)
+- This is expected behavior, not a bug
+
+## Conclusion
+Channel masking at any network depth does not simulate occlusion robustness. True occlusion robustness requires exposure to occluded training data, but this creates a trade-off with clean image performance. A mixed training approach (clean + occluded) would be needed to maintain both capabilities.

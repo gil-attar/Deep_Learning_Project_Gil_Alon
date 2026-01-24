@@ -4,16 +4,14 @@ This document explains the evaluation system for the CNN vs Transformer object d
 
 ---
 
-## Overview: JSON Files & Workflow
-
-### Complete Workflow
+## Overview: Workflow
 
 ```
 1. BUILD INDICES (run ONCE before experiments)
    python scripts/build_evaluation_indices.py
 
 2. TRAIN MODEL (your experiment)
-   → saves weights to models/
+   → saves weights to Google Drive
 
 3. GENERATE PREDICTIONS (run after training)
    Run inference, save detections to JSON
@@ -21,29 +19,6 @@ This document explains the evaluation system for the CNN vs Transformer object d
 4. EVALUATE (run to get metrics & plots)
    python scripts/evaluate_run.py
 ```
-
-### JSON Files Created
-
-| File | Location | When Created | Purpose |
-|------|----------|--------------|---------|
-| `train_index.json` | `data/processed/evaluation/` | Once (Step 1) | Ground truth for train set |
-| `val_index.json` | `data/processed/evaluation/` | Once (Step 1) | Ground truth for val set |
-| `test_index.json` | `data/processed/evaluation/` | Once (Step 1) | Ground truth for test set |
-| `{experiment}_predictions.json` | `evaluation/metrics/` | Per experiment (Step 3) | Model predictions |
-| `metrics.json` | `evaluation/results/{experiment}/` | Per evaluation (Step 4) | Computed metrics |
-| `summary.csv` | `evaluation/results/{experiment}/` | Per evaluation (Step 4) | Quick table view |
-
-### What About Legacy Files?
-
-**We do NOT use legacy files.** The following are from old notebooks (02, 04) and use Ultralytics' built-in evaluation:
-
-```
-evaluation/metrics/baseline_yolo_*.json    ← Legacy, don't use
-evaluation/metrics/baseline_rtdetr_*.json  ← Legacy, don't use
-evaluation/metrics/e3_*.json               ← Legacy, don't use
-```
-
-Our new system computes metrics ourselves for more control and transparency.
 
 ---
 
@@ -98,7 +73,7 @@ python scripts/build_evaluation_indices.py \
 
 ## Step 2: Train Your Model
 
-Train however you want (notebook, script, etc.). Save the best weights.
+Train using the experiment notebooks in `experiments/`. Save the best weights.
 
 ---
 
@@ -156,22 +131,13 @@ pred_json = {
     "run_id": "YOUR_EXPERIMENT_NAME",
     "split": "test",
     "model_family": "yolo",  # or "rtdetr"
-    "model_name": "yolov8n",
-    "inference_settings": {
-        "conf_threshold": 0.01,
-        "iou_threshold": 0.50,
-        "imgsz": 640
-    },
     "predictions": predictions
 }
 
-output_path = "evaluation/metrics/YOUR_EXPERIMENT_test_predictions.json"
-Path(output_path).parent.mkdir(parents=True, exist_ok=True)
-
-with open(output_path, 'w') as f:
+with open('predictions.json', 'w') as f:
     json.dump(pred_json, f, indent=2)
 
-print(f"Saved predictions to {output_path}")
+print(f"Saved predictions to predictions.json")
 ```
 
 **Predictions Format:**
@@ -180,12 +146,6 @@ print(f"Saved predictions to {output_path}")
   "run_id": "e1_freeze_backbone_50epochs",
   "split": "test",
   "model_family": "yolo",
-  "model_name": "yolov8n_frozen_backbone",
-  "inference_settings": {
-    "conf_threshold": 0.01,
-    "iou_threshold": 0.50,
-    "imgsz": 640
-  },
   "predictions": [
     {
       "image_id": "image_001",
@@ -211,14 +171,14 @@ print(f"Saved predictions to {output_path}")
 
 ```bash
 python scripts/evaluate_run.py \
-    --predictions evaluation/metrics/YOUR_EXPERIMENT_test_predictions.json \
+    --predictions predictions.json \
     --ground_truth data/processed/evaluation/test_index.json \
-    --output_dir evaluation/results/YOUR_EXPERIMENT/test/ \
+    --output_dir results/ \
     --run_name "Your Experiment Name" \
     --conf_thresholds 0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8
 ```
 
-### Option B: Notebook
+### Option B: In Notebook
 
 ```python
 from evaluation.io import load_predictions, load_ground_truth, load_class_names
@@ -230,7 +190,7 @@ from evaluation.metrics import (
 from evaluation.plots import plot_all_metrics
 
 # Load data
-preds = load_predictions("evaluation/metrics/YOUR_EXPERIMENT_test_predictions.json")
+preds = load_predictions("predictions.json")
 gts = load_ground_truth("data/processed/evaluation/test_index.json")
 class_names = load_class_names("data/processed/evaluation/test_index.json")
 
@@ -245,14 +205,14 @@ plot_all_metrics(
     per_class_results=per_class['per_class'],
     confusion_data=per_class,
     counting_results=counting,
-    output_dir="evaluation/results/YOUR_EXPERIMENT/test/",
+    output_dir="results/",
     run_name="Your Experiment"
 )
 ```
 
 ### Output Files
 
-After evaluation, you'll find in `evaluation/results/YOUR_EXPERIMENT/`:
+After evaluation, you'll find:
 
 | File | Description |
 |------|-------------|
@@ -272,14 +232,14 @@ After evaluation, you'll find in `evaluation/results/YOUR_EXPERIMENT/`:
 **Purpose:** Evaluate box-level correctness across confidence thresholds.
 
 **Definitions:**
-- **True Positive (TP):** Prediction matched to GT with IoU ≥ 0.5
+- **True Positive (TP):** Prediction matched to GT with IoU >= 0.5
 - **False Positive (FP):** Prediction with no matching GT
 - **False Negative (FN):** GT with no matching prediction
 
 **Formulas:**
 - Precision = TP / (TP + FP)
 - Recall = TP / (TP + FN)
-- F1 = 2 × P × R / (P + R)
+- F1 = 2 x P x R / (P + R)
 
 **Output:** Results at multiple confidence thresholds to find the optimal operating point.
 
@@ -291,7 +251,7 @@ After evaluation, you'll find in `evaluation/results/YOUR_EXPERIMENT/`:
 
 **Confusion Matrix:**
 - Rows = True class, Columns = Predicted class
-- Only includes matched detections (IoU ≥ threshold)
+- Only includes matched detections (IoU >= threshold)
 - Diagonal = correct class predictions
 - Off-diagonal = class confusions
 
@@ -307,29 +267,6 @@ After evaluation, you'll find in `evaluation/results/YOUR_EXPERIMENT/`:
 
 ---
 
-## Threshold Selection Protocol
-
-**IMPORTANT:** Use validation set for threshold selection, test set for final reporting only.
-
-### Correct Workflow:
-
-```python
-# 1. Evaluate validation set at multiple thresholds
-val_results = eval_detection_prf_at_iou(val_preds, val_gts,
-    conf_thresholds=[0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8])
-
-# 2. Find best threshold on validation
-best_threshold = max(val_results.keys(), key=lambda k: val_results[k]['f1'])
-
-# 3. Report test set metrics at that threshold
-test_results = eval_detection_prf_at_iou(test_preds, test_gts,
-    conf_thresholds=[best_threshold])
-```
-
-**Never** pick threshold based on test set performance!
-
----
-
 ## Matching Algorithm
 
 We use **greedy one-to-one matching** (per image, per class):
@@ -339,11 +276,11 @@ We use **greedy one-to-one matching** (per image, per class):
 3. Greedily assign matches (highest IoU first)
 4. Each prediction matches at most one GT
 5. Each GT matches at most one prediction
-6. Match valid only if IoU ≥ threshold (default: 0.5)
+6. Match valid only if IoU >= threshold (default: 0.5)
 
 ---
 
-## Directory Structure
+## Module Structure
 
 ```
 evaluation/
@@ -353,14 +290,7 @@ evaluation/
 ├── metrics.py            # 3 core evaluation functions
 ├── plots.py              # Visualization functions
 ├── README_METRICS.md     # This file
-├── QUICK_START.md        # Quick reference guide
-├── metrics/              # Prediction JSONs go here
-│   └── {experiment}_predictions.json
-└── results/              # Evaluation outputs go here
-    └── {experiment}/
-        ├── metrics.json
-        ├── summary.csv
-        └── *.png (plots)
+└── QUICK_START.md        # Quick reference guide
 
 data/processed/evaluation/
 ├── train_index.json      # Ground truth indices
@@ -387,9 +317,3 @@ A: Greedy is simpler, faster, and standard in detection evaluation (COCO, PASCAL
 
 **Q: How do I compare YOLO vs RT-DETR fairly?**
 A: Run both on the **same test set** with the **same evaluation code**. Use validation to pick best threshold for each model separately.
-
----
-
-## Contact
-
-For questions about the evaluation system, open an issue in the repo.
