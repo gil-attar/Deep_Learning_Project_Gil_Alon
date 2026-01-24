@@ -1,254 +1,173 @@
-# The Attention-Based Chef 🍳
+# CNN vs Transformer for Occluded Object Detection
 
-Deep Learning course project comparing CNN (YOLOv8) vs Transformer (RT-DETR) architectures for ingredient detection from food images, with recipe generation via OpenAI API.
+Deep Learning course project comparing YOLOv8 (CNN) vs RT-DETR (Transformer) architectures for ingredient detection, with focus on occlusion robustness.
 
 **Authors:** Gil & Alon
 
+---
+
 ## Project Overview
 
-This project addresses the question: **Do Transformers handle occlusion better than CNNs in object detection?**
+This project investigates two research questions:
 
-We compare:
-- **YOLOv8** (CNN-based, single-stage detector)
-- **RT-DETR** (Transformer-based, real-time DETR)
+1. **Experiment 1 (Freezing Ladder):** How does the number of trainable layers during fine-tuning affect detection performance?
+2. **Experiment 3 (Channel Masking):** Can internal feature masking during training improve occlusion robustness?
 
-### Key Novelties
-1. **Occlusion Difficulty Analysis** - Test images classified as Easy/Medium/Hard based on bounding box overlap
-2. **Confidence Calibration Study** - Analyzing prediction confidence across difficulty levels
-3. **Attention Map Visualization** - How Transformers attend to occluded objects
+### Models
+- **YOLOv8m** - CNN-based single-stage detector
+- **RT-DETR-L** - Transformer-based real-time detector
+
+### Dataset
+- **Source:** Roboflow Food Ingredients Dataset (26 classes)
+- **Split:** 1384 train / 200 val / 400 test images
+- **Format:** YOLO (images + bounding box labels)
 
 ---
 
-## Step 2: Data Pipeline & Evaluation Foundations (FROZEN)
-
-This section documents the data protocol. **Do not modify after Step 2 is complete.**
-
-### Dataset
-
-- **Source:** Roboflow - `gaworkspace-utcbg/food-ingredients-dataset-2-rewtd` (version 1)
-- **Format:** YOLOv8 (images + YOLO format labels)
-- **Location:** `data/raw/` (read-only, immutable)
-
-### Data Split (Fixed)
-
-| Split | Images | Percentage |
-|-------|--------|------------|
-| Train | 1384   | 70%        |
-| Valid | 200    | 10%        |
-| Test  | 400    | 20%        |
-
-The test set is **fixed forever**. All experiments evaluate on the same 396 test images.
-
-### Occlusion Difficulty Definition (Core Novelty)
-
-Difficulty is assigned based on **MAXIMUM pairwise IoU** between ground-truth bounding boxes:
-
-| Difficulty | Criterion | Meaning |
-|------------|-----------|---------|
-| **Easy**   | max_iou < 0.05 | No significant overlap |
-| **Medium** | 0.05 ≤ max_iou < 0.15 | Partial overlap |
-| **Hard**   | max_iou ≥ 0.15 | Significant occlusion |
-
-#### IoU Computation
-```
-For each test image:
-  1. Get all ground-truth bounding boxes
-  2. Compute pairwise IoU for all box pairs
-  3. Take the MAXIMUM IoU value
-  4. Assign difficulty based on thresholds above
-```
-
-**These thresholds are frozen and must not change.**
-
-### Step 2 Artifacts
-
-All artifacts are in `data/processed/`:
-
-| File | Purpose |
-|------|---------|
-| `splits/split_manifest.json` | Lists all filenames per split (reproducibility) |
-| `evaluation/test_index.json` | Ground truth + difficulty for each test image |
-| `evaluation/difficulty_summary.csv` | Statistics per difficulty level |
-
-### Script Usage
-
-```bash
-# Download dataset to data/raw/
-python scripts/download_dataset.py --output_dir data/raw
-
-# Build evaluation artifacts (creates all Step 2 outputs)
-python scripts/build_evaluation_index.py --dataset_root data/raw --output_dir data/processed --seed 42
-```
-
-### Repository Structure
+## Repository Structure
 
 ```
 Deep_Learning_Gil_Alon/
 ├── data/
-│   ├── raw/                    # Immutable dataset (not committed)
-│   │   ├── train/
-│   │   ├── valid/
-│   │   ├── test/
-│   │   └── data.yaml
+│   ├── raw/                      # Original dataset (downloaded via script)
 │   └── processed/
-│       ├── splits/
-│       │   └── split_manifest.json     # ✓ Committed
-│       └── evaluation/
-│           ├── test_index.json         # ✓ Committed
-│           └── difficulty_summary.csv  # ✓ Committed
-├── scripts/
-│   ├── download_dataset.py
-│   ├── build_evaluation_index.py
-│   └── merge_valid_into_train.py       # Phase 2 only (not Step 2)
+│       ├── evaluation/           # Ground truth indices (train/val/test_index.json)
+│       └── splits/               # Split manifest for reproducibility
+│
+├── evaluation/                   # Custom evaluation pipeline
+│   ├── __init__.py
+│   ├── io.py                     # Load predictions and ground truth
+│   ├── matching.py               # IoU-based prediction-to-GT matching
+│   ├── metrics.py                # P/R/F1, per-class metrics, counting MAE
+│   └── plots.py                  # Visualization functions
+│
+├── experiments/
+│   ├── Experiment_1/             # Freezing Ladder (see README inside)
+│   │   ├── README.md
+│   │   ├── freeze_presets.py
+│   │   ├── runOneTest.py
+│   │   └── eval_contract.json
+│   │
+│   └── Experiment_3/             # Channel Masking (see README inside)
+│       ├── README.md
+│       ├── mask_presets.py
+│       ├── channel_masking.py
+│       └── debug_logger.py
+│
 ├── notebooks/
-│   └── 01_data_pipeline.ipynb
-├── models/                     # Trained model weights (not committed)
+│   └── test_evaluation_system.ipynb
+│
+├── scripts/
+│   ├── download_dataset.py       # Download from Roboflow
+│   ├── build_evaluation_indices.py
+│   └── generate_synthetic_occlusions.py
+│
 ├── requirements.txt
 └── README.md
 ```
 
 ---
 
-## Step 3: Baseline Model Training & Evaluation (READY TO RUN)
+## Quick Start
 
-This section implements baseline training and evaluation for YOLOv8 and RT-DETR.
-
-### Workflow
-
-#### Option A: Google Colab (Recommended)
-
-1. Open [notebooks/02_train_models.ipynb](notebooks/02_train_models.ipynb) in Colab
-2. Run all cells sequentially:
-   - Downloads dataset
-   - Trains YOLOv8n (50 epochs)
-   - Trains RT-DETR-l (50 epochs)
-   - Generates all 6 evaluation JSON files
-   - Saves weights and JSONs to Google Drive
-
-**Expected outputs:**
-```
-models/
-├── yolov8n_baseline.pt       # ~6 MB
-└── rtdetr_baseline.pt        # ~100 MB
-
-evaluation/metrics/
-├── baseline_yolo_run.json          # Run metadata
-├── baseline_yolo_metrics.json      # Aggregate metrics
-├── baseline_yolo_predictions.json  # Per-image predictions
-├── baseline_rtdetr_run.json
-├── baseline_rtdetr_metrics.json
-└── baseline_rtdetr_predictions.json
-```
-
-#### Option B: Local/WSL Training (If you have GPU)
+### 1. Setup Environment
 
 ```bash
-# Install dependencies
 pip install -r requirements.txt
+```
 
-# Download dataset
+### 2. Download Dataset
+
+```bash
 export ROBOFLOW_API_KEY="your_api_key"
 python scripts/download_dataset.py --output_dir data/raw
-
-# Create data.yaml
-python scripts/create_data_yaml.py --dataset_root data/raw --output data/processed/data.yaml
-
-# Train models (requires GPU)
-# ... (not recommended for 3-week timeline - use Colab's free GPU instead)
 ```
 
-#### Option C: Evaluation Only (If you already have weights)
-
-If you've already trained models and just need to generate evaluation JSONs:
+### 3. Build Evaluation Indices
 
 ```bash
-python scripts/evaluate_baseline.py \
-    --yolo_weights models/yolov8n_baseline.pt \
-    --rtdetr_weights models/rtdetr_baseline.pt \
-    --dataset_root data \
-    --output_dir evaluation/metrics \
-    --model both
+python scripts/build_evaluation_indices.py \
+    --dataset_root data/raw \
+    --output_dir data/processed/evaluation
 ```
 
-### What Gets Generated
+### 4. Run Experiments
 
-The evaluation script creates **6 JSON files** (see [evaluation/README.md](evaluation/README.md)):
+Each experiment has its own README with detailed instructions:
 
-1. **Run Metadata** (`*_run.json`): Reproducibility info (model config, dataset refs, hardware)
-2. **Metrics** (`*_metrics.json`): Aggregate performance (mAP@50, precision, recall, FPS)
-3. **Predictions** (`*_predictions.json`): Per-image detections (for occlusion analysis)
+- **Experiment 1:** See [experiments/Experiment_1/README.md](experiments/Experiment_1/README.md)
+- **Experiment 3:** See [experiments/Experiment_3/README.md](experiments/Experiment_3/README.md)
 
-### Verification
+Experiments are designed to run in **Google Colab** with GPU acceleration.
 
-After training completes:
+---
+
+## Evaluation Pipeline
+
+We use a custom evaluation system (not Ultralytics' built-in `model.val()`) for consistency across experiments.
+
+### Metrics Computed
+- **Threshold Sweep:** P/R/F1 at confidence thresholds 0.0-0.9
+- **Per-Class Metrics:** F1 score per ingredient class
+- **Confusion Matrix:** Classification errors for matched detections
+- **Counting MAE:** How accurately the model counts objects
+
+### Usage
 
 ```python
-import json
+from evaluation.io import load_predictions, load_ground_truth
+from evaluation.metrics import eval_detection_prf_at_iou
 
-# Check metrics comparison
-with open("evaluation/metrics/baseline_yolo_metrics.json") as f:
-    yolo = json.load(f)
-with open("evaluation/metrics/baseline_rtdetr_metrics.json") as f:
-    rtdetr = json.load(f)
+predictions = load_predictions("path/to/predictions.json")
+ground_truth = load_ground_truth("data/processed/evaluation/test_index.json")
 
-print(f"YOLOv8   mAP@50: {yolo['metrics']['map50']:.4f}")
-print(f"RT-DETR  mAP@50: {rtdetr['metrics']['map50']:.4f}")
-```
-
-### Next: Occlusion Analysis (Step 3.3)
-
-Once JSON files are generated, your friend can proceed with occlusion difficulty analysis without re-running inference.
-
----
-
-## Environment Setup
-
-```bash
-pip install -r requirements.txt
-```
-
-Required environment variable:
-```bash
-export ROBOFLOW_API_KEY="your_api_key"
+results = eval_detection_prf_at_iou(predictions, ground_truth, iou_threshold=0.5)
+print(f"Best F1: {max(r['f1'] for r in results.values())}")
 ```
 
 ---
 
-## Experiments
+## Experiments Summary
 
 ### Experiment 1: Freezing Ladder
-Measures how the number of trainable parameters during fine-tuning affects performance when adapting COCO-pretrained detectors to our ingredient dataset.
 
-- **Location:** `experiments/Experiment_1/`
-- **Notebook:** `notebooks/E1_run_evaluate.ipynb`
-- **Presets:** F0 (head only) → F3 (full fine-tune)
+**Question:** How many layers should we fine-tune?
 
-### Experiment 3: Internal Masking vs Occlusion Training
-Tests whether internal channel masking during training can improve robustness to occlusions.
+| Preset | Layers Trained | Description |
+|--------|----------------|-------------|
+| F0 | Head only | Minimal fine-tuning |
+| F1 | Head + Neck | Moderate fine-tuning |
+| F2 | Head + Neck + Late Backbone | Recommended |
+| F3 | All layers | Full fine-tuning |
 
-- **Location:** `experiments/Experiment_3/`
-- **Notebook:** `experiments/Experiment_3/E3_run_evaluate.ipynb`
-- **Sessions:** 6 per model (clean baseline, occluded training, 4 masking locations)
-- **Models:** YOLOv8m, RT-DETR-L
-- **See:** [Experiment 3 README](experiments/Experiment_3/README.md)
+**Key Finding:** F2 (partial fine-tuning) achieved best balance of performance and generalization.
+
+### Experiment 3: Channel Masking vs Occlusion Training
+
+**Question:** Can masking feature channels simulate occlusion robustness?
+
+| Session | Training Data | Masking Location |
+|---------|---------------|------------------|
+| S1 | Clean | None (baseline) |
+| S2 | 40% Occluded | None |
+| S3 | Clean | Backbone Early |
+| S4 | Clean | Backbone Late |
+| S5 | Clean | Neck |
+| S6 | Clean | Head |
+
+**Key Finding:** Channel masking does NOT improve occlusion robustness. S2 (occluded training) achieved 81% F1 on occluded images but exhibited catastrophic forgetting on clean images.
 
 ---
 
-## Project Roadmap
+## Requirements
 
-- [x] Step 1: Repository & Environment Setup
-- [x] Step 2: Data Pipeline & Evaluation Foundations (FROZEN)
-- [x] Step 3: Baseline Model Training & Evaluation
-  - [x] 3.1: Protocol Freezing (run metadata JSONs)
-  - [x] 3.2: Training & Baseline Performance (metrics + predictions JSONs)
-  - [ ] 3.3: Occlusion Difficulty Analysis (slice by Easy/Medium/Hard)
-  - [ ] 3.4: Confidence Threshold Sweep
-- [x] Experiment 1: Freezing Ladder (YOLOv8m vs RT-DETR-L)
-- [ ] Experiment 3: Internal Masking vs Occlusion Training
-- [ ] Step 4: Performance Visualization
-- [ ] Step 5: Hyperparameter Tuning (Phase 1)
-- [ ] Step 6: Final Training (Phase 2 - 80/20 split)
-- [ ] Step 7: Confidence Calibration Study
-- [ ] Step 8: Attention Map Visualization
-- [ ] Step 9: Recipe Generation Pipeline (Logic Gate + OpenAI API)
-- [ ] Step 10: Final Report & Ethics Statement
+- Python 3.10+
+- PyTorch 2.0+
+- Ultralytics 8.0+
+- See `requirements.txt` for full list
+
+---
+
+## License
+
+Academic project for Deep Learning course.
