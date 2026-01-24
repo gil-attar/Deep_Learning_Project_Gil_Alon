@@ -65,6 +65,20 @@ All models evaluated on:
 
 ## Running the Experiment
 
+### Colab-First Orchestration (Main Entry Point)
+- **Notebook:** `E3_run_evaluate.ipynb`
+
+The experiment is designed to be executed end-to-end from Google Colab via the notebook above. The notebook:
+1. Mounts **Google Drive** for persistent storage of all run artifacts and plots  
+2. Downloads the dataset (Roboflow) and the required pretrained weights into the Colab runtime  
+3. Links the experiment output directory to a Drive-backed folder so runs survive disconnects  
+4. Runs the experiment driver script, which invokes the per-session runner once per configuration (model × session)  
+5. Aggregates results and saves combined plots and evaluation summaries back to Drive  
+
+This Colab-first path standardizes environment setup, storage persistence, and end-to-end reproducibility.
+
+### Running sequence
+
 1. Open `E3_run_evaluate.ipynb` in Google Colab
 2. Configure parameters in the config cell:
    - `EPOCHS = 50` for full experiment

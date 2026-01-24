@@ -31,7 +31,7 @@ This project investigates two research questions:
 
 ```
 Deep_Learning_Gil_Alon/
-├── artifacts/                    # Run data can be stored here (unless storing it on google drive)
+├── artifacts/                    # Would only be populated in local run
 │
 ├── data/
 │   ├── raw/                      # Original dataset (downloaded when running experiments)
@@ -46,21 +46,32 @@ Deep_Learning_Gil_Alon/
 │   ├── metrics.py                # P/R/F1, per-class metrics, counting MAE
 │   ├── plots.py                  # Visualization functions
 │   ├── plots/                    # Empty placeholder (plots saved to results dir)
-│   ├── QUICK_START.md           # Updated - quick reference guide
-│   ├── README_METRICS.md        # Updated - full documentation
-│   └── evaluation_summery.txt   # Updated - module overview
+│   ├── QUICK_START.md            # Updated - quick reference guide
+│   ├── README_METRICS.md         # Updated - full documentation
+│   └── evaluation_summery.txt    # Updated - module overview
 │
 ├── experiments/
 │   ├── Experiment_1/             # Freezing Ladder (see README inside)
-│   │   ├── README.md
-│   │   ├── freeze_presets.py
-│   │   ├── runOneTest.py
-│   │   └── eval_contract.json
+│   │   ├── E1_run_evaluate.ipynb
+│   │   ├── E1_run_evaluate_FINAL_RUN.ipynb    # Final full run
+│   │   ├── E1_uniqueness_audit.ipynb
+│   │   ├── README.md
+│   │   ├── RUN_CONTRACT.md
+│   │   ├── eval_contract.json
+│   │   ├── freezing              # Freeze presets + inspection/utilities
+│   │   ├── runOneTest.py
+│   │   ├── run_experiment1.sh
+│   │   └── runs                  # Would only be populated in local run
 │   │
 │   ├── Experiment_2/             # Training Duration (see README inside)
 │   │   ├── README.md
+│   │   ├── run_experiment2.sh
+│   │   ├── runOneTest.py
 │   │   ├── E2_run_evaluate.ipynb
-│   │   └── runOneTest.py
+│   │   ├── E2_run_evaluate_FINAL_RUN.ipynb    # Final full run
+│   │   └── runs/                 # Would only be populated in local run
+│   │       ├── rtdetr-l/F2/...
+│   │       └── yolov8m/F2/...
 │   │
 │   └── Experiment_3/             # Channel Masking (see README inside)
 │       ├── README.md
