@@ -22,6 +22,8 @@ This project investigates two research questions:
 - **Source:** Roboflow Food Ingredients Dataset (26 classes)
 - **Split:** 1384 train / 200 val / 400 test images
 - **Format:** YOLO (images + bounding box labels)
+- **VERY IMPORTANT NOTE:** the current code runs on dataset activated automaticly by our own private Roboflow API key. This key is going to be DELETED after our project is over. in case you want to run the code yourself, you need to set your own API key (pay to roboflow, download the database from https://universe.roboflow.com/samuels/food-ingredients-dataset-2/browse?queryText=&pageSize=50&startingIndex=650&browseQuery=true, create a new project from it, and make a version from it with train/val/test splits with the augmentations you want). To run, simply change in each experiment the data download line: os.environ["ROBOFLOW_API_KEY"] = "<enter your key here>"
+
 
 ---
 

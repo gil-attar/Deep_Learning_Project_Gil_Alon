@@ -50,17 +50,17 @@ All models evaluated on:
 
 ## Files
 
-| File | Purpose |
-|-------------------------|---------|
+| File                    | Purpose                             |
+|-------------------------|-------------------------------------|
 | `E3_run_evaluate.ipynb` | Main notebook (run in Google Colab) |
-| `channel_masking.py` | Forward hook implementation |
-| `mask_presets.py` | Layer definitions & session configs |
-| `debug_logger.py` | Debug logging utilities |
+| `channel_masking.py`    | Forward hook implementation         |
+| `mask_presets.py`       | Layer definitions & session configs |
+| `debug_logger.py`       | Debug logging utilities             |
 
 ### Completed Run Notebooks
-| File | Purpose |
-|------|---------|
-| `E3_full_run/E3_run_evaluate_FINAL_RUN.ipynb` | Full experiment run with all sessions (S1-S6) |
+| File                                              | Purpose                                        |
+|---------------------------------------------------|------------------------------------------------|
+| `E3_full_run/E3_run_evaluate_FINAL_RUN.ipynb`     | Full experiment run with all sessions (S1-S6)  |
 | `E3_full_run/E3_run_evaluate_S2_DEBUGCHECK.ipynb` | S2-only re-run to verify domain shift behavior |
 
 ## Running the Experiment
@@ -68,28 +68,36 @@ All models evaluated on:
 1. Open `E3_run_evaluate.ipynb` in Google Colab
 2. Configure parameters in the config cell:
    - `EPOCHS = 50` for full experiment
-   - `DRY_RUN = False`
-3. Run all cells
+   - `DRY_ID = ""` comment this line if you want a new run, uncomment & enter correct id to resume after disconnect
+3. Run all cells - dont forget to approve google collab mount befor you leave the compute and also correct the data API key (as specified in the general README.md)!
 
 ### Resume After Disconnect
 1. Check `LATEST_E3_RUN_ID.txt` on your Google Drive
-2. Set `PREVIOUS_RUN_ID = "E3_..."` in the config cell
+2. Set `RUN_ID = "E3_..."` in the config cell
 3. Re-run — completed sessions are automatically skipped
 
 ## Output Structure
 ```
 /content/drive/MyDrive/Colab_Outputs/Deep_Learning_Project_Gil_Alon/<RUN_ID>/
-├── E3_runs/
-│   ├── yolov8m__S1_clean_train/
-│   │   ├── weights/best.pt
-│   │   └── results.csv
-│   ├── yolov8m__S2_occ_train/
-│   │   └── ...
-│   └── ...
-├── _plots/
-│   ├── comparison_f1_clean.png
-│   └── comparison_f1_occluded.png
-└── all_results.json
+└── E3_runs/
+    ├── yolov8m__S1_clean_train/
+    │   ├── weights/
+    │   │   ├── best.pt
+    │   │   └── LAST.pt
+    │   ├── args.yaml
+    │   ├── <box_cerves>.png
+    │   ├── <batch>.png
+    │   ├── <confusion_matrix>.png
+    │   ├── DONE                       # Markdowns incase of a crash
+    │   ├── results.png   
+    │   └── results.csv
+    ├── yolov8m__S2_occ_train/
+    │   └── ...
+    ├── ...                            # same with all the 12 sessions
+    ├── plots/                         # IMPORTANT: Combined plots (F1/P/R) for all sessions
+    ├── evaluations/                   # IMPORTANT: Each session graphs & metrics 
+    ├── <file_name>.json               # Json files for results
+    └── <file_name>.csv                # Csv files for results 
 ```
 
 ## Key Results
@@ -97,9 +105,10 @@ All models evaluated on:
 ### Channel Masking Does NOT Improve Occlusion Robustness
 
 **Key Findings:**
-1. **Channel masking (S3-S6)** provides no improvement over baseline (S1) on occluded images
+1. **Channel masking (S3-S6)** provides no improvement over baseline (S1) on occluded images, nor on clean images
 2. **Occlusion training (S2)** dramatically improves occluded performance (81% F1) but causes **catastrophic forgetting** on clean images (3% F1)
-3. **Domain shift confirmed**: S2 models detect 15x more objects on occluded vs clean images
+3. **Domain shift confirmed** S2 models detect 15x more objects on occluded vs clean images
+4. **Mask location matters** on clean images testing, masking early backbone features (S3) significantly harms learning. In contrast, masking later components (S4–S6) is much more tolerable
 
 ### Why S2 Shows Domain Shift
 - Model trained exclusively on 40% occluded images
@@ -108,4 +117,6 @@ All models evaluated on:
 - This is expected behavior, not a bug
 
 ## Conclusion
-Channel masking at any network depth does not simulate occlusion robustness. True occlusion robustness requires exposure to occluded training data, but this creates a trade-off with clean image performance. A mixed training approach (clean + occluded) would be needed to maintain both capabilities.
+Internal channel masking (as implemented in our project) is not a drop-in replacement for occlusion-augmented training: it does not produce meaningful occlusion robustness.
+Applying masking to early backbone layers can severely degrade clean performance, however, masking later layers (neck/head) largely preserves clean accuracy and can act as a mild regularization (smaller train–val gaps), though this regularization does not translate into improved robustness under occlusion.
+This supports the interpretation that channel-wise feature removal is fundamentally different from spatial occlusion and therefore does not teach the same robustness.
